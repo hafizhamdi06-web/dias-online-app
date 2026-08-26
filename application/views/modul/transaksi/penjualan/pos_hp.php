@@ -2,73 +2,7 @@
 
 <body id="<?= $id; ?>" class="layout-fixed bg-transparent overflow-hidden" data-panel-auto-height-mode="height"> 
   <!-- Custom CSS -->  
-  <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/transaksi-page-pos.css');?>">  
-  
-   <style scoped>
-    .container-absolute{
-      margin-top: 0px;
-      
-    }
-    .container-absolute input,
-    .container-absolute input:focus{
-      font-weight: bold;
-      font-size: 1.5rem; 
-      box-shadow: none;
-    } 
-    @media (max-width:767px){
-      .container-absolute{
-        margin-top: 0px; 
-      }
-    }       
-  </style>  
-   <style scoped>
-    .container-absolute2{
-      margin-top: 0px;
-      
-    }
-    .container-absolute2 input,
-    .container-absolute2 input:focus{
-      font-weight: bold;
-      font-size: 1rem; 
-      box-shadow: none;
-    } 
-    @media (max-width:767px){
-      .container-absolute2{
-        margin-top: 0px; 
-      }
-    }       
-  </style>   
-  
-     <style>
-        body {
-            margin: 10px;
-        }
-
-        .radio-lg .custom-radio-input {
-            top: 0.8rem;
-            scale: 1.4;
-            margin-right: 2rem;
-        }
-
-        .radio-lg .custom-radio-label {
-            padding-top: 13px;
-        }
-    </style>
-   
-
-<style>
- 
-
-.center_button {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-</style>
-
-
+  <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/transaksi-page-pos-hp.css');?>">
 
   <!-- Loading Page -->  
   <div class="loader-wrap d-none">
@@ -92,10 +26,11 @@
   
          
                                             <div class="form-group row my-0">
-                                                <label class="col-2 col-sm-2 col-lg-1 col-form-label text-sm px-1 font-weight-normal" >No Transaksi</label>
-                                                <div class="col-2 col-sm-2 col-lg-2">
+                                                <label class="col-2 col-form-label text-sm px-1 font-weight-normal" >No Transaksi</label>
+                                                <div class="col-2">
                                                     <input type="text" id="nomor" name="nomor" class="form-control form-control-sm kuncitext " placeholder="New Trans"   disabled>  
                                                     <input type="hidden" id="idpaket" class="form-control form-control-sm " name="idpaket" value="">        
+                                                    <input type="hidden" id="jumlahkupon" class="form-control form-control-sm " name="jumlahkupon" value="">        
                                                     <input type="hidden" id="jumlahpaket" class="form-control form-control-sm " name="jumlahpaket" value="0">        
                                                     <input type="hidden" id="nopaketheader" class="form-control form-control-sm " name="nopaketheader" value=""> 
                                                     <input type="hidden" id="idpromo" class="form-control form-control-sm " name="idpromo" value="">           
@@ -109,8 +44,8 @@
                                                         <input type="hidden" id="iddiskonvocer" name="iddiskonvocer" class="form-control form-control-sm ">      
                                                 </div>   
                                                 
-                                               <label class="col-1 col-sm-1 col-lg-1 col-form-label text-sm px-1 font-weight-normal" >Pasien</label>
-                                                  <div class="col-3  col-sm-3  col-lg-3">
+                                               <label class="col-1 col-form-label text-sm px-1 font-weight-normal" >Pasien</label>
+                                                  <div class="col-3">
                                                       <div class="input-group" data-target-input="nearest">
                                                         <input type="hidden" id="idkontak" name="idkontak"> 
                                                         <input type="hidden" id="kontaktipe" name="kontaktipe">   
@@ -129,21 +64,21 @@
                                                 </div>  
                                                
                                                
-                                                <label class="col-1 col-sm-1 col-lg-1 col-form-label text-sm px-3 font-weight-normal " >Total</label> 
-                                                <div class="col-3 col-sm-3 col-lg-3 px-3 ">
-                                                        <div class="container-fluid container-absolute2">  
+                                                <label class="col-2 col-form-label text-sm px-3 font-weight-normal " >Total</label>
+                                                <div class="col-2 px-3 ">
+                                                        <div class="container-fluid container-absolute2">
                                                             <input id="totaltanpadp" type="hidden" class="form-control form-control-sm ">
                                                             <input id="tsubtotal" type="text" class="total form-control form-control-sm numeric border-1 kuncitext "   value="0">
-                                                        </div>   
-                                                </div> 
-                                            </div>  
+                                                        </div>
+                                                </div>
+                                            </div>
                                             
                                             
                                             
                                             
                                             <div class="form-group row my-0">
-                                                 <label class="col-2  col-sm-2   col-lg-1 col-form-label text-sm px-1 font-weight-normal">Tanggal *</label>
-                                                <div class="col-2  col-sm-2  col-lg-2 ">
+                                                 <label class="col-2 col-form-label text-sm px-1 font-weight-normal">Tanggal *</label>
+                                                <div class="col-2">
                                                        
                                                         <input type="text" id="tgl" name="tgl" class="form-control form-control-sm datepicker kuncitext" autocomplete="off">
                                                          <!--begin::Col <div class="input-group date">-->
@@ -153,36 +88,36 @@
                                                       <!--begin::Co</div>   -->
                                                 </div>   
                                                 
-                                                <label class="col-1 col-sm-1 col-lg-1 col-form-label text-sm px-1 font-weight-normal" >Id Pasien</label>
-                                                  <div class="col-3  col-sm-3  col-lg-3"> 
-                                                  <div id="pasienid" class=" col-form-label text-sm font-weight-normal"></div> 
-                                                </div>  
-                                                   
-                                                <label class="col-1 col-sm-1 col-lg-1 col-form-label text-sm px-3 font-weight-normal" >Pembayaran</label>
-                                                <div class="col-3 col-sm-3 col-lg-3 px-3">
-                                                        <div class="container-fluid container-absolute2">  
+                                                <label class="col-1 col-form-label text-sm px-1 font-weight-normal" >Id Pasien</label>
+                                                  <div class="col-3">
+                                                  <div id="pasienid" class=" col-form-label text-sm font-weight-normal"></div>
+                                                </div>
+
+                                                <label class="col-2 col-form-label text-sm px-3 font-weight-normal" >Pembayaran</label>
+                                                <div class="col-2 px-3">
+                                                        <div class="container-fluid container-absolute2">
                                                             <input id="totalbayar" type="text" class="total form-control form-control-sm numeric border-1 kuncitext" value="0">
-                                                        </div>   
-                                                </div>         
+                                                        </div>
+                                                </div>
                                             </div>
                                             
                                             
                                              <div class="form-group row my-0">  
-                                             <label class="col-2 col-sm-2 col-lg-1 col-form-label text-sm px-1 font-weight-normal" >Kasir</label>
-                                              <div class="col-2  col-sm-2  col-lg-2 ">
-                                                <input type="hidden" id="idsalesman" name="idsalesman">                    
-                                                <input type="text" id="salesman" name="salesman" class="form-control form-control-sm border-0 ">  
-                                                               
-                                              </div>   
-                                               <div class="col-4  col-sm-4  col-lg-4" id="divtglexpiredmember"> </div>  
-                                                
-                                                <label class="col-1 col-sm-1 col-lg-1 col-form-label text-sm px-3 font-weight-normal label-total" >Sisa</label>
-                                                <div class="col-3 col-sm-3 col-lg-3 px-3">
-                                                        <div class="container-fluid container-absolute2">  
+                                             <label class="col-2 col-form-label text-sm px-1 font-weight-normal" >Kasir</label>
+                                              <div class="col-2">
+                                                <input type="hidden" id="idsalesman" name="idsalesman">
+                                                <input type="text" id="salesman" name="salesman" class="form-control form-control-sm border-0 ">
+
+                                              </div>
+                                               <div class="col-4" id="divtglexpiredmember"> </div>
+
+                                                <label class="col-2 col-form-label text-sm px-3 font-weight-normal label-total" >Sisa</label>
+                                                <div class="col-2 px-3">
+                                                        <div class="container-fluid container-absolute2">
                                                             <input id="totalsisa" type="text" class="total form-control form-control-sm numeric border-1 kuncitext" value="0">
-                                                        </div>   
-                                                </div>  
-                                            </div>   
+                                                        </div>
+                                                </div>
+                                            </div>
                                             
                                                
                         </div>
@@ -223,7 +158,7 @@
                                     <tr>
                                       <th> 
                                       <div class="form-group row my-0">
-                                            <label class="col-3 col-form-label text-sm px-3 font-weight-normal"  >Nama 2 </label>   
+                                            <label class="col-3 col-form-label text-sm px-3 font-weight-normal"  >Nama </label>   
                                             <label class="col-1 col-form-label text-sm px-1 font-weight-normal"  >Qty </label> 
                                             <label class="col-2 col-form-label text-sm px-1 font-weight-normal"  >Harga </label> 
                                             <label class="col-1 col-form-label text-sm px-1 font-weight-normal"  >Dis 1 </label> 
@@ -299,7 +234,7 @@
                    <div class="form-group row my-0 d-none"> 
                      <div class="col-12 px-3">
                      <button type="button" id="baddrow" class="btn btn-primary btn-step1 text-sm mb-2"><i class="fa fa-plus px-2 d-none"></i>Tambah Data</button>
-                     <span id="loader-detil" class="ml-2 text-sm d-none"><i class="fas fa-spinner fa-spin mx-2  d-none"></i>loading item data...</span>
+                     <span id="loader-detil-legacy" class="ml-2 text-sm d-none"><i class="fas fa-spinner fa-spin mx-2  d-none"></i>loading item data...</span>
    
             
                   </div>   
@@ -308,28 +243,28 @@
             
                 <div class="form-group row my-0">
                     <div class="col-8  px-3 "> 
-                        <div class="btn-group" role="group" aria-label="Button group with nested dropdown"> 
+                        <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                             <button type="button" id="btambahitem2" class="btn btn-success btn-step1 text-sm btn-sm buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Tambah Item</button>
-                            <button type="button" id="bpaket" class="btn btn-info btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Paket</button>
-                            <button type="button" id="bpromo" class="btn btn-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Promo</button>
-                            <button type="button" id="bpro" class="btn btn-warning btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>PRO</button>    
+                            <button type="button" id="bpaket" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Paket</button>
+                            <button type="button" id="bpromo" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Promo</button>
+                            <button type="button" id="bpro" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>PRO</button>
                             <div class="dropdown ">
-                              <button class="btn btn-danger text-sm btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">  
+                              <button class="btn btn-outline-secondary text-sm btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                                 Medlib
                               </button>
                               <div class="dropdown-menu">
                                 <a class="dropdown-item" href="javascript:void(0)" onclick="medlibbyjokul();" >Data Invoice by Jokul</a>
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="medlibbeluminvoice();" >Data Medlib Belum Invoice</a> 
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="medlibbeluminvoice_cara2();" >Data Medlib Belum Invoice 2</a> 
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="medlibbeluminvoice();" >Data Medlib Belum Invoice</a>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="medlibbeluminvoice_cara2();" >Data Medlib Belum Invoice 2</a>
                               </div>
-                            </div> 
-                            
-                    
-                     <!--begin::Col -->  <button type="button" id="bkirimulangemail" class="btn btn-warning btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-plus px-2"></i>Kirim Ulang Email</button> 
+                            </div>
+
+
+                     <!--begin::Col -->  <button type="button" id="bkirimulangemail" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-plus px-2"></i>Kirim Ulang Email</button>
+
+                     <button type="button" id="bkupon" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-plus px-2"></i>Kupon</button>
                      
-                     <button type="button" id="bkupon" class="btn btn-danger btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-plus px-2"></i>Kupon</button>    
-                         
-                         
+                     
                          
                          </div> 
                          <span id="loader-detil" class="ml-2 text-sm d-none"><i class="fas fa-spinner fa-spin mx-2"></i>loading data...</span>
@@ -366,11 +301,11 @@
                               <i class="fas fa-times" title="Batal"></i>
                             </a>                      
                             <a id="bcanceltransaksi" class="btn btn-app btn-step1" title="Cancel Transaksi">
-                              <i class="fas" title="Cancel Transaksi">Cancel</i>
+                              <i class="fas fa-ban" title="Cancel Transaksi"></i>
                             </a>
-                            <a id="bapprovecanceltransaksi" class="btn btn-app btn-step2 disabled" title="Approve Cancel Transaksi">    
-                              <i class="fas" title="Approve Cancel Transaksi">App Cance</i>
-                            </a>        
+                            <a id="bapprovecanceltransaksi" class="btn btn-app btn-step2 disabled" title="Approve Cancel Transaksi">
+                              <i class="fas fa-check-double" title="Approve Cancel Transaksi"></i>
+                            </a>
                             </div>  
                       </div> </div> 
                       
@@ -378,20 +313,20 @@
                 <div class="col-2 px-0 ">  
                             
                             <div class="dropdown ">
-                              <button class="btn btn-danger text-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">  
+                              <button class="btn btn-outline-secondary text-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
                                 Data Lainnya
                               </button>
                               <div class="dropdown-menu">
                                 <a class="dropdown-item" href="javascript:void(0)" onclick="datalainnya();" >Data Lainnya</a>
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="catatanplanning();" >Catatan Planning</a> 
-                                <a class="dropdown-item" href="javascript:void(0)" onclick="datateman();" >Data Teman</a> 
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="catatanplanning();" >Catatan Planning</a>
+                                <a class="dropdown-item" href="javascript:void(0)" onclick="datateman();" >Data Teman</a>
                               </div>
-                            </div> 
-                            
-                            
+                            </div>
+
+
                   </div>
-                <div class="col-2 px-0 "> 
-                            <button type="button" id="bdatasurgery" class="btn btn-warning btn-step1 btn-block buttontambahan">Data Surgery</button>  
+                <div class="col-2 px-0 ">
+                            <button type="button" id="bdatasurgery" class="btn btn-outline-secondary btn-step1 btn-block buttontambahan">Data Surgery</button>
                   </div>
                 
                 </div>       

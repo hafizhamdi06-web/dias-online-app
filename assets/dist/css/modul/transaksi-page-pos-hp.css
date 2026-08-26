@@ -143,12 +143,13 @@
       left: 67%;
     }
     .container-absolute,
+    .container-absolute2,
     .container-absolute-80,
     .container-absolute-100,
     .container-absolute-120 {
       float:left;
       margin-top: 20px;
-      width: 100%;        
+      width: 100%;
     }
     .container-absolute-fina {
       float:left;
@@ -274,3 +275,69 @@
   .btn-app.disabled {
     opacity: .35;
   }
+
+/* ============================================================
+   POS Dev — mobile layout (phones, <=767px)
+   Header/footer switch from fixed-position strips to normal
+   document flow so stacked fields have room, and touch targets
+   are enlarged. Kept in this dev-only stylesheet so the
+   production POS page (transaksi-page-pos.css) is untouched.
+   ============================================================ */
+@media (max-width: 767px) {
+
+  /* Header no longer pinned to the top — let it grow to fit stacked fields */
+  .content-header {
+    position: relative !important;
+    height: auto !important;
+    top: auto !important;
+  }
+  section.content {
+    margin-top: 10px !important;
+  }
+
+  /* Every label / input column in the transaction header stacks full-width */
+  .content-header .form-group.row > label,
+  .content-header .form-group.row > div[class^="col-"] {
+    flex: 0 0 100%;
+    max-width: 100%;
+    text-align: left;
+  }
+  .content-header .form-group.row > label {
+    padding-top: 8px;
+    padding-bottom: 0;
+  }
+
+  /* Footer also released from fixed positioning, flows after the item table */
+  .mainx-footer {
+    position: relative !important;
+    height: auto !important;
+    bottom: auto !important;
+    padding-bottom: env(safe-area-inset-bottom, 8px);
+  }
+  .content2,
+  .py-99 {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Bigger touch targets */
+  #footer .btn-group .btn,
+  #footer .dropdown > .btn {
+    min-height: 38px;
+    font-size: 12px;
+  }
+  .btn-app {
+    min-width: 42px;
+    min-height: 42px;
+  }
+  #bbayar {
+    min-height: 46px;
+    font-size: 1rem;
+  }
+
+  /* Item table: compact but legible while horizontally scrolling (.table-responsive) */
+  #tdetil,
+  #tvoucher {
+    font-size: 11px;
+  }
+}
