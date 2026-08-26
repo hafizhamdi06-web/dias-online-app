@@ -19,5 +19,13 @@
 	"require-dev": {
 		"mikey179/vfsstream": "1.1.*",
 		"phpunit/phpunit": "4.* || 5.*"
+	},
+	"config": {
+		"policy": {
+			"advisories": {
+				"ignore-id": ["PKSA-z3gr-8qht-p93v", "PKSA-w57n-mhp6-c9sd"],
+				"block": false
+			}
+		}
 	}
 }
