@@ -1,0 +1,11 @@
+services:
+  dias-online:
+    build: ./
+    container_name: dias-online
+    volumes:
+      - /home/nmwtech/sites/dias-online:/var/www/html
+    ports:
+      - "9074:9000"
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

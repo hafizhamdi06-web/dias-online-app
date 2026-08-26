@@ -1,0 +1,103 @@
+<?php
+	include ('style.php');
+	$date1 = $_POST['tgldari'];
+	$date2 = $_POST['tglsampai'];	
+    if(isset($_POST['idkontak'])){
+    	$kontak = $_POST['idkontak'];
+    } else {
+    	$kontak = "";
+    }	
+
+    $CI =& get_instance();
+    $transcode = element('PJ_Retur_Penjualan',NID); // Lihat di global_helper
+    $transcode = $CI->M_transaksi->prefixtrans($transcode);        
+    $query  = "SELECT A.ipuid 'id',A.ipunotransaksi 'nomor',DATE_FORMAT(A.iputanggal,'%d-%m-%Y') 'tanggal',
+                          B.knama 'kontak', A.ipuuraian 'uraian', IFNULL(A.iputotaltransaksi-A.iputotalpajak-A.iputotalpph22,0) 'total', 0 'totalv',
+                          CASE WHEN A.iputotalbayar=0 AND (A.iputotaltransaksi-IFNULL(A.ipujumlahdp,0)) > 0  THEN 'Belum Dibayar' 
+                               WHEN (A.iputotaltransaksi-IFNULL(A.ipujumlahdp,0))-A.iputotalbayar=0 OR (A.iputotaltransaksi-IFNULL(A.ipujumlahdp,0))=0   THEN 'Lunas'
+                               WHEN (A.iputotaltransaksi-IFNULL(A.ipujumlahdp,0))-A.iputotalbayar<0 THEN 'Lebih Dibayar'
+                               ELSE 'Dibayar Sebagian' 
+                          END 'status', IFNULL(A.ipujumlahdp,0) 'totaldp', IFNULL(A.iputotalpph22,0) 'totalpph22', 
+                          IFNULL(A.iputotalpajak,0) 'totalppn',
+                          '-' 'posting', ROUND((IFNULL(A.iputotaltransaksi,0)-IFNULL(A.ipujumlahdp,0)),2) 'totaltagihan'
+                     FROM einvoicepenjualanu A 
+                LEFT JOIN bkontak B ON A.ipukontak=B.kid 
+	                WHERE A.ipusumber = '".$transcode."'  
+	                  AND A.iputanggal BETWEEN '".tgl_database($date1)."' 
+	                  AND '".tgl_database($date2)."'";            
+
+    if($kontak != ""){
+    	$query .= " AND A.ipukontak='".$kontak."'";
+    }
+
+    $query .= " GROUP BY A.ipuid,A.ipunotransaksi,A.iputanggal";
+
+    $datareport = $CI->M_transaksi->get_data_query($query);
+    $datareport = json_decode($datareport);
+
+?>
+<div class="header-report">
+	<table class="table border-0">
+		<thead>
+			<tr>
+				<th colspan="9" class="center"><h3 class="text-blue"><?= $company_name; ?></h3></th>				
+			</tr>
+			<tr>
+				<th colspan="9" class="center"><p><?= $title; ?></p></th>				
+			</tr>			
+			<tr>
+				<th colspan="9" class="center"><span>Periode : <?= $date1; ?> s/d <?= $date2; ?></span></th>				
+			</tr>						
+		</thead>
+	</table>
+</div>
+<div class="content-report">
+	<table class="table">
+		<thead>
+			<tr class="bg-dark">
+				<th class="left" width="11%">Tanggal</th>
+				<th class="left" width="12%">Nomor</th>				
+				<th class="left">Kontak</th>
+				<th class="left">Keterangan</th>
+				<th class="right">Jumlah</th>
+				<th class="right">PPN</th>
+				<th class="right">PPH 22</th>								
+				<th class="right">Total Retur</th>								
+				<th class="left" width="11%">Status</th>				
+			</tr>
+		</thead>
+		<tbody>
+			<?	
+				$total = 0; $totaltagihan = 0; $totalppn = 0; $totalpph22 = 0;
+				foreach ($datareport->data as $row) {
+					echo "<tr>";
+					echo "<td>".$row->tanggal."</td>";					
+					echo "<td>".$row->nomor."</td>";
+					echo "<td>".$row->kontak."</td>";
+					echo "<td>".$row->uraian."</td>";
+					echo "<td class='right'>".eFormatNumber($row->total,2)."</td>";
+					echo "<td class='right'>".eFormatNumber($row->totalppn,2)."</td>";					
+					echo "<td class='right'>".eFormatNumber($row->totalpph22,2)."</td>";
+					echo "<td class='right'>".eFormatNumber($row->totaltagihan,2)."</td>";
+					echo "<td>".$row->status."</td>";
+					echo "</tr>";								
+					$total += $row->total;
+					$totaltagihan += $row->totaltagihan;																						
+					$totalppn += $row->totalppn;					
+					$totalpph22 += $row->totalpph22;					
+				}
+			?>
+		</tbody>
+		<tfoot>
+			<tr>
+				<td colspan="4">Total</td>
+				<td class="right"><?= eFormatNumber($total,2); ?></td>				
+				<td class="right"><?= eFormatNumber($totalppn,2); ?></td>
+				<td class="right"><?= eFormatNumber($totalpph22,2); ?></td>																
+				<td class="right"><?= eFormatNumber($totaltagihan,2); ?></td>				
+				<td></td>				
+			</tr>			
+		</tfoot>
+	</table>
+	<div class="clear">&nbsp;</div>	
+</div>

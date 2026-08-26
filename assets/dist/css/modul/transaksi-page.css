@@ -1,0 +1,166 @@
+    #sTable{
+      float:left;
+      margin-top: 10px;
+      width: 50%;
+      padding-left: 5px;
+      position: sticky;
+      top:10px;
+      z-index: 999;
+    }
+    .top{
+      background-color:#ffffff;
+      padding: 3px;
+      position: sticky;
+      top:0px;
+      z-index: 998;
+    }
+    .bottom{
+      background-color: transparent;      
+      padding: 3px;
+      display: none;
+    }
+    label {
+      color:#000;
+    }
+    .text-label {
+      color:#336666;
+    }
+    .table-transaksi {
+      table-layout: fixed;
+      word-wrap: break-word;
+    }
+    .table-transaksi tbody tr td{
+      background-color:rgba(255,0,0,0.02);
+    }
+    .content-header{
+      position:sticky;
+      top:0px;
+      height:70px;
+      z-index:1000;
+    }
+    .table.table-striped tbody tr td:first-child {
+      display: none;
+    }  
+    .table.table-striped tbody tr td {
+      font-size: 12px;
+    }  
+    .container-absolute-fina {
+      position: relative;
+      float:right;
+      margin-top: 10px;
+      z-index: 0;
+      width: 65%; 
+    }  
+    .container-absolute,
+    .container-absolute-80,
+    .container-absolute-100,
+    .container-absolute-120 {
+      float:right;
+      z-index: 9900;
+      width: 55%;
+    }          
+    .container-absolute {
+      margin-top: -145px;
+    }    
+    .container-absolute-80 {
+      margin-top: -80px;
+    }                
+    .container-absolute-100 {
+      margin-top: -100px;
+    }            
+    .container-absolute-120 {
+      margin-top: -120px;
+    }                
+    #btnsideright{
+      position: absolute;
+      left:85%;
+      top:30px;
+    }
+    .left {
+      float: left;
+    }
+    #dLeftFirst {
+      margin-top: -46px;
+    }
+    .col-overlap {
+      margin-top: -50px;
+    }
+    .col-overlap-2 {
+      margin-top: -72px;
+    }    
+    .col-space-hidden {
+      visibility: visible;
+    }
+    .table-transaksi thead th{
+      background-color: rgba(0,0,0,0.04);
+    }
+    textarea.form-control {
+      height: 2.3em;
+    }
+    .content-header span{
+      font-weight: 500;
+    }
+  @media (max-width:767px){
+    body,
+    .content-wrapper{
+      background-color: #fff; 
+    }
+    .col-overlap,
+    .col-overlap-2 {
+      margin-top: 0px;
+    }
+    .col-space-hidden {
+      visibility: hidden;
+    }    
+    label {
+      text-align: left;
+    }
+    #btnsideright{
+      left: 67%;
+    }
+    .container-absolute,
+    .container-absolute-80,
+    .container-absolute-100,
+    .container-absolute-120 {
+      float:left;
+      margin-top: 20px;
+      width: 100%;        
+    }
+    .container-absolute-fina {
+      float:left;
+      margin-top: 20px;
+      width: 100%;        
+    } 
+    #dLeftFirst {
+      margin-top: 0px;
+    }         
+  }
+
+  .loader-wrap{
+    background: #000;
+    opacity: .6;
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 99999;
+  }
+  .loader{
+    font-size: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+    width: 120px;
+    height: 20px;
+  }
+  @keyframes loader{
+    0% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(0.7) rotate(10deg);
+        opacity: 0.1;
+    }
+  }

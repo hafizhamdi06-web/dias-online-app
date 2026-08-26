@@ -1,0 +1,157 @@
+<?php
+	include ('style.php');
+	$date = $_POST['tgl']; 
+    if(isset($_POST['gudang'])){
+    	$idgudang = $_POST['gudang'];
+    } else {
+    	$idgudang = "";
+    }	
+    if(isset($_POST['namapt'])){
+    	$idpt = $_POST['namapt'];
+    } else {
+    	$idpt = "";
+    }	
+	$tampilNol =  $_POST['saldo'];		 
+    $CI =& get_instance();  
+	                   
+ 
+
+
+	                  $query = "SELECT    npnama, gkode,ctnama, ikode  as ikode,  inama as inama, icogs , ihargabeliterakhir, icogs_lama, cogs_hargabeli,
+					  sum(cogs) 'cogs', SUM(qty) 'qty'  from
+                      (
+                      select
+                      npnama, gkode, ctnama, ikode, inama, icogs , ihargabeliterakhir, icogs_lama, 
+                      IFNULL(SUM(SDMASUK-( IF(SDDARIPAKET<> 0 AND  SDKEDATANGAN  = 0,0,sdkeluar) ) ),0) as qty,
+                      case   when IHARGABELITERAKHIR=0 then icogs_lama+(icogs_lama*5/100) else IHARGABELITERAKHIR end
+                        as cogs_hargabeli ,  
+                      IFNULL(SUM(SDMASUK-( IF(SDDARIPAKET<> 0 AND  SDKEDATANGAN  = 0,0,sdkeluar) ) ),0) *
+					   case   when IHARGABELITERAKHIR=0 then icogs_lama+(icogs_lama*5/100) else IHARGABELITERAKHIR end
+                        as cogs 
+
+	                  from fstokd left join bitem on IID = sditem   
+                      left join fstoku on suid=sdidsu
+	                  left join bgudang on gid=sucabang   
+	                  left join bitem2 on i2iditem=iid  
+	                  left join bcoatipe_pendapatan coabaru on coabaru.ctid=i2coapendapatan   
+					  left join bnamapt on npid=gpt
+	                  WHERE sustatus<>9 and  SDCANCEL=0  and istatus=0    
+	                  AND sutanggal <= '".tgl_database($date)."'  
+                      ";     
+	                  
+	                   if($idgudang != ""){
+                        	$query .= " AND sucabang='".$idgudang."'";
+                        }  
+	                   if($idpt != ""){
+                        	$query .= " AND gpt='".$idpt."'";
+                        }  
+                        $query .= " GROUP by npnama,gkode,ctnama, ikode,inama, icogs_lama ,IHARGABELITERAKHIR, icogs
+                        having  IFNULL(SUM(SDMASUK-( IF(SDDARIPAKET<> 0 AND  SDKEDATANGAN  = 0,0,sdkeluar) ) ),0)>0 ) a
+                        group by npnama, gkode,ctnama, ikode,inama , icogs , ihargabeliterakhir, icogs_lama, cogs_hargabeli
+
+
+
+
+						
+                        "; 
+	  
+
+    $datareport = $CI->M_transaksi->get_data_query($query);
+    $datareport = json_decode($datareport);
+    
+    
+     
+    
+
+?>
+<div class="header-report">
+	<h4 class="text-blue"><?= $company_name; ?></h4>		
+	<h3><?= $title; ?></h3>
+	<span>Periode : <?= $date; ?>  </span>
+</div>
+<div class="content-report">
+	<table class="table">
+		<thead> 
+			<tr class="bg-dark"> 
+				<th class="left px-1">Nama PT</th> 	 
+				<th class="left px-1">Cabang</th> 	 
+				<th class="left px-1">Jenis</th> 		
+				<th class="left px-1">Nama</th> 	
+				<th class="left px-1">Qty</th> 	 
+				<th class="left px-1">Total COGS</th> 	 
+				<th class="right px-1">COGS Lama</th> 		 
+				<th class="right px-1">COGS Baru</th> 		 
+				<th class="right px-1">Harga Beli Terakhir</th> 		 
+			</tr>
+		</thead>
+		<tbody>
+			<?	
+				$jumlahdatang = 0; $nilai = 0; $qty = 0;
+				$nilaiproduk = 0 ; $subtotal = 0 ; 
+				$tnilaiproduk = 0 ; $tnilaisales = 0 ;  
+
+				$jumlahdata=0;
+
+				$nilaiprodukperpt=0; $nilaisalesperpt=0;
+				
+				$tanggal = ''; $gudang = ''; $namapt='';
+				
+				foreach ($datareport->data as $row) {
+
+  
+    			   if ($namapt !=  $row->npnama and $namapt !='') {
+
+ 						echo "<tr class='bg-dark'>"; 
+    					echo "<td class='px-1' colspan=2>Total ".$namapt."</td>";   
+    					echo "<td class='right px-1'>".eFormatNumber($nilaiprodukperpt,2)."</td>"; 
+    					echo "</tr>";	 
+						
+						$nilaiprodukperpt=0; $nilaisalesperpt=0; 
+    			   } 
+
+ 
+    			     
+    			    $namapt = $row->npnama ;  
+    				    
+    					echo "<tr>";  
+    					echo "<td class='px-1'>".$row->npnama."</td>"; 
+    					echo "<td class='px-1'>".$row->gkode."</td>";  
+    					echo "<td class='px-1'>".$row->ctnama."</td>"; 
+    					echo "<td class='px-1'>".$row->inama."</td>"; 
+    					echo "<td class='right px-1'>".eFormatNumber($row->qty,2)."</td>";  
+    					echo "<td class='right px-1'>".eFormatNumber($row->cogs,2)."</td>"; 
+    					echo "<td class='right px-1'>".eFormatNumber($row->icogs_lama,2)."</td>"; 
+    					echo "<td class='right px-1'>".eFormatNumber($row->icogs,2)."</td>"; 
+    					echo "<td class='right px-1'>".eFormatNumber($row->ihargabeliterakhir,2)."</td>"; 
+    					echo "</tr>";	
+    					 
+    					$tnilaiproduk += $row->cogs ; 
+    					$nilaiprodukperpt += $row->cogs ; 
+
+    					$jumlahdata ++; 
+				   
+				}
+
+				echo "<tr class='bg-dark'>"; 
+    					echo "<td class='px-1' colspan=4>Total ".$namapt."</td>";   
+    					echo "<td class='right px-1'>".eFormatNumber($nilaiprodukperpt,2)."</td>"; 
+    					echo "</tr>";	 
+				
+				
+			?>
+		</tbody>
+		<tfoot>
+		 	
+			<tr> 
+				<td class="px-1" colspan=2>Total</td> 
+				<td class="right px-1"><?= eFormatNumber($tnilaiproduk,2); ?></td> 
+			</tr> 	
+			
+			
+		</tfoot>
+	</table>
+	<div class="clear">&nbsp;</div>	 
+
+ 
+	
+</div>

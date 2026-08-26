@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: caddy-config
+  namespace: default
+data:
+  Caddyfile: |
+    http:// {
+        @medlib host medlib.nmwclinic.co.id
+        handle @medlib {
+            root * /srv/ui-experience/dist
+            file_server
+            try_files {path} /index.html
+        }
+
+        @pro host pro.nmwclinic.co.id
+        handle @pro {
+            root * /srv/ui-pro.experience/dist
+            file_server
+            try_files {path} /index.html
+        }
+
+        @royal host royaligyolini.co.id
+        handle @royal {
+            handle /api/* {
+                reverse_proxy 192.168.63.251:8800
+            }
+            root * /srv/ui-logistic/dist
+            file_server
+            try_files {path} /index.html
+        }
+
+        @dias-online host dias-online.nmwclinic.co.id
+        handle @dias-online {
+            root * /srv/dias-online
+            php_fastcgi dias-online.default.svc.cluster.local:9000 {
+                root /var/www/html
+                env HTTPS on
+                env HTTP_HOST {host}
+                env HTTP_X_FORWARDED_PROTO https
+            }
+            file_server
+        }
+
+        respond "Not Found" 404
+    }

@@ -1,0 +1,42 @@
+label {
+color:#6c757d;
+text-shadow: .3px .3px #ccc;
+}
+button {
+text-shadow:1px 1px #000000;
+}
+.text-label {
+color:#6c757d;
+text-shadow: .3px .3px #ccc;    
+}
+.content-header{
+position:sticky;
+top:0px;
+height:70px;
+box-shadow: 0 4px 2px -2px #ddd;
+z-index:1000;    
+}
+.container-absolute {
+float:right;
+margin-top: -160px;
+z-index: -1;
+width: 72%;    
+}
+table {
+table-layout: fixed;
+word-wrap: break-word;
+}
+.btn-app {
+max-width: 20px;
+}
+@media (max-width:767px){
+.container-absolute {
+float:left;
+margin-top: 20px;
+width: 100%;        
+}
+#btnsideright{
+position: absolute;
+margin-left: -20px;
+}          
+}

@@ -1,0 +1,12 @@
+.content-header {
+	min-height: 1px;
+	background-color:#fff;
+	margin-bottom: 15px;
+	margin-top: -1px;	
+}
+.content-header p {
+	font-size: 12px;
+	margin-top: 0px;
+	line-height: 1.35em;
+	height: 15px;
+}
