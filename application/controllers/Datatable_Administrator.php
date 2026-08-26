@@ -39,26 +39,31 @@ class Datatable_Administrator extends CI_Controller {
     }    
 
    function view_table_menu() {
-        $query  = "SELECT mid,mnama,mdescription,
-                          CASE WHEN mtype=0 THEN 'Module' 
-                               WHEN mtype=1 THEN 'Laporan' 
-                               WHEN mtype=2 THEN 'Transaksi'
-                               WHEN mtype=3 THEN 'Master Data'                               
-                               ELSE 'Administrator' 
+        $query  = "SELECT A.mid,A.mnama,A.mdescription,
+                          CASE WHEN A.mtype=0 THEN 'Module'
+                               WHEN A.mtype=1 THEN 'Laporan'
+                               WHEN A.mtype=2 THEN 'Transaksi'
+                               WHEN A.mtype=3 THEN 'Master Data'
+                               ELSE 'Administrator'
                           END AS 'mtype',
-                          micon,murutan,IF(mactive='1','Aktif','Tidak Aktif') AS 'mactive' 
-                     FROM aamenu";
-        $search = array('mnama','mdescription');
-        $where  = null;         
-        $isWhere = "mnama LIKE '%".$this->input->post('nama')."%'";
+                          A.micon,A.murutan,IF(A.mactive='1','Aktif','Tidak Aktif') AS 'mactive',
+                          A.mparent,
+                          CASE WHEN A.mparent=0 THEN A.mnama ELSE B.mnama END AS 'mgroup',
+                          COALESCE(B.murutan,A.murutan) AS 'mgrouporder'
+                     FROM aamenu A LEFT JOIN aamenu B ON A.mparent=B.mid";
+        $search = array('A.mnama','A.mdescription');
+        $where  = null;
+        $isWhere = "A.mnama LIKE '%".$this->input->post('nama')."%'";
 
         if(!empty($this->input->post('tipe')) && $this->input->post('tipe') != '') {
-          $isWhere .= " AND mtype='".$this->input->post('tipe')."'";
+          $isWhere .= " AND A.mtype='".$this->input->post('tipe')."'";
         }
 
+        $isOrder = "mgrouporder ASC, A.mparent ASC, A.murutan ASC";
+
         header('Content-Type: application/json');
-        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
-    }        
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere,$isOrder);
+    }
 
    function view_table_report() {
         $query  = "SELECT arid 'id', arname 'nama', arname2 'alias', artitle 'judul',

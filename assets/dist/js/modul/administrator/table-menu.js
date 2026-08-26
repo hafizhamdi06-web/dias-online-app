@@ -25,11 +25,13 @@ $(function () {
       "serverSide": true,
       "lengthChange": false,
       "searching": false,
-      "ordering": true,
-      "pagingType":"simple",    
+      "ordering": false,
+      "pagingType":"simple",
       "select":true,
-      "order": [[ 3, 'asc' ]],
       "dom": '<"top"pi>tr<"clear">',
+      "rowGroup": {
+          "dataSrc": "mgroup"
+      },
       "ajax": {
           "url":base_url+"Datatable_Administrator/view_table_menu",
           "type":"post",
@@ -51,8 +53,16 @@ $(function () {
             orderable:      false,
             data:           null,
             defaultContent: "<i class='fas fa-caret-right text-sm'></i>"
-            },    
-            { "data": "mnama" },
+            },
+            {
+            "data": "mnama",
+            "render": (data, type, row) => {
+                 if(row.mparent != 0){
+                      data = "<span style='margin-left:20px;'>"+data+"</span>";
+                 }
+                 return data;
+            }
+            },
             { "data": "murutan" },          
             { "data": "mtype" },
             { "data": "micon" },          

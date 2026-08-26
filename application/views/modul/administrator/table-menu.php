@@ -1,6 +1,7 @@
 <body id="<? echo $id; ?>" class="layout-fixed overflow-hidden" data-panel-auto-height-mode="height">
-  <!-- Custom CSS -->  
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/table-page.css');?>">
+  <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables-rowgroup/css/rowGroup.bootstrap4.min.css');?>">
 
   <div class="loader-wrap d-none">
     <div class="loader">
@@ -117,6 +118,8 @@
 <script src="<? echo base_url('assets/plugins/datatables-select/js/select.bootstrap4.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables/colResize.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-rowgroup/js/rowGroup.bootstrap4.min.js'); ?>"></script>
 <!-- JS Custom -->
 <script type="module" src="<? echo app_url('assets/dist/js/modul/administrator/table-menu.js'); ?>"></script>
 </body>
