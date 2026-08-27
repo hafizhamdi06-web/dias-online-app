@@ -30,12 +30,16 @@ var _kontakdatatable = function(){
     "ajax": {
         "url": base_url + "Datatable_Master/view_table_kontak_pos2/"+katId,
         "type":"post",
+        "data": function(data){
+          data.cabang = $('#cabang').val();
+        },
         "beforeSend": function(){
-          $(".loader-wrap").addClass("d-none");            
-        }                   
+          $(".loader-wrap").addClass("d-none");
+        }
     },
     "deferRender": true,
     "bInfo":false,
+    "pageLength": 10,
     "aLengthMenu": [[20, 50, 100],[20, 50, 100]],
     "language": 
     {          
@@ -115,13 +119,19 @@ var _setcabang = function(){
                $.each(data, function(index,element) {
                 list = `<option value=`+element.id+`>`+element.text+`</option>  `;
                  $('#cabang').append(list);
-              }); 
-              
-             
-        
-         
-  } 
-  }); 
+              });
+
+             var trigger = $('#modaltrigger').val();
+             var defaultCabang = $("#"+trigger).contents().find('#cabang').val();
+             if(defaultCabang){
+               $('#cabang').val(defaultCabang);
+             }
+             $('#cabang').trigger('change');
+
+             _kontakdatatable();
+
+  }
+  });
 }
  
  
@@ -135,13 +145,17 @@ function _pilihkategorikontak(id){
   if(id!=='All'){
     $('#idkatkontak').val(id);
   }else{
-    $('#idkatkontak').val('');          
+    $('#idkatkontak').val('');
   }
 
   $('.cTrue').addClass('d-none');
-  $('#c'+id).removeClass('d-none');  
+  $('#c'+id).removeClass('d-none');
+}
+
+$('#btampilkan').click(function(){
+  _pilihkategorikontak( $('#jenispasien').val() );
   _kontakdatatable();
-}  
+});
 
  
 function restable(){

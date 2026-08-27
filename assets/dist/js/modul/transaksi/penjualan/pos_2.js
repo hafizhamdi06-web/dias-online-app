@@ -213,20 +213,19 @@ var _CariKontak = () => {
         },
         "success": function(result) {
           parent.window.$(".main-modal-body").html(result);
-          parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');  
-          
-          
+          parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');
+          parent.window.$(".loader-wrap").addClass("d-none");
+
           parent.window._setjenis();
-          parent.window._setcabang();
-          
+
           parent.window._lstkategorikontak();
-          parent.window._pilihkategorikontak(''); 
+          parent.window._pilihkategorikontak('');
           setTimeout(function (){
                parent.window.$('#modal input').focus();
-             
+
           }, 500);
           return;
-        } 
+        }
       });
     
     

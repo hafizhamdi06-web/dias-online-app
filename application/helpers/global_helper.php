@@ -31,7 +31,8 @@ define ('NID', array(
 	'STK_Mutasi_Barang'			  => 705,
 	'STK_Stok_Opname'			    => 707,
 	'STK_Penyesuaian_Barang'	=> 706 	,
-	'PJ_Editdepo'	=> 727 													
+	'PJ_Editdepo'	=> 727,
+	'PB_Permintaan_Barang' => 728
 ));
 
 define("DEFAULT_CURRENCY_SYMBOL", "");

@@ -73,6 +73,23 @@ $("#tipe").on("select2:select", () => {
     $('#induk').val('').trigger('change');
 });
 
+$("#induk").on("select2:select select2:clear", () => {
+    if($('#id').val()=='') _setNextUrutan();
+});
+
+var _setNextUrutan = () => {
+    $.ajax({
+      "url"    : base_url+"Admin_Menu/getnexturutan",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data" : "induk="+$('#induk').val(),
+      "cache"  : false,
+      "success" : (result) => {
+          $('#urutan').val(result.data[0]['urutan']);
+      }
+    })
+};
+
 $("#submit").click( () => {
     if (_IsValid()===0) return;
     _saveData();

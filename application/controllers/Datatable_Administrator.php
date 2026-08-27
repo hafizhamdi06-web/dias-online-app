@@ -16,24 +16,22 @@ class Datatable_Administrator extends CI_Controller {
                      FROM auser";
         $search = array('ukode','unama');
         $where  = null;  
-        $isWhere = "";
-        
+        $isWhere = "1=1";
+
        // if($_SESSION['kode']==0){
        //   $isWhere = null;
        // } else {
-        //  $isWhere = " ukode<>0 ";          
-       // } 
-        
+        //  $isWhere = " ukode<>0 ";
+       // }
+
         if(!empty($_POST['nama'])){
-          $isWhere .= " unama like '%".$_POST['nama']."%' ";
-        }else{
-          $isWhere .= "";
-        }        
-        
-        
-        
-       // $isWhere .= "unama LIKE '%".$this->input->post('nama')."%'";
-        
+          $isWhere .= " AND unama like '%".$_POST['nama']."%' ";
+        }
+
+        if(!empty($this->input->post('aktifsaja'))) {
+          $isWhere .= " AND uactive=1 ";
+        }
+
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }    

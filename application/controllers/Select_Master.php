@@ -256,14 +256,44 @@ class Select_Master extends CI_Controller {
     }                       
 
    function view_gudang() {
-        $query  = "SELECT A.gid AS 'id',A.gnama AS 'text',null AS 'kode' 
+        $query  = "SELECT A.gid AS 'id',A.gnama AS 'text',null AS 'kode',A.galamat1 AS 'nomor'
                      FROM bgudang A";
         $search = array('gnama');
         $isOrder = 'gid';
         $isWhere = null;
         header('Content-Type: application/json');
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
-    }                          
+    }
+
+   function view_user() {
+        $query  = "SELECT A.uid AS 'id',CONCAT(A.ukode,' - ',A.unama) AS 'text',A.ukode AS 'kode'
+                     FROM auser A";
+        $search = array('A.ukode','A.unama');
+        $isOrder = 'A.unama';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_jenis_lain() {
+        $query  = "SELECT DISTINCT A.ltipe AS 'id',A.ltipe AS 'text',null AS 'kode'
+                     FROM blain A";
+        $search = array('ltipe');
+        $isOrder = 'ltipe';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_jenis_permintaan() {
+        $query  = "SELECT A.lid AS 'id',A.lnama AS 'text',A.lgudangid AS 'kode',A.lgudangnama AS 'gudangnama'
+                     FROM blain A";
+        $search = array('lnama');
+        $isOrder = 'lnama';
+        $isWhere = "A.ltipe='Jenis Permintaan'";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
 
    function view_namapt() {
         $query  = "SELECT A.npid AS 'id',A.npnama AS 'text',null AS 'kode' 

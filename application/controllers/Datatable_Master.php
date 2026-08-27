@@ -30,30 +30,44 @@ class Datatable_Master extends CI_Controller {
 
    function view_table_item() {
         $info = _ainfo(1);
-        $digitqty = $info['idecimalqty'];        
-        $query  = "SELECT A.iid AS 'id',A.ikode AS 'kode',A.inama AS 'nama',
-                          CASE WHEN A.ijenisitem=0 THEN ROUND(IFNULL(A.istocktotal,0),$digitqty) 
+        $digitqty = $info['idecimalqty'];
+        $cabangsaja = !empty($this->input->post('cabangsaja'));
+
+        if($cabangsaja){
+          $kodestok = $this->code_gudang();
+          $jumlahExpr = "ROUND(IFNULL($kodestok,0),$digitqty)";
+        } else {
+          $jumlahExpr = "CASE WHEN A.ijenisitem=0 THEN ROUND(IFNULL(A.istocktotal,0),$digitqty)
                                WHEN A.ijenisitem=1 THEN 0
                                ELSE ROUND(IFNULL(A.istocktotal,0),$digitqty)
-                          END AS 'jumlah',
+                          END";
+        }
+
+        $query  = "SELECT A.iid AS 'id',A.ikode AS 'kode',A.inama AS 'nama',
+                          $jumlahExpr AS 'jumlah',
                           B.skode AS 'satuan',
-                          CASE WHEN A.ijenisitem=0 THEN 'Persediaan' 
-                               WHEN A.ijenisitem=1 THEN 'Jasa' 
-                               WHEN A.ijenisitem=2 THEN 'Konsinyasi' 
+                          CASE WHEN A.ijenisitem=0 THEN 'Persediaan'
+                               WHEN A.ijenisitem=1 THEN 'Jasa'
+                               WHEN A.ijenisitem=2 THEN 'Konsinyasi'
                           END AS 'jenis',
                           ROUND(IFNULL(A.ihargabeli,0),2) AS 'hbeli',ROUND(IFNULL(A.ihargajual1,0),2) AS 'hjual',
-                          IFNULL(C.cnocoa,'') AS 'coa',IFNULL(C.cnama,'') AS 'coanama'        
+                          IFNULL(C.cnocoa,'') AS 'coa',IFNULL(C.cnama,'') AS 'coanama'
                      FROM bitem A
                 LEFT JOIN bsatuan B ON A.isatuan=B.sid
                 LEFT JOIN bcoa C ON A.icoapendapatan=C.cid";
         $search = array('ikode','inama');
-        $where  = null;         
-        $isWhere = "A.ikode LIKE '%".$_POST['kode']."%' AND A.inama LIKE'%".$_POST['nama']."%'";
+        $where  = null;
+        $isWhere = "A.ikode LIKE '%".@$_POST['kode']."%' AND A.inama LIKE'%".@$_POST['nama']."%'";
+
+        if($cabangsaja){
+          $cabang = @$_SESSION['cabang'];
+          $isWhere .= " AND A.icabang LIKE '%".$cabang."|%' ";
+        }
 
         if(!empty($this->input->post('jenis')) && $this->input->post('jenis') != null) {
           $isWhere .= " AND A.ijenisitem='".$this->input->post('jenis')."' ";
         }
-        
+
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
@@ -245,31 +259,73 @@ class Datatable_Master extends CI_Controller {
         echo $this->M_datatables->get_tables_query_tanpalimit($query,$search,$where,$isWhere,$isOrder); 
     }
 
-    function view_table_kontak_pos2($katId="" ) { 
+    function view_table_lain() {
+        $query  = "SELECT A.lid AS 'id',A.lkode AS 'kode',A.lnama AS 'nama',A.ltipe AS 'tipe',
+                          IFNULL(A.lgudangnama,'') AS 'gudang'
+                     FROM blain A";
+        $search = array('lkode','lnama','ltipe');
+        $where  = null;
+        $isWhere = "A.lkode LIKE '%".@$_POST['kode']."%' AND A.lnama LIKE'%".@$_POST['nama']."%'";
+
+        if(!empty($this->input->post('tipe'))) {
+          $isWhere .= " AND A.ltipe='".$this->input->post('tipe')."'";
+        }
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
+
+   function view_table_role() {
+        $query  = "SELECT A.ARID AS 'id',A.ARIDMENU AS 'idmenu',A.ARNAMAROLE AS 'nama'
+                     FROM aarole A";
+        $search = array('ARNAMAROLE');
+        $where  = null;
+        $isWhere = "A.ARNAMAROLE LIKE '%".@$_POST['nama']."%'";
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
+
+    function view_table_tujuan() {
+        $query  = "SELECT A.lid AS 'id',A.lnama AS 'nama',A.lgudangnama AS 'gudang',A.lgudangid AS 'idgudang',A.lkode AS 'kode'
+                     FROM blain A";
+        $search = array('lnama');
+        $where  = null;
+        $isWhere = "A.ltipe='Jenis Permintaan' AND A.lnama LIKE '%".@$_POST['nama']."%'";
+        $isOrder = "A.lnama ASC";
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere,$isOrder);
+    }
+
+    function view_table_kontak_pos2($katId="" ) {
         $query  = "SELECT A.kid AS 'id',A.kkode AS 'kode',A.knama AS 'nama',B.ktnama AS 'tipe',
                           A.k1alamat 'alamat',A.k1kota AS 'kota',A.k1telp1 AS 'telp', gkode 'cabang'
                      FROM bkontak A
                INNER JOIN bkontaktipe B ON A.ktipe=B.ktid left join bgudang on gid=kcabang ";
         $search = array('kkode','knama','kidpasien','k1telp1');
         $where  = null;
-        
+
 
         if($katId!==""){
           $isWhere = "A.ktipe='".$katId."'";
         }else{
           $isWhere = "A.kkode LIKE '%".@$_POST['kode']."%' AND A.knama LIKE'%".@$_POST['nama']."%'";
         }
- 
-        
+
+
 
         if(!empty($this->input->post('kategori')) && $this->input->post('kategori') != null) {
           $isWhere .= " AND A.ktipe='".$this->input->post('kategori')."' ";
-        }       
-         
+        }
+
+        if(!empty($this->input->post('cabang'))) {
+          $isWhere .= " AND A.kcabang='".$this->input->post('cabang')."' ";
+        }
+
          $isOrder = " A.kid desc " ;
 
         header('Content-Type: application/json');
-        echo $this->M_datatables->get_tables_query_tanpalimit($query,$search,$where,$isWhere,$isOrder); 
+        echo $this->M_datatables->get_tables_query_tanpalimit($query,$search,$where,$isWhere,$isOrder);
     }
 
 
@@ -356,10 +412,15 @@ class Datatable_Master extends CI_Controller {
                      FROM bgudang";
         $search = array('gkode','gnama');
         $where  = null;         
-        $isWhere = "gkode LIKE '%".$_POST['kode']."%' AND gnama LIKE'%".$_POST['nama']."%'";
+        $isWhere = "gkode LIKE '%".@$_POST['kode']."%' AND gnama LIKE'%".@$_POST['nama']."%'";
+
+        if(!empty($this->input->post('aktifsaja'))) {
+          $isWhere .= " AND gaktif<>0";
+        }
+
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
-    }                        
+    }
 
    function view_table_satuan() {
         $query  = "SELECT sid AS 'id',skode AS 'kode',snama AS 'nama',ssatuandasar AS 'dasar',snilai AS 'nilai' 

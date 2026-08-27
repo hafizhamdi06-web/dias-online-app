@@ -104,6 +104,21 @@ class Modal extends CI_Controller {
     function cari_diskonvocer(){
         $this->loader('include/modal-diskonvocer');
     }
+
+    // Modal Cari Tujuan Permintaan Barang
+    function cari_tujuan(){
+        $this->loader('include/modal-cari-tujuan');
+    }
+
+    // Modal Cari Gudang
+    function cari_gudang(){
+        $this->loader('include/modal-cari-gudang');
+    }
+
+    // Modal Cari Item Permintaan Barang
+    function cari_item(){
+        $this->loader('include/modal-cari-item');
+    }
   
 
 
@@ -187,7 +202,17 @@ class Modal extends CI_Controller {
     // Modal Form Divisi
     function form_divisi(){
         $this->loader('modul/master/form-divisi');
-    }                                
+    }
+
+    // Modal Form Data Lain
+    function form_lain(){
+        $this->loader('modul/master/form-lain');
+    }
+
+    // Modal Form Master Data Role
+    function form_role(){
+        $this->loader('modul/master/form-role');
+    }
 
    // Modal Form Divisi
     function form_jenis_penyesuaian(){

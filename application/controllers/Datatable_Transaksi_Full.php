@@ -157,6 +157,37 @@ class Datatable_Transaksi_Full extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
 
+   function view_permintaan_barang() {
+        $transcode = element('PB_Permintaan_Barang',NID);
+        $transcode = $this->M_transaksi->prefixtrans($transcode);
+        $query  = "SELECT A.pbuid 'id',A.pbunotransaksi 'nomor',DATE_FORMAT(A.pbutanggal,'%d-%m-%Y') 'tanggal',
+                          B.knama 'karyawan', C.gnama 'gudang', A.pbuuraian 'uraian',
+                          CASE A.pbustatus
+                               WHEN 0 THEN 'Belum Verifikasi'
+                               WHEN 1 THEN 'Pending'
+                               WHEN 2 THEN 'Verifikasi Finance'
+                               WHEN 3 THEN 'Perintah Kirim'
+                               WHEN 4 THEN 'Sedang DiKirim'
+                               WHEN 5 THEN 'Progress Diterima Cabang'
+                               WHEN 6 THEN 'Selesai Diterima Cabang'
+                               WHEN 7 THEN 'Konfirmasi Bag Pembelian'
+                          END 'status'
+                     FROM fpermintaanbarangu A
+                LEFT JOIN bkontak B ON A.pbukontak=B.kid
+                LEFT JOIN bgudang C ON A.pbugudang=C.gid";
+        $search = array('pbunotransaksi','knama');
+        $where  = null;
+        if(!empty($_POST['kontak'])){
+          $isWhere = "AND A.pbukontak = '".$_POST['kontak']."'";
+        }else{
+          $isWhere = "";
+        }
+        $isWhere = "A.pbusumber='".$transcode."' AND A.pbutanggal BETWEEN '".tgl_database($_POST['dari'])."'
+                    AND '".tgl_database($_POST['sampai'])."' " . $isWhere;
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
+
    function view_uang_muka_pembelian() {
         $transcode = element('PB_Uang_Muka_Pembelian',NID);
         $transcode = $this->M_transaksi->prefixtrans($transcode);

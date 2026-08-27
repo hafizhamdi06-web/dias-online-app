@@ -83,16 +83,29 @@ class Datatable_Transaksi extends CI_Controller {
     /* Table esalesorderu */
    function view_order_pembelian() {
         $transcode = element('PB_Order_Pembelian',NID);
-        $transcode = $this->M_transaksi->prefixtrans($transcode);    
-        $query  = "SELECT A.souid 'id',A.sounotransaksi 'nomor',DATE_FORMAT(A.soutanggal,'%d-%m-%Y') 'tanggal',B.knama 'kontak'         
-                     FROM esalesorderu A 
+        $transcode = $this->M_transaksi->prefixtrans($transcode);
+        $query  = "SELECT A.souid 'id',A.sounotransaksi 'nomor',DATE_FORMAT(A.soutanggal,'%d-%m-%Y') 'tanggal',B.knama 'kontak'
+                     FROM esalesorderu A
                 LEFT JOIN bkontak B ON A.soukontak=B.kid";
         $search = array('sounotransaksi','knama');
-        $where  = null;         
+        $where  = null;
         $isWhere = "A.sousumber='".$transcode."'";
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
-    }    
+    }
+
+   function view_permintaan_barang() {
+        $transcode = element('PB_Permintaan_Barang',NID);
+        $transcode = $this->M_transaksi->prefixtrans($transcode);
+        $query  = "SELECT A.pbuid 'id',A.pbunotransaksi 'nomor',DATE_FORMAT(A.pbutanggal,'%d-%m-%Y') 'tanggal',B.knama 'kontak'
+                     FROM fpermintaanbarangu A
+                LEFT JOIN bkontak B ON A.pbukontak=B.kid";
+        $search = array('pbunotransaksi','knama');
+        $where  = null;
+        $isWhere = "A.pbusumber='".$transcode."'";
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
 
    function view_order_penjualan() {
         $transcode = element('PJ_Order_Penjualan',NID);

@@ -26,8 +26,9 @@ $(function () {
         "url":base_url+"Datatable_Administrator/view_table_user",
         "type":"post",
 	        "data": function(data){
-	          data.nama = $('#nama').val();         
-	        }	            
+	          data.nama = $('#nama').val();
+	          data.aktifsaja = $('#aktifsaja').prop('checked') ? 1 : 0;
+	        }
     },
     "deferRender": true,
     "bInfo":true,
@@ -148,18 +149,23 @@ $("#bedit").click(async function() {
 
       if(id=="" || id==null) return;
 
-      var kode = "", nama = "", namalengkap = "", status = "";
+      var kode = "", nama = "", namalengkap = "", status = "", ukid = "", namakaryawan = "", ucabang = "", unomor = "", namacabang = "";
 
-      await $.ajax({ 
-        "url"    : base_url+"Admin_User/getinfouser", 
-        "type"   : "POST", 
+      await $.ajax({
+        "url"    : base_url+"Admin_User/getinfouser",
+        "type"   : "POST",
         "dataType" : "json",
         "data" : "id="+id,
-        "success": function(result) {    
+        "success": function(result) {
           kode = result.data[0]['ukode'];
           nama = result.data[0]['unama'];
           namalengkap = result.data[0]['unamalengkap'];
           status = result.data[0]['uactive'];
+          ukid = result.data[0]['ukid'];
+          namakaryawan = result.data[0]['namakaryawan'];
+          ucabang = result.data[0]['ucabang'];
+          unomor = result.data[0]['unomor'];
+          namacabang = result.data[0]['namacabang'];
         }
       })
 
@@ -184,6 +190,17 @@ $("#bedit").click(async function() {
           parent.window.$("#kode").val(kode);
           parent.window.$("#nama").val(nama);            
           parent.window.$("#namalengkap").val(namalengkap);
+
+          if(ukid!=null && ukid!=''){
+            var _karyawan = parent.window.$("<option selected='selected'></option>").val(ukid).text(namakaryawan);
+            parent.window.$("#ukid").append(_karyawan).trigger("change");
+          }
+
+          if(ucabang!=null && ucabang!=''){
+            var _cabang = parent.window.$("<option selected='selected'></option>").val(ucabang).text(namacabang);
+            parent.window.$("#ucabang").append(_cabang).trigger("change");
+          }
+          parent.window.$("#unomor").val(unomor);
 
           if(kode==0){
             parent.window.$("#kode").prop('disabled', true);

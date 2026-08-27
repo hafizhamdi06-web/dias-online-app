@@ -156,6 +156,14 @@ class Page extends CI_Controller {
         $this->loader('opb','modul/transaksi/pembelian/table-order-pembelian');
     }
 
+    function pmb(){
+        $this->loader('pmb','modul/transaksi/pembelian/permintaan-barang');
+    }
+
+    function pmbData(){
+        $this->loader('pmb','modul/transaksi/pembelian/table-permintaan-barang');
+    }
+
     function umb(){
         $this->loader('umb','modul/transaksi/pembelian/uangmuka-pembelian');
     }
@@ -395,6 +403,14 @@ class Page extends CI_Controller {
 
     function jenispenyesuaian(){
         $this->loader('jenispenyesuaian','modul/master/table-jenis-penyesuaian');
+    }
+
+    function lain(){
+        $this->loader('lain','modul/master/table-lain');
+    }
+
+    function role(){
+        $this->loader('role','modul/master/table-role');
     }
 
     function voucher(){

@@ -13,12 +13,16 @@ class M_Admin_User extends CI_Model {
         $data = array(
                 'ukode' => $_POST['kode'],
                 'unama' => $_POST['nama'],
-                'unamalengkap' => $_POST['namalengkap'],                
-                'uactive' => $_POST['status']
-        );        
-        //$this->db->trans_begin();
-        //$this->db->where('uid',$id);        
-        //$this->db->update('auser',$data);
+                'unamalengkap' => $_POST['namalengkap'],
+                'uactive' => $_POST['status'],
+                'ukid' => empty($_POST['ukid']) ? null : $_POST['ukid'],
+                'ucabang' => empty($_POST['ucabang']) ? null : $_POST['ucabang'],
+                'unomor' => empty($_POST['unomor']) ? null : $_POST['unomor'],
+                'ucabangpilih' => empty($_POST['ucabangpilih']) ? null : $_POST['ucabangpilih']
+        );
+        $this->db->trans_begin();
+        $this->db->where('uid',$id);
+        $this->db->update('auser',$data);
 
         //Hapus ausermenu sesuai id
         $this->db->where('auiduser', $id);
@@ -50,18 +54,33 @@ class M_Admin_User extends CI_Model {
                     'auidmenu' => $item->idmenu,
                     'auapprove' => $item->buka
             );
-            $this->db->insert('aausermenu',$data_report);                        
+            $this->db->insert('aausermenu',$data_report);
             $r++;
-        }                
+        }
+
+        //Hapus aauserrole sesuai id
+        $this->db->where('AURIDUSER', $id);
+        $this->db->delete('aauserrole');
+
+        //Insert rolepilih
+        $d = json_decode($_POST['rolepilih']);
+        foreach($d as $idrole){
+            $data_role = array(
+                    'AURIDUSER' => $id,
+                    'AURIDROLE' => $idrole,
+                    'AURSTATUS' => 1
+            );
+            $this->db->insert('aauserrole',$data_role);
+        }
 
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
             return "rollback";
         } else {
-            $this->db->trans_commit();            
+            $this->db->trans_commit();
             return "sukses";
         }
-    }    
+    }
 
     function hapusData()
     {
@@ -93,8 +112,12 @@ class M_Admin_User extends CI_Model {
                 'unama' => $_POST['nama'],
                 'unamalengkap' => $_POST['namalengkap'],                
                 'upassword' => $password,
-                'uactive' => $_POST['status']
-        );        
+                'uactive' => $_POST['status'],
+                'ukid' => empty($_POST['ukid']) ? null : $_POST['ukid'],
+                'ucabang' => empty($_POST['ucabang']) ? null : $_POST['ucabang'],
+                'unomor' => empty($_POST['unomor']) ? null : $_POST['unomor'],
+                'ucabangpilih' => empty($_POST['ucabangpilih']) ? null : $_POST['ucabangpilih']
+        );
 
         $this->db->trans_begin();
         $this->db->insert('auser',$data);
@@ -130,16 +153,27 @@ class M_Admin_User extends CI_Model {
                     'auidmenu' => $item->idmenu,
                     'auapprove' => $item->buka
             );
-            $this->db->insert('aausermenu',$data_report);                        
+            $this->db->insert('aausermenu',$data_report);
             $r++;
-        }                
+        }
+
+        //Insert rolepilih
+        $d = json_decode($_POST['rolepilih']);
+        foreach($d as $idrole){
+            $data_role = array(
+                    'AURIDUSER' => $id,
+                    'AURIDROLE' => $idrole,
+                    'AURSTATUS' => 1
+            );
+            $this->db->insert('aauserrole',$data_role);
+        }
 
         if($this->db->trans_status() === FALSE){
             $this->db->trans_rollback();
             return "rollback";
         } else {
-            $this->db->trans_commit();            
+            $this->db->trans_commit();
             return "sukses";
         }
-    }    
+    }
 }
