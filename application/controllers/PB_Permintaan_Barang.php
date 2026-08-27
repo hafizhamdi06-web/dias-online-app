@@ -28,6 +28,26 @@ class PB_Permintaan_Barang extends CI_Controller {
       echo $this->M_PB_Permintaan_Barang->autonumber($this->input->post('tgl'));
    }
 
+   function cekapprovepo(){
+      $id = $this->session->id;
+
+      $query = "SELECT COUNT(*) 'jumlah'
+                   FROM aauserrole A
+                   JOIN aarole B ON A.AURIDROLE=B.ARID
+                  WHERE A.AURIDUSER='".$id."' AND A.AURSTATUS=1 AND B.ARNAMAROLE='Approve PO Cabang'";
+
+      $result = $this->db->query($query)->row();
+      $approve = ($result && $result->jumlah > 0) ? 1 : 0;
+
+      echo json_encode(array('approve' => $approve));
+   }
+
+   function getketerangan(){
+      $query = "SELECT NKETERANGAN 'keterangan' FROM aanomor WHERE NID='".element('PB_Permintaan_Barang',NID)."'";
+      header('Content-Type: application/json');
+      echo $this->M_transaksi->get_data_query($query);
+   }
+
    function getgudangnama(){
       $query = "SELECT gnama FROM bgudang WHERE gid='".$this->input->post('id')."'";
       header('Content-Type: application/json');
@@ -78,8 +98,8 @@ class PB_Permintaan_Barang extends CI_Controller {
                          F.pbditem 'iditem', G.ikode 'kditem', G.inama 'namaitem', F.pbdcatatan 'catdetil',
                          F.pbdsatuan 'idsatuan', H.skode 'satuan',
                          IFNULL(F.pbdqty,0) 'qtydetil',
-                         IFNULL(F.pbdstokreal,0) 'stokrealdetil',
-                         IFNULL(F.pbdstok,0) 'stokdetil'
+                         IFNULL(F.pbdstok,0) 'stokrealdetil',
+                         IFNULL(F.pbdstokreal,0) 'stokdetil'
                     FROM fpermintaanbarangu A
                LEFT JOIN bkontak B ON A.pbukontak=B.kid
                LEFT JOIN bgudang C ON A.pbugudang=C.gid

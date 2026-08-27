@@ -111,8 +111,15 @@ function _setcabang(){
 
 function restable(){
   const id = $('#transaksi-table').DataTable().cell($('#transaksi-table').DataTable().rows({selected:true}),0).data(),
-      trigger = $('#modaltrigger').val();         
-  $('#modal').modal('hide');        
-  $("#"+trigger).contents().find("#id").val(id).trigger('change');
-  return;        
+      trigger = $('#modaltrigger').val();
+  $('#modal').modal('hide');
+
+  var iframeWindow = document.getElementById(trigger) ? document.getElementById(trigger).contentWindow : null;
+
+  if(iframeWindow && typeof iframeWindow._pilihTransaksi === 'function'){
+    iframeWindow._pilihTransaksi(id);
+  } else {
+    $("#"+trigger).contents().find("#id").val(id).trigger('change');
+  }
+  return;
 }

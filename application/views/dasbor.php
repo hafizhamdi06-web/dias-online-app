@@ -31,7 +31,7 @@
               <i class="fas fa-caret-down px-2"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-              <a href="#" class="dropdown-item text-sm"><i class="fas fa-user text-secondary"></i><span class="ml-1">Profil Akun</span></a>
+              <a href="#" id="profilakun" class="dropdown-item text-sm"><i class="fas fa-user text-secondary"></i><span class="ml-1">Profil Akun</span></a>
               <div class="dropdown-divider"></div>
               <a href="#" class="dropdown-item text-sm pl-4" data-widget="iframe-close" data-type="all-other">Tutup Tab Lainnya</a>
               <a href="#" class="dropdown-item text-sm pl-4" data-widget="iframe-close" data-type="all">Tutup Semua Tab</a>

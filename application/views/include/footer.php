@@ -23,6 +23,7 @@
 <script src="<? echo base_url('assets/plugins/bootstrap-switch/js/bootstrap-switch.min.js'); ?>"></script>
 <!-- JS Custom -->
 <script src="<? echo app_url('assets/dist/js/modul/dasbor.js'); ?>"></script>
+<script type="module" src="<? echo app_url('assets/dist/js/modul/profil-akun.js'); ?>"></script>
 
 </body>
 </html>

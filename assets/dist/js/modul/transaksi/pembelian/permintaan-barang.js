@@ -15,6 +15,8 @@ $(function () {
 
   Component_Select2('#jenis');
 
+  _cekApprovePo();
+
   this.addEventListener('contextmenu', function(e){
     e.preventDefault();
   });
@@ -144,6 +146,8 @@ $(function () {
     _inputFormat();
     _formState1();
     _isiDepoFarmasi();
+    _isiKaryawanDefault();
+    _isiKeteranganDefault();
     _setStatus(0);
     _getNomor();
   });
@@ -288,6 +292,8 @@ $(function () {
     _inputFormat();
     _formState1();
     _isiDepoFarmasi();
+    _isiKaryawanDefault();
+    _isiKeteranganDefault();
     _setStatus(0);
     _getNomor();
   }else{
@@ -307,6 +313,41 @@ var _setStatus = (status) => {
   status = (status==null || status=='') ? 0 : Number(status);
   $('#status').val(status);
   $('#statusnama').val(STATUS_LABELS[status]);
+}
+
+var _isiKaryawanDefault = () => {
+  var idkaryawandefault = $('#idkaryawandefault').val();
+  if(idkaryawandefault==null || idkaryawandefault==''){
+    return;
+  }
+  $('#idkaryawan').val(idkaryawandefault);
+  $('#karyawan').val($('#karyawandefault').val());
+}
+
+var _isiKeteranganDefault = () => {
+  $.ajax({
+    "url"    : base_url+"PB_Permintaan_Barang/getketerangan",
+    "type"   : "POST",
+    "dataType" : "json",
+    "success": function(result) {
+      $('#uraian').val(result.data[0]['keterangan']);
+    }
+  });
+}
+
+var _cekApprovePo = () => {
+  $.ajax({
+    "url"    : base_url+"PB_Permintaan_Barang/cekapprovepo",
+    "type"   : "POST",
+    "dataType" : "json",
+    "success": function(result) {
+      if(result.approve==1){
+        $('#tdetil').removeClass('pb-hide-stokakhir');
+      }else{
+        $('#tdetil').addClass('pb-hide-stokakhir');
+      }
+    }
+  });
 }
 
 var _isiDepoFarmasi = () => {
@@ -337,9 +378,15 @@ var _applyTujuanLock = (kode) => {
 }
 window._applyTujuanLock = _applyTujuanLock;
 
+window._pilihTransaksi = (id) => {
+  $('#id').val(id);
+  _formState2();
+  _getDataTransaksi(id);
+}
+
 var _isiItemBaris = async (idx, iditem) => {
   if(iditem==null || iditem==''){
-    $("input[name^='item']").eq(idx).val('');
+    $("input[name='item[]']").eq(idx).val('');
     $("input[name^='itemnama']").eq(idx).val('');
     $("input[name^='kodeitem']").eq(idx).val('');
     $("select[name^='satuan']").eq(idx).empty();
@@ -355,7 +402,7 @@ var _isiItemBaris = async (idx, iditem) => {
     "dataType" : "json",
     "cache"  : false,
     "success"  : async function(result) {
-      $("input[name^='item']").eq(idx).val(iditem);
+      $("input[name='item[]']").eq(idx).val(iditem);
       $("input[name^='itemnama']").eq(idx).val(result.data[0]['nama']);
       $("input[name^='kodeitem']").eq(idx).val(result.data[0]['kode']);
 
@@ -428,15 +475,15 @@ var _addRow = () => {
       newrow += "<td><select name='satuan[]' class='satuan form-control select2 form-control-sm' style=\"width:100%\"></select></td>";
       newrow += "<td><textarea name=\"catatan[]\" class=\"form-control form-control-sm\" rows=\"1\" autocomplete=\"off\"></textarea></td>";
       newrow += "<td><input type=\"tel\" name=\"stokreal[]\" class=\"numeric form-control form-control-sm\" autocomplete=\"off\" value=\"0\"></td>";
-      newrow += "<td><input type=\"text\" name=\"stok[]\" class=\"numeric form-control form-control-sm\" autocomplete=\"off\" value=\"0\" tabindex=\"-1\" readonly></td>";
-      newrow += "<td class=\"text-center\"><a href=\"javascript:void(0)\" class=\"btn btn-step1 btn-refresh-stok\" tabindex=\"-1\"><i class=\"fas fa-sync text-primary\"></i></a></td>";
+      newrow += "<td class=\"col-stokakhir\"><input type=\"text\" name=\"stok[]\" class=\"numeric form-control form-control-sm\" autocomplete=\"off\" value=\"0\" tabindex=\"-1\" readonly></td>";
+      newrow += "<td class=\"col-refreshstok text-center\"><a href=\"javascript:void(0)\" class=\"btn btn-step1 btn-refresh-stok\" tabindex=\"-1\"><i class=\"fas fa-sync text-primary\"></i></a></td>";
       newrow += "<td><a href=\"javascript:void(0)\" class=\"btn btn-step1 btn-delrow\" onclick=\"_hapusbaris($(this));\" tabindex=\"-1\"><i class=\"fa fa-minus text-primary\"></i></a></td>";
       newrow += "</tr>";
   $('#tdetil tbody').append(newrow);
 }
 
 var _refreshStokBaris = async (idx) => {
-  let iditem = $("input[name^='item']").eq(idx).val();
+  let iditem = $("input[name='item[]']").eq(idx).val();
   let idgudang = $('#cabang').val();
 
   if(!iditem || !idgudang) return;
@@ -497,7 +544,7 @@ var _IsValid = () => {
 
     const totalbaris = $(".item").length;
     for(let i=0;i<totalbaris;i++){
-      if($("input[name^='item']").eq(i).val()=='' || $("input[name^='item']").eq(i).val()==null){
+      if($("input[name='item[]']").eq(i).val()=='' || $("input[name='item[]']").eq(i).val()==null){
         $("input[name^='kodeitem']").eq(i).attr('data-title','Item harus diisi !');
         $("input[name^='kodeitem']").eq(i).tooltip('show');
         $("input[name^='kodeitem']").eq(i).focus();
@@ -559,7 +606,7 @@ const id = $("#id").val(),
 
   var detil = [];
 
-  $("input[name^='item']").each(function(index,element){
+  $("input[name='item[]']").each(function(index,element){
       detil.push({
                item:this.value,
                qty:Number($("input[name^='qty']").eq(index).val().split('.').join('').toString().replace(',','.')),
@@ -608,10 +655,22 @@ const id = $("#id").val(),
       parent.window.$(".loader-wrap").addClass("d-none");
       if(result.pesan=='sukses'){
           parent.window.toastr.success("Transaksi berhasil disimpan");
+          const idtersimpan = result.nomor;
           _clearForm();
           _addRow();
           _inputFormat();
           _formState1();
+          parent.window.Swal.fire({
+            title: 'Apakah akan mencetak?',
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: `Iya`,
+            cancelButtonText: `Tidak`,
+          }).then((res) => {
+            if (res.isConfirmed) {
+              window.open(`${base_url}Laporan/preview/page-pmb/${idtersimpan}`)
+            }
+          })
           return;
       } else {
           parent.window.toastr.error(result.pesan);
@@ -669,7 +728,7 @@ var _getDataTransaksi = (id) => {
         for (let i = 0; i < result.data.length; i++) {
           let satuan = $("<option selected='selected'></option>").val(result.data[i]['idsatuan']).text(result.data[i]['satuan']);
 
-          $("input[name^='item']").eq(i).val(result.data[i]['iditem']);
+          $("input[name='item[]']").eq(i).val(result.data[i]['iditem']);
           $("input[name^='itemnama']").eq(i).val(result.data[i]['namaitem']);
           $("input[name^='kodeitem']").eq(i).val(result.data[i]['kditem']);
           $("select[name^='satuan']").eq(i).append(satuan).trigger('change');

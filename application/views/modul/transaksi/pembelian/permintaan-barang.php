@@ -1,6 +1,12 @@
 <body id="<?= $id; ?>" class="layout-fixed bg-transparent overflow-hidden" data-panel-auto-height-mode="height">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/transaksi-page.css');?>">
+  <style>
+    #tdetil.pb-hide-stokakhir .col-stokakhir,
+    #tdetil.pb-hide-stokakhir .col-refreshstok {
+      display: none;
+    }
+  </style>
 
   <!-- Loading Page -->
   <div class="loader-wrap d-none">
@@ -52,6 +58,8 @@
     <input type="hidden" class="noclear" id="bisaedit" name="bisaedit" value="<?= $bisaedit ?>">
     <input type="hidden" class="noclear" id="bisahapus" name="bisahapus" value="<?= $bisahapus ?>">
     <input type="hidden" class="noclear" id="bisaprint" name="bisaprint" value="<?= $bisaprint ?>">
+    <input type="hidden" class="noclear" id="idkaryawandefault" name="idkaryawandefault" value="<? echo @$_SESSION['idkaryawan']; ?>">
+    <input type="hidden" class="noclear" id="karyawandefault" name="karyawandefault" value="<? echo @$_SESSION['namakaryawan']; ?>">
     <section class="content" style="margin-top: 70px">
       <div class="container-fluid pt-4">
           <div class="form-group row my-0">
@@ -163,8 +171,8 @@
                             <th class="text-sm text-label text-center border-0" style="width: 90px">Satuan</th>
                             <th class="text-sm text-label text-center border-0" style="width: 180px">Catatan</th>
                             <th class="text-sm text-label text-center border-0" style="width: 100px">Real Stok</th>
-                            <th class="text-sm text-label text-center border-0" style="width: 100px">Stok Akhir</th>
-                            <th class="text-sm text-label text-center border-0" style="width: 100px">Refresh Stok</th>
+                            <th class="text-sm text-label text-center border-0 col-stokakhir" style="width: 100px">Stok Akhir</th>
+                            <th class="text-sm text-label text-center border-0 col-refreshstok" style="width: 100px">Refresh Stok</th>
                             <th class="text-sm text-label text-center border-0" style="width: 40px"></th>
                           </tr>
                         </thead>

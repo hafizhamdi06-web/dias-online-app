@@ -44,8 +44,8 @@ class M_PB_Permintaan_Barang extends CI_Model {
                     'pbdqtyd' => $item->qty,
                     'pbdsatuan' => $item->satuan,
                     'pbdsatuand' => $item->satuan,
-                    'pbdstokreal' => $item->stokreal,
-                    'pbdstok' => $item->stok,
+                    'pbdstok' => $item->stokreal,
+                    'pbdstokreal' => $item->stok,
                     'pbdcatatan' => $item->catatan
             );
             $this->db->insert('fpermintaanbarangd',$data_detil);
@@ -121,8 +121,8 @@ class M_PB_Permintaan_Barang extends CI_Model {
                     'pbdqtyd' => $item->qty,
                     'pbdsatuan' => $item->satuan,
                     'pbdsatuand' => $item->satuan,
-                    'pbdstokreal' => $item->stokreal,
-                    'pbdstok' => $item->stok,
+                    'pbdstok' => $item->stokreal,
+                    'pbdstokreal' => $item->stok,
                     'pbdcatatan' => $item->catatan
             );
             $this->db->insert('fpermintaanbarangd',$data_detil);

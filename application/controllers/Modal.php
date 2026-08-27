@@ -214,6 +214,11 @@ class Modal extends CI_Controller {
         $this->loader('modul/master/form-role');
     }
 
+    // Modal Profil Akun
+    function profil_akun(){
+        $this->loader('modul/administrator/form-profil');
+    }
+
    // Modal Form Divisi
     function form_jenis_penyesuaian(){
         $this->loader('modul/master/form-jenis-penyesuaian');

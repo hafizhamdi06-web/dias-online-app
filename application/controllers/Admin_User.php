@@ -116,4 +116,92 @@ class Admin_User extends CI_Controller {
         echo $this->M_transaksi->get_data_query($query);
     }
 
+    function getprofilakun(){
+        $id = $this->session->id;
+
+        $query = "SELECT A.uid,A.ukode,A.unama,A.unamalengkap,A.uactive,A.ucabang,A.ukid,A.unomor,
+                         B.knama 'namakaryawan', C.gnama 'namacabang'
+                    FROM auser A LEFT JOIN bkontak B ON A.ukid=B.kid LEFT JOIN bgudang C ON A.ucabang=C.gid
+                   WHERE A.uid = '".$id."'";
+
+        header('Content-Type: application/json');
+        echo $this->M_transaksi->get_data_query($query);
+    }
+
+    function getgudangpilihanprofil(){
+        $id = $this->session->id;
+        $ucabangpilih = "";
+        $userQuery = $this->db->query("SELECT UCABANG, UCABANGPILIH FROM auser WHERE uid='".$id."'")->row();
+
+        $ucabangaktif = $userQuery ? $userQuery->UCABANG : null;
+        if($userQuery && $userQuery->UCABANGPILIH !== null) $ucabangpilih = $userQuery->UCABANGPILIH;
+
+        $pilih = array_filter(array_map('trim', explode(',', $ucabangpilih)));
+
+        $data = array();
+        if(!empty($pilih)){
+          $inClause = implode(',', array_map(function($v){ return "'".$v."'"; }, $pilih));
+          $query = "SELECT GID 'gid', GKODE 'gkode', GNAMA 'gnama'
+                      FROM bgudang
+                     WHERE GID IN (".$inClause.") AND GAKTIF<>0
+                  ORDER BY GNAMA ASC";
+          $data = $this->db->query($query)->result_array();
+          foreach($data as &$row){
+            $row['aktif'] = ($row['gid'] == $ucabangaktif) ? 1 : 0;
+          }
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(array('data' => $data));
+    }
+
+    function gantiCabang(){
+        $id = $this->session->id;
+        $gid = $this->input->post('gid');
+
+        if(empty($gid)){
+          echo "Gudang tidak valid";
+          return;
+        }
+
+        $userQuery = $this->db->query("SELECT UCABANGPILIH FROM auser WHERE uid='".$id."'")->row();
+        $ucabangpilih = ($userQuery && $userQuery->UCABANGPILIH !== null) ? $userQuery->UCABANGPILIH : "";
+        $pilih = array_filter(array_map('trim', explode(',', $ucabangpilih)));
+
+        if(!in_array((string)$gid, $pilih)){
+          echo "Gudang tidak diizinkan untuk user ini";
+          return;
+        }
+
+        $gudang = $this->db->query("SELECT GID, GALAMAT1, GKODE FROM bgudang WHERE GID='".$gid."' AND GAKTIF<>0")->row();
+
+        if(!$gudang){
+          echo "Gudang tidak ditemukan";
+          return;
+        }
+
+        $this->db->trans_begin();
+        $this->db->where('uid', $id);
+        $this->db->update('auser', array(
+                'ucabang' => $gudang->GID,
+                'unomor' => $gudang->GALAMAT1
+        ));
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            echo "rollback";
+            return;
+        }
+
+        $this->db->trans_commit();
+
+        $this->session->set_userdata(array(
+                'cabang' => $gudang->GID,
+                'kodecabang' => $gudang->GALAMAT1,
+                'namagudang' => $gudang->GKODE
+        ));
+
+        echo "sukses";
+    }
+
 }
