@@ -1,5 +1,7 @@
  <form class='form-horizontal' method="post">
   <input type="hidden" id="id" name="id">
+  <input type="hidden" id="idkontak" name="idkontak">
+  <input type="hidden" id="idsupos" name="idsupos">
   <div class="modal-body">
   <div class="row mx-2">
     <label for="" class="col-sm-2 col-form-label text-sm text-brown font-weight-normal">No Depo</label>                    
@@ -48,14 +50,14 @@
               </div>
               <div class="card-body card-outline-tabs-body px-0 mx-0 py-0 mt-2 w-100">
                 <div class="tab-content">
-                  <div class="table-responsive" tabindex="-1" style="border:1px solid #dee2e6;height:calc(100vh - 750px);overflow: auto;">
+                  <div class="table-responsive" tabindex="-1" style="border:1px solid #dee2e6;height:calc(100vh - 650px);overflow: auto;">
                         <table id="tdatatindakan" class="table table-hover table-sm table-transaksi">
                           <thead class="bg-light">
                             <tr>
                               <th class="text-sm text-label text-left px-1 border-0" style="width: 80px">Tindakan #</th>
                               <th class="text-sm text-label text-right px-1 border-0" style="width: 40px">Qty</th>
                               <th class="text-sm text-label text-right px-1 border-0" style="width: 80px">Nilai</th>
-                              <th class="text-sm text-label text-left px-1 border-0" style="width: 40px">No Ref</th> 
+                              <th class="text-sm text-label text-left px-1 border-0" style="width: 40px">No Ref</th>
                               <th class="text-sm text-label text-center border-0" style="width: 30px">Pilih</th>
                               <th class="text-sm text-label text-center border-0" style="width: 30px">Reset</th>
                             </tr>
@@ -65,42 +67,11 @@
                           <tfoot>
                           </tfoot>
                         </table>
-                  </div> 
-                </div>
-              </div>
-            </div>  
-            <div style='clear:both'></div> 
-  
-   
-            <div class="card card-primary card-outline card-outline-tabs">
-              <div class="card-header card-header-sm p-0 border-bottom-0"> Data Alkes
-              </div>
-              <div class="card-body card-outline-tabs-body px-0 mx-0 py-0 mt-2 w-100">
-                <div class="tab-content">
-                  <div class="table-responsive" tabindex="-1" style="border:1px solid #dee2e6;height:calc(100vh - 650px);overflow: auto;">
-                        <table id="tdataalkes" class="table table-hover table-sm table-transaksi">
-                          <thead class="bg-light">
-                            <tr>
-                              <th class="text-sm text-label text-left px-1 border-0" style="width: 100px">Nama Alkes #</th>
-                              <th class="text-sm text-label text-right px-1 border-0" style="width: 40px">Qty</th>
-                              <th class="text-sm text-label text-right px-1 border-0" style="width: 60px">Qty Standar</th>
-                              <th class="text-sm text-label text-left px-1 border-0" style="width: 80px">Satuan</th>  
-                              <th class="text-sm text-label text-center border-0" style="width: 40px">Hapus</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                          </tbody>
-                          <tfoot>
-                          </tfoot>
-                        </table>
-                  </div>
-                  <div class="row mt-2 px-2">
-                     
                   </div>
                 </div>
               </div>
-            </div>  
-            <div style='clear:both'></div> 
+            </div>
+            <div style='clear:both'></div>
           
           
           

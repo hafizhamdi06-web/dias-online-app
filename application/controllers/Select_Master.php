@@ -265,6 +265,23 @@ class Select_Master extends CI_Controller {
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
     }
 
+   function view_gudang_pilihan() {
+        $ucabangpilih = '';
+        $sql = "SELECT UCABANGPILIH FROM auser WHERE UID='".$this->session->id."'";
+        $res = $this->db->query($sql);
+        foreach ($res->result() as $row) {
+            $ucabangpilih = $row->UCABANGPILIH;
+        }
+
+        $query  = "SELECT A.gid AS 'id',A.gnama AS 'text',null AS 'kode',A.galamat1 AS 'nomor'
+                     FROM bgudang A";
+        $search = array('gnama');
+        $isOrder = 'gid';
+        $isWhere = !empty($ucabangpilih) ? "A.gid IN (".$ucabangpilih.")" : null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
    function view_user() {
         $query  = "SELECT A.uid AS 'id',CONCAT(A.ukode,' - ',A.unama) AS 'text',A.ukode AS 'kode'
                      FROM auser A";

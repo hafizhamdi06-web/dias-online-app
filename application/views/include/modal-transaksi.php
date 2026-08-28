@@ -1,7 +1,8 @@
 <div class="modal-body">   
 <input type="hidden" id="namaview" class="noclear" name="namaview">
 <input type="hidden" id="cabanguser" class="noclear" name="cabanguser" value="<? echo @$_SESSION['cabang']; ?>">  
-<input type="hidden" id="kodecabang" class="noclear" name="kodecabang" value="<? echo @$_SESSION['kodecabang']; ?>">  
+<input type="hidden" id="kodecabang" class="noclear" name="kodecabang" value="<? echo @$_SESSION['kodecabang']; ?>">
+<input type="hidden" id="namacabang" class="noclear" name="namacabang" value="<? echo @$_SESSION['namagudang']; ?>">
 <input type="hidden" id="allcabang" class="noclear" name="allcabang" value="<? echo @$_SESSION['allcabang']; ?>">  
 
 <div class="container-fluid px-0">  

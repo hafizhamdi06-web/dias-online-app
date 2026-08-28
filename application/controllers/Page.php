@@ -164,6 +164,10 @@ class Page extends CI_Controller {
         $this->loader('pmb','modul/transaksi/pembelian/table-permintaan-barang');
     }
 
+    function pmbverif(){
+        $this->loader('pmbverif','modul/transaksi/pembelian/table-verifikasi-permintaan-barang');
+    }
+
     function umb(){
         $this->loader('umb','modul/transaksi/pembelian/uangmuka-pembelian');
     }
@@ -309,6 +313,10 @@ class Page extends CI_Controller {
 
     function posData(){
         $this->loader('pos','modul/transaksi/penjualan/table-penjualan-tunai');
+    }
+
+    function alkesData(){
+        $this->loader('alkesData','modul/transaksi/penjualan/table-alkes');
     }
 
     function ippersetujuankomisi(){

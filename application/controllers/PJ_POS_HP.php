@@ -29,10 +29,23 @@ class PJ_POS_HP extends CI_Controller {
    }   
 
    function kirimulangpoint(){
-      echo $this->M_PJ_POS_HP->kirimulangpoint();          
-   }  
-   
-   
+      echo $this->M_PJ_POS_HP->kirimulangpoint();
+   }
+
+   function cekkirimulangemail(){
+      $id = $this->session->id;
+
+      $query = "SELECT COUNT(*) 'jumlah'
+                   FROM aauserrole A
+                   JOIN aarole B ON A.AURIDROLE=B.ARID
+                  WHERE A.AURIDUSER='".$id."' AND A.AURSTATUS=1 AND B.ARNAMAROLE='Kirim Ulang Email'";
+
+      $result = $this->db->query($query)->row();
+      $kirimemail = ($result && $result->jumlah > 0) ? 1 : 0;
+
+      echo json_encode(array('kirimemail' => $kirimemail));
+   }
+
 
    function updatekupon(){ 
         echo $this->M_PJ_POS_HP->updatekupon();   

@@ -1,22 +1,15 @@
 /* ========================================================================================== */
-/* File Name : table-penjualan-tunai.js
+/* File Name : table-alkes.js
 /* Info Lain :
 /* ========================================================================================== */
 
 import { Component_Inputmask_Date } from '../../component.js';
 import { Component_Scrollbars } from '../../component.js';
-import { Component_Select2 } from '../../component.js';
-import { Component_Select2_Account } from '../../component.js';
-
 
 var tabel = null;
 
 
 $(function() {
-
-
-
-
 
 	$.fn.dataTable.ext.errMode = 'none';
 
@@ -40,9 +33,15 @@ $(function() {
 	});
 
 	var clearFilter = () => {
+		$('#tgldari').datepicker('setDate','dd-mm-yy');
+		$('#tglsampai').datepicker('setDate','dd-mm-yy');
+		$('#idkontak,#kontak').val('');
 	}
 
 	clearFilter();
+
+	if($('#bisaedit').val()==0) $('#bedit').addClass('disabled');
+	if($('#bisaprint').val()==0) $('#bprint').addClass('disabled');
 
 
 	tabel=$('#table').DataTable({
@@ -54,12 +53,15 @@ $(function() {
 		"pagingType":"simple",
 		"order": [[0, 'desc' ]],
 		"select":true,
+		"autoWidth": false,
 		"dom": '<"top"pi>tr<"clear">',
 		"ajax": {
-		    "url":base_url+"Datatable_Transaksi_Full/view_persetujuankomisi",
+		    "url":base_url+"Datatable_Transaksi_Full/view_alkes",
 		    "type":"post",
 	        "data": function(data){
-	          data.cabang = 1;
+	          data.kontak = $('#kontak').val();
+	          data.dari = $('#tgldari').val();
+	          data.sampai = $('#tglsampai').val();
 	        }
 		},
 		"deferRender": true,
@@ -67,7 +69,23 @@ $(function() {
 		"aLengthMenu": datapage,
 		"columns": [
 		      { "data": "id" },
+		      {
+		      orderable:      false,
+		      data:           null,
+		      defaultContent: "<i class='fas fa-caret-right text-sm'></i>"
+		      },
+		      { "data": "nomor" },
+		      { "data": "tanggal" },
+		      { "data": "kontak" },
+		      { "data": "noref" },
+		      { "data": "uraian" },
 		],
+		"columnDefs": [
+		      { "targets": [0], "visible": false }
+		],
+	    "createdRow": function(row, data, dataIndex) {
+	      $(row).attr('data-idsupos', data.idsupos);
+	    },
 	    "drawCallback": function() {
 	      var total = tabel.data().count();
 
@@ -84,63 +102,47 @@ $(function() {
 		  if($(".table-utils").hasClass("d-none")){
 			  $(".table-utils").removeClass("d-none");
 		  }
+
+		  if($(".table").hasClass("d-none")){
+		    $(".table").removeClass("d-none");
+		  }
 		}
 	});
 
-	new $.fn.dataTable.ColResize(tabel, {
-	  isEnabled: true,
-	  hoverClass: 'dt-colresizable-hover',
-	  hasBoundCheck: true,
-	  minBoundClass: 'dt-colresizable-bound-min',
-	  maxBoundClass: 'dt-colresizable-bound-max',
-	  isResizable: function(column) {
-	    return column.idx !== 1;
-	  },
-	  onResize: function(column) {
-	  },
-	  onResizeEnd: function(column, columns) {
-	  }
-	});
 
-
-
-
-	$("#badd").click(function() {
-		parent.window.$('.loader-wrap').removeClass('d-none');
-		location.href=base_url+"page/pos";
-	});
+	$('#table').on('dblclick','tr',function(e){
+	})
 
 	$("#bedit").click(function() {
         const id = $('#table').DataTable().cell($('#table').DataTable().rows({selected:true}),0).data();
+        const idsupos = $($('#table').DataTable().rows({selected:true}).nodes()).attr('data-idsupos');
 
-        if(typeof id=='undefined') return;
+        if(typeof idsupos=='undefined' || idsupos=='' || idsupos==null) {
+          parent.window.toastr.error('Pilih data terlebih dahulu !');
+          return;
+        }
 
-		parent.window.$('.loader-wrap').removeClass('d-none');
-		location.href=base_url+"page/pos/?id="+id;
-	});
-
-	$('#table').on('dblclick','tr',function(e){
-	//	e.preventDefault();
-	//	e.stopPropagation();
-	//	tabel.rows(this).select();
-	//	$('#bedit').click();
-	})
-
-	$("#bdelete").click(function() {
-		const id = $('#table').DataTable().cell($('#table').DataTable().rows({selected:true}),2).data();
-
-		if(typeof id=='undefined') return;
-
-		parent.window.Swal.fire({
-			title: 'Anda yakin akan menghapus '+id+'?',
-			showDenyButton: false,
-			showCancelButton: true,
-			confirmButtonText: `Iya`,
-		}).then((result) => {
-			if (result.isConfirmed) {
-			  _deleteData();
-			}
-		})
+        $.ajax({
+          "url"    : base_url+"Modal/form_editdepo",
+          "type"   : "POST",
+          "dataType" : "html",
+          "beforeSend": function(){
+            parent.window.$(".loader-wrap").removeClass("d-none");
+            parent.window.$(".modal").modal("show");
+            parent.window.$(".modal-title").html("Edit DEPO");
+            parent.window.$("#modaltrigger").val("iframe-page-alkesData");
+          },
+          "error": function(){
+            parent.window.$(".loader-wrap").addClass("d-none");
+            console.log('error menampilkan modal form edit depo...');
+            return;
+          },
+          "success": async function(result) {
+            await parent.window.$(".main-modal-body").html(result);
+            await parent.window._getData(idsupos, id);
+            parent.window.$(".loader-wrap").addClass("d-none");
+          }
+        });
 	});
 
 	$("#bprint").click(() => {
@@ -153,7 +155,6 @@ $(function() {
 
 	$("#brefresh").click(function() {
 		_reloaddatatable();
-		_inputFormat();
 	});
 
 	$("#bfilter").click(function() {
@@ -180,7 +181,7 @@ $(function() {
 				  parent.window.$(".loader-wrap").removeClass("d-none");
 				  parent.window.$(".modal").modal("show");
 				  parent.window.$(".modal-title").html("Cari Kontak");
-				  parent.window.$("#modaltrigger").val("iframe-page-posData");
+				  parent.window.$("#modaltrigger").val("iframe-page-alkesData");
 				  parent.window.$('#coltrigger').val('pasien');
 				},
 				"error": function(){
@@ -220,83 +221,5 @@ $(function() {
 		clearFilter();
 		$('#table').DataTable().ajax.reload();
 	}
-
-	var _deleteData = (function(){
-		const id = $('#table').DataTable().cell($('#table').DataTable().rows({selected:true}),0).data();
-		const nomor = $('#table').DataTable().cell($('#table').DataTable().rows({selected:true}),2).data();
-
-		if(typeof id=='undefined') return;
-
-		$.ajax({
-		"url"    : base_url+"PJ_Penjualan_Tunai/deletedata",
-		"type"   : "POST",
-		"data"   : "id="+id+"&nomor="+nomor,
-		"cache"    : false,
-		"beforeSend" : function(){
-		  parent.window.$(".loader-wrap").removeClass("d-none");
-		},
-		"error": function(xhr, status, error){
-		  parent.window.$(".loader-wrap").addClass("d-none");
-		  parent.window.toastr.error("Error : "+xhr.status+", "+error);
-		  console.log(xhr.responseText);
-		  return;
-		},
-		"success": function(result) {
-		  parent.window.$(".loader-wrap").addClass("d-none");
-
-		  if(result=='sukses'){
-		    parent.window.toastr.success("Transaksi berhasil dihapus");
-		    _reloaddatatable();
-		    return;
-		  } else {
-		    parent.window.toastr.error(result);
-		    return;
-		  }
-		}
-		});
-	});
-
-
-
-
-
-
-
-$("#editdepo").click(function() {
-
-  const id = $('#table').DataTable().cell($('#table').DataTable().rows({selected:true}),0).data();
-   if(id=="" || id==null) return;
-
-  $.ajax({
-    "url"    : base_url+"Modal/form_editdepo",
-    "type"   : "POST",
-    "dataType" : "html",
-    "beforeSend": function(){
-      parent.window.$(".loader-wrap").removeClass("d-none");
-      parent.window.$(".modal").modal("show");
-      parent.window.$(".modal-title").html("Edit DEPO");
-      parent.window.$("#modaltrigger").val("iframe-page-posData");
-    },
-    "error": function(){
-      parent.window.$(".loader-wrap").addClass("d-none");
-      console.log('error menampilkan modal form edit depo...');
-      return;
-    },
-    "success": async function(result) {
-      await parent.window.$(".main-modal-body").html(result);
-      await parent.window._getData(id);
-      parent.window.$(".loader-wrap").addClass("d-none");
-    }
-  });
-});
-
-
-
-
-
-
-
-
-
 
 })

@@ -64,15 +64,46 @@ var _kontakdatatable = function(){
       var total = tabelkontak.data().count();
 
       if(total>0){
-        $(".modal-body").removeClass("noresultfound");                                   
+        $(".modal-body").removeClass("noresultfound");
+        tabelkontak.rows(0).select();
       }else{
-        $(".modal-body").addClass("noresultfound");                                   
+        $(".modal-body").addClass("noresultfound");
       }
-      $('#modal input').focus();                                     
-      $('#contact-table').removeClass("d-none"); 
-    }        
-  });    
+      $('#sTable input[type="search"]').focus();
+      $('#contact-table').removeClass("d-none");
+    }
+  });
 }
+
+var _moveSelectionItem = (direction) => {
+  var allIdx = tabelkontak.rows().indexes().toArray();
+  if(allIdx.length===0) return;
+
+  var selected = tabelkontak.rows({selected:true}).indexes().toArray();
+  var pos = selected.length ? allIdx.indexOf(selected[0]) : -1;
+  var newPos = pos + direction;
+  if(newPos < 0) newPos = 0;
+  if(newPos > allIdx.length-1) newPos = allIdx.length-1;
+
+  tabelkontak.rows().deselect();
+  tabelkontak.row(allIdx[newPos]).select();
+
+  var node = tabelkontak.row(allIdx[newPos]).node();
+  if(node) node.scrollIntoView({block:'nearest'});
+}
+
+$('.main-modal-body').off('keydown.caribarangpos').on('keydown.caribarangpos', '#sTable input[type="search"], #contact-table', function(e){
+  if(e.keyCode==13){
+    e.preventDefault();
+    restable();
+  } else if(e.keyCode==40){
+    e.preventDefault();
+    _moveSelectionItem(1);
+  } else if(e.keyCode==38){
+    e.preventDefault();
+    _moveSelectionItem(-1);
+  }
+});
 
 var _lstkategorikontak = function(){
   $.ajax({ 
@@ -118,7 +149,9 @@ const id = $('#contact-table').DataTable().cell($('#contact-table').DataTable().
         tipeitem = $('#contact-table').DataTable().cell($('#contact-table').DataTable().rows({selected:true}),6).data(),
       trigger = $('#modaltrigger').val(),
       coltrigger = $('#coltrigger').val();
-      
+
+      if (id==null || typeof id=='undefined') return;
+
       if (tipeitem ==0 && stok <= 0)
       {
           alert('Stok ' + stok +' Produk tidak bisa dipilih');

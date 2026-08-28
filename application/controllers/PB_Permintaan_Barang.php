@@ -114,4 +114,24 @@ class PB_Permintaan_Barang extends CI_Controller {
         echo $this->M_transaksi->get_data_query($query);
    }
 
+   function getverifikasidata(){
+        if(empty($_POST['id'])) {
+            echo _pesanError("Id transaksi tidak ditemukan !");
+            exit;
+        }
+
+        $query = "SELECT A.pbuid 'id', A.pbunotransaksi 'nomor', DATE_FORMAT(A.pbutanggal,'%d/%m/%Y') 'tanggal',
+                         B.knama 'karyawan', A.pbustatus 'status', IFNULL(A.pbukonfirmasicatatan,'') 'catatanverifikasi'
+                    FROM fpermintaanbarangu A
+               LEFT JOIN bkontak B ON A.pbukaryawan=B.kid
+                   WHERE A.pbuid='".$_POST['id']."'";
+
+        header('Content-Type: application/json');
+        echo $this->M_transaksi->get_data_query($query);
+   }
+
+   function simpanverifikasi(){
+      echo $this->M_PB_Permintaan_Barang->simpanVerifikasi();
+   }
+
 }

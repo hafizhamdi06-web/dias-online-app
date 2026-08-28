@@ -1,12 +1,28 @@
 <body id="<?= $id; ?>" class="layout-fixed overflow-hidden" data-panel-auto-height-mode="height">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/table-page.css');?>">
-  <input type="hidden" class="noclear" id="bisatambah" name="bisatambah" value="<?= $bisatambah ?>">
   <input type="hidden" class="noclear" id="bisaedit" name="bisaedit" value="<?= $bisaedit ?>">
   <input type="hidden" class="noclear" id="bisahapus" name="bisahapus" value="<?= $bisahapus ?>">
   <input type="hidden" class="noclear" id="bisaprint" name="bisaprint" value="<?= $bisaprint ?>">
+  <input type="hidden" id="cabanguser" class="noclear" name="cabanguser" value="<? echo @$_SESSION['cabang']; ?>">
+  <input type="hidden" id="kodecabang" class="noclear" name="kodecabang" value="<? echo @$_SESSION['kodecabang']; ?>">
+  <input type="hidden" id="namacabang" class="noclear" name="namacabang" value="<? echo @$_SESSION['namagudang']; ?>">
+  <input type="hidden" id="allcabang" class="noclear" name="allcabang" value="<? echo @$_SESSION['allcabang']; ?>">
 
+  <!-- Loading Page -->
+  <div class="loader-wrap d-none">
+    <div class="loader">
+      <div class="box-1 box"></div>
+      <div class="box-2 box"></div>
+      <div class="box-3 box"></div>
+      <div class="box-4 box"></div>
+      <div class="box-5 box"></div>
+    </div>
+  </div>
+
+  <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper tab-wrap mx-0">
+    <!-- Content Header (Page header) -->
     <div class="content-header bg-white px-4 py-2 position-fixed w-100">
       <div class="row">
       <div class="col-sm-11">
@@ -20,6 +36,7 @@
       </div>
       </div>
     </div>
+    <!-- /.content-header -->
 
     <div class="table-utils d-none">
       <button id="bfilter" type="button" class="btn btn-light btn-sm" style="text-shadow: none;">
@@ -27,27 +44,26 @@
       </button>
     </div>
 
-    <div class="content px-0 mx-0 ml-2" style="margin-top:70px;">
+    <!-- Main content -->
+    <div class="content px-0 mx-0 ml-2" style="margin-top: 70px;">
       <div class="container-fluid mt-1 px-0 mx-0">      
-        <table id="table" class="table table-sm table-striped table-hover w-100 bg-light nowrap">
+        <table id="table" class="table table-sm table-striped table-hover w-100 nowrap">
           <thead>
           <tr>
           <th class="d-none"></th>
           <th></th>
           <th class="text-sm">Nomor</th>
           <th class="text-sm">Tanggal</th>
-          <th class="text-sm">Pelanggan</th>   
-          <th class="text-sm text-right">Total Transaksi</th>
-          <th class="text-sm">Status</th>  
-          </tr>
+          <th class="text-sm">Pelanggan</th>  
+          <th class="text-sm">Uraian</th>
+          <th class="text-sm">No Ref</th>
+        </tr>
           </thead>
         </table>
         <div id="fDataTable" class="fDataTable d-none">
           <div class="row mt-2 mx-1">
-              <div class="col-sm-4">
+              <div class="col-sm-12">
                 <label class="col-form-label text-sm font-weight-normal">Kontak :</label>
-              </div>
-              <div class="col-sm-8">
                 <div class="input-group" data-target-input="nearest">
                   <input type="hidden" name="idkontak" id="idkontak">                
                   <input type="text" id="kontak" name="kontak" class="form-control form-control-sm" autocomplete="off">
@@ -58,10 +74,26 @@
               </div>
           </div>
           <div class="row mt-2 mx-1">
-              <div class="col-sm-4">
-                <label class="col-form-label text-sm font-weight-normal">Dari Tanggal :</label>
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">Cabang :</label>
+                <select id="cabang" name="cabang" class="cabang form-control select2 form-control-sm" data-trigger="manual" data-placement="auto"></select>
               </div>
-              <div class="col-sm-8">
+          </div>
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">No Transaksi :</label>
+                <input type="text" id="notransaksi" name="notransaksi" class="form-control form-control-sm" autocomplete="off">
+              </div>
+          </div>
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">No Ref :</label>
+                <input type="text" id="noref" name="noref" class="form-control form-control-sm" autocomplete="off">
+              </div>
+          </div>
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">Dari Tanggal :</label>
                 <div class="input-group date">
                   <input id="tgldari" type="text" class="form-control form-control-sm datepicker">
                   <div id="dtgldari" class="input-group-append" role="button">
@@ -71,10 +103,8 @@
               </div>
           </div>
           <div class="row mt-0 pt-0 mx-1">
-              <div class="col-sm-4">
+              <div class="col-sm-12">
                 <label class="col-form-label text-sm font-weight-normal">Sampai Tanggal :</label>
-              </div>
-              <div class="col-sm-8">
                 <div class="input-group date">
                   <input id="tglsampai" type="text" class="form-control form-control-sm datepicker">
                   <div id="dtglsampai" class="input-group-append" role="button">
@@ -83,67 +113,31 @@
                 </div>                                
               </div>
           </div>
-          
-          <div class="row mt-2 mx-1">
-              <div class="col-sm-4">
-                <label class="col-form-label text-sm font-weight-normal">Cara Bayar :</label>
-              </div>
-              <div class="col-sm-8">
-                
-                <select id="carabayar" class="form-control select2 form-control-sm"  data-trigger="manual" data-placement="auto">
-                    
-                     <option selected></option> 
-                      <option value="TUNAI">TUNAI</option>
-                      <option value="DEBIT">DEBIT</option>
-                      <option value="KREDIT">KREDIT</option>
-                      <option value="TRANSFER">TRANSFER</option>
-                      <option value="MERCHANT">MERCHANT</option>
-                </select>
-                            
-              </div>
-          </div>
-          
-          <div class="row mt-2 mx-1">
-              <div class="col-sm-4">
-                <label class="col-form-label text-sm font-weight-normal">Bank :</label>
-              </div>
-              <div class="col-sm-8"> 
-                  <input type="text" id="bank" name="bank" class="form-control form-control-sm" autocomplete="off">
-                            
-              </div>
-          </div>
-          
-          <div class="row mt-4 pt-0 mx-1 px-1">
-            <button type="button" id="submitfilter" class="btn btn-primary btn-sm btn-block">Tampilkan</button>
-          </div>
-          <div class="row mt-2 pt-0 mx-1 px-1">
-            <button type="button" id="editdepo" class="btn btn-primary btn-sm btn-block">EDIT DEPO</button>
-          </div>
-                             
-        </div>        
+          <div class="row ml-3 mt-4 pt-0">
+            <button type="button" id="submitfilter" class="btn btn-primary btn-sm">Tampilkan</button>
+          </div>                              
+        </div>                                
       </div>
     </div>
+    <!-- /.Main content -->
   </div>
 
   <!-- Control Sidebar -->
   <div class="bg-white btn-group-vertical btn-top">
   </div>
   <div class="btn-group-vertical">
-      <a id="badd" class="btn btn-app" >
-        <i class="fas fa-plus"></i> <span>Tambah</span>
-      </a>
       <a id="bedit" class="btn btn-app" >
         <i class="fas fa-edit"></i> <span>Edit</span>
       </a>
       <a id="bdelete" class="btn btn-app" >
         <i class="fas fa-trash"></i> <span>Hapus</span>
-      </a>
+      </a>    
       <a id="bprint" class="btn btn-app" >
         <i class="fas fa-print"></i> <span>Cetak</span>
-      </a>
+      </a>        
       <a id="brefresh" class="btn btn-app">
         <i class="fas fa-sync"></i> <span>Refresh</span>
-      </a>
+      </a>            
   </div>    
   <aside id="control-sidebar-r" class="control-sidebar bg-transparent border-0">
   </aside>
@@ -155,18 +149,18 @@
 <script src="<? echo base_url('assets/plugins/jquery-ui/jquery-ui.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/dist/js/adminlte.js'); ?>"></script>
-<script src="<? echo base_url('assets/dist/js/akunting.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-responsive/js/dataTables.responsive.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-responsive/js/responsive.bootstrap4.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-select/js/dataTables.select.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-select/js/select.bootstrap4.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/select2/select2.full.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/input-mask/jquery.inputmask.bundle.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables/colResize.js'); ?>"></script>
 <!-- JS Custom -->
-<script type="module" src="<? echo app_url('assets/dist/js/modul/transaksi/penjualan/table-penjualan-tunai.js'); ?>"></script>
+<script type="module" src="<? echo app_url('assets/dist/js/modul/transaksi/penjualan/table-alkes.js'); ?>"></script>
 </body>
 </html>

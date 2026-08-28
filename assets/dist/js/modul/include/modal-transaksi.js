@@ -23,10 +23,11 @@ var _transaksidatatable = function(_view=''  ){
     "lengthChange": false,
     "searching": true,
     "ordering": true,
-    "pagingType":"simple",        
-    "order": [[0, 'desc' ]],      
-    "select":true,      
-    "dom": '<"#sTable"f><"top"p>tr<"clear">',        
+    "pagingType":"simple",
+    "order": [[0, 'desc' ]],
+    "select":true,
+    "dom": '<"#sTable"f><"top"p>tr<"clear">',
+    "searchDelay": 400,
     "ajax": {
         "url":base_url+"Datatable_Transaksi/"+_view+"/"+cabang,
         "type":"post",
@@ -56,16 +57,47 @@ var _transaksidatatable = function(_view=''  ){
       var total = tabeltransaksi.data().count();
 
       if(total>0){
-        $(".modal-body").removeClass("noresultfound");                                   
+        $(".modal-body").removeClass("noresultfound");
+        tabeltransaksi.rows(0).select();
       }else{
-        $(".modal-body").addClass("noresultfound");                                   
+        $(".modal-body").addClass("noresultfound");
       }
 
-      $('#modal input').focus();                                
-      $('#transaksi-table').removeClass("d-none");   
-    }    
+      $('#sTable input[type="search"]').focus();
+      $('#transaksi-table').removeClass("d-none");
+    }
   });
 }
+
+var _moveSelectionTransaksi = (direction) => {
+  var allIdx = tabeltransaksi.rows().indexes().toArray();
+  if(allIdx.length===0) return;
+
+  var selected = tabeltransaksi.rows({selected:true}).indexes().toArray();
+  var pos = selected.length ? allIdx.indexOf(selected[0]) : -1;
+  var newPos = pos + direction;
+  if(newPos < 0) newPos = 0;
+  if(newPos > allIdx.length-1) newPos = allIdx.length-1;
+
+  tabeltransaksi.rows().deselect();
+  tabeltransaksi.row(allIdx[newPos]).select();
+
+  var node = tabeltransaksi.row(allIdx[newPos]).node();
+  if(node) node.scrollIntoView({block:'nearest'});
+}
+
+$('.main-modal-body').off('keydown.caritransaksi').on('keydown.caritransaksi', '#sTable input[type="search"], #transaksi-table', function(e){
+  if(e.keyCode==13){
+    e.preventDefault();
+    restable();
+  } else if(e.keyCode==40){
+    e.preventDefault();
+    _moveSelectionTransaksi(1);
+  } else if(e.keyCode==38){
+    e.preventDefault();
+    _moveSelectionTransaksi(-1);
+  }
+});
 
 
  $("#btampilkan").click(function() {   
@@ -82,7 +114,7 @@ function _setcabang(){
        "theme":"bootstrap4",        
        "dropdownParent": $('#transaksi-table'),     
        "ajax": {
-          "url": base_url+"Select_Master/view_gudang",
+          "url": base_url+"Select_Master/view_gudang_pilihan",
           "type": "post",
           "dataType": "json",                                       
           "delay": 800,
@@ -100,7 +132,7 @@ function _setcabang(){
   });
   
    
-        const _cabang = $("<option selected='selected'></option>").val($('#cabanguser').val()).text($('#kodecabang').val());  
+        const _cabang = $("<option selected='selected'></option>").val($('#cabanguser').val()).text($('#namacabang').val());  
         $('#cabang').append(_cabang); 
         var allcabang = $('#allcabang').val();   
         
@@ -112,6 +144,9 @@ function _setcabang(){
 function restable(){
   const id = $('#transaksi-table').DataTable().cell($('#transaksi-table').DataTable().rows({selected:true}),0).data(),
       trigger = $('#modaltrigger').val();
+
+  if (id==null || typeof id=='undefined') return;
+
   $('#modal').modal('hide');
 
   var iframeWindow = document.getElementById(trigger) ? document.getElementById(trigger).contentWindow : null;

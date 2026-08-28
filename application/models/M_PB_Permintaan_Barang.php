@@ -193,6 +193,53 @@ class M_PB_Permintaan_Barang extends CI_Model {
 
     }
 
+    function simpanVerifikasi(){
+        $id = $this->input->post('id');
+        $status = $this->input->post('status');
+        $catatan = $this->input->post('catatan');
+
+        if(empty($id) || !in_array($status, array('1','2'))){
+            return "Data verifikasi tidak valid";
+        }
+
+        if($status=='1' && empty($catatan)){
+            return "Catatan Verifikasi harus diisi jika status Pending";
+        }
+
+        $data = array(
+                'pbustatus' => $status,
+                'pbukonfirmasicatatan' => $catatan,
+                'pbuapproveu' => $this->session->id,
+                'pbuapproved' => date('Y-m-d H:i:s')
+        );
+
+        $this->db->trans_begin();
+        $this->db->where('pbuid', $id);
+        $this->db->update('fpermintaanbarangu', $data);
+
+        // USERLOG
+        $nomor = $this->db->query("SELECT pbunotransaksi FROM fpermintaanbarangu WHERE pbuid='".$id."'")->row();
+        $nomor = $nomor ? $nomor->pbunotransaksi : $id;
+        $uactivity = _anomor(element('PB_Permintaan_Barang',NID));
+        $uactivity = $uactivity['keterangan'];
+        $userlog = array(
+            'uluser' => $this->session->id,
+            'ulusername' => $this->session->nama,
+            'ulcomputer' => $this->input->ip_address(),
+            'ulactivity' => 'Verifikasi '.$uactivity.' '.$nomor,
+            'ullevel'=> 2
+        );
+        $this->db->insert('auserlog',$userlog);
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return "rollback";
+        } else {
+            $this->db->trans_commit();
+            return "sukses";
+        }
+    }
+
     function autonumber($tgl){
         $cabang  = @$_SESSION['cabang'];
         $kodecabang  = @$_SESSION['kodecabang'];

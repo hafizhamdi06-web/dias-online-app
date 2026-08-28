@@ -44,9 +44,14 @@ $(function() {
 
   if($('#nilaipph22').val() != '') {
     $('#col-pph22').removeClass('d-none');
-    $('#col-clear').removeClass('col-sm-8');    
-    $('#col-clear').addClass('col-sm-6');        
+    $('#col-clear').removeClass('col-sm-8');
+    $('#col-clear').addClass('col-sm-6');
   }
+
+  _cekKirimUlangEmail();
+
+  _resizeNamaPasien();
+  $('#namakontak').off('input.resizenama').on('input.resizenama', _resizeNamaPasien);
 
 /**/
 
@@ -63,12 +68,12 @@ $(function() {
         
        // alert(e.keyCode);
 
-        //   F12 key
-        if(e.keyCode == 123) {
+        //   F2 key (Cari Item) - dipakai karena F12 selalu dipakai browser untuk DevTools
+        if(e.keyCode == 113) {
              _CariBarang();
             return false;
         }
-        
+
          //   F1 key
         if(e.keyCode == 122) {
             $('#carikontak').click();
@@ -115,7 +120,11 @@ $(function() {
   
 // jike enter, makaok di masing2 form modal
   $('#norefnya').keydown(function(e){
-    if(e.keyCode==13) { $('#boknoref').click(); }
+    if(e.keyCode==13) { e.preventDefault(); $('#boknoref').click(); }
+  });
+
+  $('#noicnya').keydown(function(e){
+    if(e.keyCode==13) { e.preventDefault(); $('#boknoic').click(); }
   });
   
 
@@ -165,7 +174,7 @@ $(function() {
         if($("#idkontak").val()!='') 
         {
              parent.window.Swal.fire({
-              title: `Jika anda ingin pasien, maka transaksi akan dikosongkan!`,
+              title: `Jika anda ingin mengganti pasien, maka transaksi akan dikosongkan!`,
               showDenyButton: false,
               showCancelButton: true,
               confirmButtonText: `Iya`,
@@ -213,10 +222,11 @@ var _CariKontak = () => {
         },
         "success": function(result) {
           parent.window.$(".main-modal-body").html(result);
-          parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');
+          parent.window.$('.modal-body').css('min-height','calc(100vh - 50vh)');
           parent.window.$(".loader-wrap").addClass("d-none");
 
           parent.window._setjenis();
+          parent.window._setcabang();
 
           parent.window._lstkategorikontak();
           parent.window._pilihkategorikontak('');
@@ -264,7 +274,8 @@ var _AmbilDetailPasien = () => {
         $('#pasienid').html(result.data[0]['pasienid']);  
         $('#pasienalamat').html(result.data[0]['alamat']);   
         $('#pasiennohp').html(result.data[0]['nohp']);     
-        $('#namakontak').val(result.data[0]['nama']);       
+        $('#namakontak').val(result.data[0]['nama']);
+        _resizeNamaPasien();
         $('#tgltransaksiakhir').html(result.data[0]['tglakhir']);
         $('#tglbuat').html(result.data[0]['tglbuat']);
         const tglsekarang = new Date() ;
@@ -282,17 +293,17 @@ var _AmbilDetailPasien = () => {
            
            {
                
-            $('#divtglexpiredmember').append("<button type=\"button\" class=\"btn btn-danger btn-step1 text-sm btn-sm bexpiredmember\" role=\"button\"  > Member Tidak Aktif</button>");
-            $('#statusmember').val(0);  
+            $('#divtglexpiredmember').append("<span class=\"badge badge-pill badge-danger btn-step1 text-sm bexpiredmember\" role=\"button\"  > Member Tidak Aktif</span> ");
+            $('#statusmember').val(0);
            }
-           else if ( tglexpired < tglsekarang )  
+           else if ( tglexpired < tglsekarang )
            {
-            $('#divtglexpiredmember').append("<button type=\"button\" class=\"btn btn-danger btn-step1 text-sm btn-sm  bexpiredmember\" role=\"button\"  > Member Tidak Aktif, Terakhir Tanggal <span class=\"badge badge-light\" >"+result.data[0]['tglexpired']+"</span></button>");
-            $('#statusmember').val(0);  
+            $('#divtglexpiredmember').append("<span class=\"badge badge-pill badge-danger btn-step1 text-sm bexpiredmember\" role=\"button\"  > Member Tidak Aktif, Terakhir Tanggal <span class=\"badge badge-light\" >"+result.data[0]['tglexpired']+"</span></span> ");
+            $('#statusmember').val(0);
            }
-           else 
-           { 
-            $('#divtglexpiredmember').append("<button type=\"button\" class=\"btn btn-light btn-step1 text-sm btn-sm  bexpiredmember\" role=\"button\"  > Member Aktif, Expired Tanggal <span class=\"badge badge-primary\" >"+result.data[0]['tglexpired']+"</span> </button>"); 
+           else
+           {
+            $('#divtglexpiredmember').append("<span class=\"badge badge-pill badge-success btn-step1 text-sm bexpiredmember\" role=\"button\"  > Member Aktif, Expired Tanggal <span class=\"badge badge-light\" >"+result.data[0]['tglexpired']+"</span> </span> ");
             $('#statusmember').val(1); 
             
             
@@ -351,12 +362,12 @@ var _AmbilDetailPasien = () => {
             $('#bstatuskartumember').html('') ; 
             if (result.data[0]['tipeid']==12) { 
                 
-                $('#modalkartumember').on('shown.bs.modal', function(){   
-                    document.getElementById("optbawakartu").checked = false;
-                    document.getElementById("opttidakbawakartu").checked = false; 
-                    
-                    $('#optbawakartu').focus();   
-                }); 
+                $('#modalkartumember').on('shown.bs.modal', function(){
+                    document.getElementById("optbawakartu").checked = true;
+                    document.getElementById("opttidakbawakartu").checked = false;
+
+                    $('#optbawakartu').focus();
+                });
                 
                 $('#modalkartumember').modal('show');   
             }
@@ -394,8 +405,36 @@ var _AmbilDetailPasien = () => {
  }
 
  
- $("#bokpilihkartu").click(function() { 
-    SetKartuPasien(); 
+ $("#bokpilihkartu").click(function() {
+    SetKartuPasien();
+ });
+
+ $('#modalkartumember').on('keydown', function(e){
+    if(e.keyCode==39 || e.keyCode==40){ // Panah kanan/bawah -> Tidak Bawa
+      e.preventDefault();
+      $('#opttidakbawakartu').prop('checked', true).focus();
+    } else if(e.keyCode==37 || e.keyCode==38){ // Panah kiri/atas -> Bawa Kartu
+      e.preventDefault();
+      $('#optbawakartu').prop('checked', true).focus();
+    } else if(e.keyCode==49){ // Tombol 1 -> langsung pilih & konfirmasi Bawa Kartu
+      e.preventDefault();
+      $('#optbawakartu').prop('checked', true);
+      $('#bokpilihkartu').click();
+    } else if(e.keyCode==50){ // Tombol 2 -> langsung pilih & konfirmasi Tidak Bawa
+      e.preventDefault();
+      $('#opttidakbawakartu').prop('checked', true);
+      $('#bokpilihkartu').click();
+    } else if(e.keyCode==13){ // Enter -> konfirmasi pilihan yang sedang aktif
+      e.preventDefault();
+      if(!$('#optbawakartu').is(':checked') && !$('#opttidakbawakartu').is(':checked')){
+        if(document.activeElement && document.activeElement.id=='opttidakbawakartu'){
+          $('#opttidakbawakartu').prop('checked', true);
+        } else {
+          $('#optbawakartu').prop('checked', true);
+        }
+      }
+      $('#bokpilihkartu').click();
+    }
  });
 
 
@@ -405,14 +444,23 @@ var _AmbilDetailPasien = () => {
     window.datalainnya = function() {  
         $('#modaldatalainnya').modal('show'); 
     }
-    window.catatanplanning = function() {  
-        
-        
-         $('#modalcatatanplanning').on('shown.bs.modal', function(){  
-             $('#untuksave').val(0);   
-            $('#rekammedis').focus();   
-        });  
-        $('#modalcatatanplanning').modal('show'); 
+    window._setCatatanPlanningMandatory = function(mandatory) {
+        var $m = $('#modalcatatanplanning');
+        $m.attr('data-keyboard', mandatory ? 'false' : 'true');
+        var inst = $m.data('bs.modal');
+        if (inst && inst._config) { inst._config.keyboard = !mandatory; }
+        if (mandatory) { $('#btutupcatatanplanning').addClass('d-none'); }
+        else { $('#btutupcatatanplanning').removeClass('d-none'); }
+    }
+    window.catatanplanning = function() {
+
+        window._setCatatanPlanningMandatory(false);
+
+         $('#modalcatatanplanning').off('shown.bs.modal').on('shown.bs.modal', function(){
+             $('#untuksave').val(0);
+            $('#rekammedis').focus();
+        });
+        $('#modalcatatanplanning').modal('show');
     }
 
      window.medlibbeluminvoice = function() { 
@@ -512,14 +560,16 @@ var _AmbilDetailPasien = () => {
             },        
             "error"  : function(xhr,status,error){
                   parent.window.toastr.error('Error : Gagal mengambil data Invoice Web Belum Invoice !');
-                  parent.window.$('.loader-wrap').addClass('d-none');                  
+                  parent.window.$('.loader-wrap').addClass('d-none');
+                  $("#loader-detil").addClass('d-none');
                 return;
             },
             "success" : function(result) {
-            
+
           if (typeof result.pesan !== 'undefined') {
             parent.window.toastr.error(result.pesan);
-            parent.window.$('.loader-wrap').addClass('d-none');                  
+            parent.window.$('.loader-wrap').addClass('d-none');
+            $("#loader-detil").addClass('d-none');
             return;
           } else {  
             
@@ -636,14 +686,15 @@ var _AmbilDetailPasien = () => {
            _hitungsubtotal();
            _hitungTotal(); 
             
-            parent.window.toastr.success("Sukses menarik data Invoice WEB ");   
-            parent.window.$('.loader-wrap').addClass('d-none');   
-            
-            return;   
-                          
+            parent.window.toastr.success("Sukses menarik data Invoice WEB ");
+            parent.window.$('.loader-wrap').addClass('d-none');
+            $("#loader-detil").addClass('d-none');
+
+            return;
+
           }
-          } 
-          }); 
+          }
+          });
     }
      
  
@@ -708,14 +759,16 @@ $("#bweb").click(function() {
         },        
         "error"  : function(xhr,status,error){
               parent.window.toastr.error('Error : Gagal mengambil data Invoice WEB !');
-              parent.window.$('.loader-wrap').addClass('d-none');                  
+              parent.window.$('.loader-wrap').addClass('d-none');
+              $("#loader-detil").addClass('d-none');
             return;
         },
         "success" : function(result) {
-        
+
       if (typeof result.pesan !== 'undefined') {
         parent.window.toastr.error(result.pesan);
-        parent.window.$('.loader-wrap').addClass('d-none');                  
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         return;
       } else {
           
@@ -876,8 +929,9 @@ $("#bweb").click(function() {
        
       // $("#medid").val('')=
         
-        parent.window.toastr.success("Sukses menarik data Invoice WEB ");   
-        parent.window.$('.loader-wrap').addClass('d-none');   
+        parent.window.toastr.success("Sukses menarik data Invoice WEB ");
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         
         //_CekKelengkapanJenis();
         
@@ -1017,14 +1071,16 @@ $("#bweb").click(function() {
         },        
         "error"  : function(xhr,status,error){
               parent.window.toastr.error('Error : Gagal mengambil data PRO !');
-              parent.window.$('.loader-wrap').addClass('d-none');                  
+              parent.window.$('.loader-wrap').addClass('d-none');
+              $("#loader-detil").addClass('d-none');
             return;
         },
         "success" : async function(result) {
-        
+
       if (typeof result.pesan !== 'undefined') {
         parent.window.toastr.error(result.pesan);
-        parent.window.$('.loader-wrap').addClass('d-none');                  
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         return;
       } else {
           
@@ -1174,8 +1230,9 @@ $("#bweb").click(function() {
        
        // $("#medid").val('')=
         
-        parent.window.toastr.success("Sukses menarik data PRO ");   
-        parent.window.$('.loader-wrap').addClass('d-none');   
+        parent.window.toastr.success("Sukses menarik data PRO ");
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         
        _CekKelengkapanTindakan() ;
         
@@ -1246,14 +1303,16 @@ $("#bweb").click(function() {
         },        
         "error"  : function(xhr,status,error){
               parent.window.toastr.error('Error : Gagal mengambil data promo !');
-              parent.window.$('.loader-wrap').addClass('d-none');                  
+              parent.window.$('.loader-wrap').addClass('d-none');
+              $("#loader-detil").addClass('d-none');
             return;
         },
-        "success" : async function(result) { 
-        
+        "success" : async function(result) {
+
       if (typeof result.pesan !== 'undefined') {
         parent.window.toastr.error(result.pesan);
-        parent.window.$('.loader-wrap').addClass('d-none');                  
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         return;
       } else {
           
@@ -1662,8 +1721,9 @@ $("#bweb").click(function() {
        
       
         
-        parent.window.toastr.success("Sukses menarik data Promo ");   
-        parent.window.$('.loader-wrap').addClass('d-none');   
+        parent.window.toastr.success("Sukses menarik data Promo ");
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         return;   
                       
       }
@@ -1792,14 +1852,16 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
         },        
         "error"  : function(xhr,status,error){
               parent.window.toastr.error('Error : Gagal mengambil data paket !');
-              parent.window.$('.loader-wrap').addClass('d-none');                  
+              parent.window.$('.loader-wrap').addClass('d-none');
+              $("#loader-detil").addClass('d-none');
             return;
         },
         "success" : function(result) {
-        
+
       if (typeof result.pesan !== 'undefined') {
         parent.window.toastr.error(result.pesan);
-        parent.window.$('.loader-wrap').addClass('d-none');                  
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         return;
       } else {
           
@@ -1980,8 +2042,9 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
        
        //_CekKelengkapanTindakan();
         
-        //parent.window.toastr.success("Sukses menarik data Paket ");   
-        parent.window.$('.loader-wrap').addClass('d-none');   
+        //parent.window.toastr.success("Sukses menarik data Paket ");
+        parent.window.$('.loader-wrap').addClass('d-none');
+        $("#loader-detil").addClass('d-none');
         return;   
                       
       }
@@ -2435,23 +2498,25 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
     _formState2();
   });
 
-  $("#bsave").click(function() {  
-     if ($('#dkkwalkin').val()=='')  
+  $("#bsave").click(function() {
+     if ($('#dkkwalkin').val()=='')
     {
-     $('#modalDKK').modal('show');  
+     $('#modalDKK').modal('show');
      return ;
     }
-    if ($('#rekammedis').val()==''){ 
-         $('#modalcatatanplanning').on('shown.bs.modal', function(){  
+
+    if (_IsValid()===0) return;
+
+    if ($('#rekammedis').val()==''){
+        window._setCatatanPlanningMandatory(true);
+         $('#modalcatatanplanning').off('shown.bs.modal').on('shown.bs.modal', function(){
              $('#untuksave').val(1);
-            $('#rekammedis').focus();   
-        });  
-        $('#modalcatatanplanning').modal('show');  
+            $('#rekammedis').focus();
+        });
+        $('#modalcatatanplanning').modal('show');
         return ;
      }
-    
-    if (_IsValid()===0) return;
-    
+
     if($('#id').val()!='')
     {
        if ($('#alasanedit').val()=='') {
@@ -2497,26 +2562,35 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
     
     
     
-     if ($('#rekammedis').val()==''){ 
-         $('#modalcatatanplanning').on('shown.bs.modal', function(){  
+     if ($('#rekammedis').val()==''){
+        window._setCatatanPlanningMandatory(true);
+         $('#modalcatatanplanning').off('shown.bs.modal').on('shown.bs.modal', function(){
              $('#untuksave').val(1);
-            $('#rekammedis').focus();   
-        });  
-        $('#modalcatatanplanning').modal('show');  
+            $('#rekammedis').focus();
+        });
+        $('#modalcatatanplanning').modal('show');
      }
-     else { 
-      _saveData(); 
-     }   
+     else {
+      _saveData();
+     }
   });
   
-  $("#bokmodalcatatanplanning").click(function() { 
+  $("#bokmodalcatatanplanning").click(function() {
       if ( $('#untuksave').val() ==1 )
-      {  
-          if (_IsValid()===0) return;
-            _saveData(); 
-          
+      {
+          if ($('#rekammedis').val()==''){
+            $('#rekammedis').attr('data-title','Catatan Planning harus diisi !');
+            $('#rekammedis').tooltip('show');
+            $('#rekammedis').focus();
+            return;
+          }
+          $('#modalcatatanplanning').modal('hide');
+            _saveData();
+
+      } else {
+        $('#modalcatatanplanning').modal('hide');
       }
-  
+
   });
   
  
@@ -2674,22 +2748,23 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
         },
         "success": function(result) {
           parent.window.$(".main-modal-body").html(result);
-          parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');  
-          
-           
+          parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');
+          parent.window.$('#modalsize').addClass('modal-lg');
+
           parent.window._lstkategorikontak();
-          parent.window._pilihkategorikontak(''); 
+          parent.window._pilihkategorikontak('');
           setTimeout(function (){
-               parent.window.$('#modal input').focus();
-             
+               parent.window.$('#sTable input[type="search"]').focus();
+
           }, 500);
           return;
-        } 
+        }
       });
-      
-      
-       
+
+
+
    }
+   window._CariBarang = _CariBarang;
    
    
  
@@ -3222,48 +3297,48 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
                 if($("select[name^='operator']").eq(i).val()=='' || $("select[name^='operator']").eq(i).val()==null){   
                    
                         $('#keberapa').val(i);
-                        $('#modaloperator').on('shown.bs.modal', function(){ 
-                           $('#labelmodaloperator').html('Pilih Operator ' + $("select[name^='item']").eq(i).text());   
-                           $('#pilihanoperator').focus();   
-                           
-                        }); 
-                        $('#modaloperator').modal('show');   
+                        $('#modaloperator').off('shown.bs.modal').on('shown.bs.modal', function(){
+                           $('#labelmodaloperator').html('Pilih Operator ' + $("select[name^='item']").eq(i).text());
+                           $('#pilihanoperator').select2('open');
+
+                        });
+                        $('#modaloperator').modal('show');
                         return 0 ;
                         break ;
                 } 
                 if($("select[name^='dokter']").eq(i).val()=='' || $("select[name^='dokter']").eq(i).val()==null){   
                     //alert($("select[name^='dokter']").eq(i).val());
                         $('#keberapa').val(i);
-                        $('#modaldokter').on('shown.bs.modal', function(){ 
-                           $('#labelmodaldokter').html('Pilih Dokter ' + $("select[name^='item']").eq(i).text());   
-                          $('#pilihandokter').focus();   
-                           
-                        }); 
-                         
-                        $('#modaldokter').modal('show');    
+                        $('#modaldokter').off('shown.bs.modal').on('shown.bs.modal', function(){
+                           $('#labelmodaldokter').html('Pilih Dokter ' + $("select[name^='item']").eq(i).text());
+                          $('#pilihandokter').select2('open');
+
+                        });
+
+                        $('#modaldokter').modal('show');
                         return 0 ;
                         break ;
                 } 
                 if($("input[name^='noref']").eq(i).val()=='' || $("input[name^='noref']").eq(i).val()==null){    
                     
                         $('#keberapa').val(i);
-                        $('#modalnoref').on('shown.bs.modal', function(){ 
-                            $('#labelmodalnoref').html('Masukkan No Ref ' + $("select[name^='item']").eq(i).text()); 
-                           $('#norefnya').focus();   
-                        }); 
-                       $('#modalnoref').modal('show');    
-                        return 0 ;  
+                        $('#modalnoref').off('shown.bs.modal').on('shown.bs.modal', function(){
+                            $('#labelmodalnoref').html('Masukkan No Ref ' + $("select[name^='item']").eq(i).text());
+                           $('#norefnya').focus();
+                        });
+                       $('#modalnoref').modal('show');
+                        return 0 ;
                         break ;
                 } 
                 if($("input[name^='noic']").eq(i).val()=='' || $("input[name^='noic']").eq(i).val()==null){   
                     
                         $('#keberapa').val(i);
-                        $('#modalnoic').on('shown.bs.modal', function(){ 
-                            $('#labelmodalnoic').html('Masukkan No IC ' + $("select[name^='item']").eq(i).text()); 
-                            $('#noicnya').focus();   
-                        }); 
-                       $('#modalnoic').modal('show');   
-                        return 0 ;   
+                        $('#modalnoic').off('shown.bs.modal').on('shown.bs.modal', function(){
+                            $('#labelmodalnoic').html('Masukkan No IC ' + $("select[name^='item']").eq(i).text());
+                            $('#noicnya').focus();
+                        });
+                       $('#modalnoic').modal('show');
+                        return 0 ;
                         break ;
                 }     
             } 
@@ -3282,12 +3357,17 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
         var _idx = $('#keberapa').val();    
         
         var   _dokter = $("<option selected='selected'></option>").val(_iddokter).text(_namadokter) ;
-        $("select[name^='dokter']").eq(_idx).append(_dokter).trigger('change');  
-        
+        $("select[name^='dokter']").eq(_idx).append(_dokter).trigger('change');
+
         $('#pilihandokter').val(''); $('#pilihandokter').text('');
+        $('#modaldokter').modal('hide');
         _CekKelengkapanTindakan();
-        
-          return;  
+
+          return;
+  });
+
+  $('#pilihandokter').on('select2:select', function(){
+    $('#bokpilihdokter').click();
   });
   
   
@@ -3302,40 +3382,47 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
         var _idx = $('#keberapa').val();    
         
         var   _dokter = $("<option selected='selected'></option>").val($('#pilihanoperator').val()).text(_namadokter) ;
-        $("select[name^='operator']").eq(_idx).append(_dokter).trigger('change');   
-              
+        $("select[name^='operator']").eq(_idx).append(_dokter).trigger('change');
+
         $('#pilihanoperator').val(''); $('#pilihanoperator').text('');
+        $('#modaloperator').modal('hide');
         _CekKelengkapanTindakan();
-          return;  
+          return;
+  });
+
+  $('#pilihanoperator').on('select2:select', function(){
+    $('#bokpilihoperator').click();
   });
   
   
- $("#boknoref").click(function() {    
+ $("#boknoref").click(function() {
         if($('#norefnya').val()==''){
-        alert ('Masukkan No Ref !'); 
-        return 0; 
+        alert ('Masukkan No Ref !');
+        return 0;
         }
-        var _idx = $('#keberapa').val();   
-         
-        $("input[name^='noref']").eq(_idx).val($('#norefnya').val());  
+        var _idx = $('#keberapa').val();
+
+        $("input[name^='noref']").eq(_idx).val($('#norefnya').val());
         $('#norefnya').val('');
+        $('#modalnoref').modal('hide');
         _CekKelengkapanTindakan();
-        return;  
+        return;
   });
   
   
- $("#boknoic").click(function() {    
+ $("#boknoic").click(function() {
         if($('#noicnya').val()==''){
-        alert ('Masukkan No IC !'); 
-        return 0; 
+        alert ('Masukkan No IC !');
+        return 0;
         }
-        var _idx = $('#keberapa').val();  
-         
-        $("input[name^='noic']").eq(_idx).val($('#noicnya').val());  
+        var _idx = $('#keberapa').val();
+
+        $("input[name^='noic']").eq(_idx).val($('#noicnya').val());
         $('#noicnya').val('');
-        
+        $('#modalnoic').modal('hide');
+
         _CekKelengkapanTindakan() ;
-        return;  
+        return;
   });
       
     
@@ -3530,8 +3617,9 @@ var _clearForm = () => {
     
     
   $('#cabang').val($('#cabanguser').val());
-  
-  
+
+  _resizeNamaPasien();
+
 }
 
 var _formState1 = () => {
@@ -4306,6 +4394,36 @@ var _addRow = () => {
 
 /* CRUD
 /* ========================================================================================== */
+var _CekBankPembayaran = () => {
+    const debitjumlahv = Number($('#debitjumlah').val().split('.').join('').toString().replace(',','.'));
+    if (debitjumlahv > 0 && !$('#debitbank').val()){
+      $('#debitbank').attr('data-title','Bank Debit harus diisi !');
+      $('#debitbank').tooltip('show');
+      $('#debitbank').focus();
+      return 0;
+    }
+    const kreditjumlahv = Number($('#kreditjumlah').val().split('.').join('').toString().replace(',','.'));
+    if (kreditjumlahv > 0 && !$('#kreditbank').val()){
+      $('#kreditbank').attr('data-title','Bank Kredit harus diisi !');
+      $('#kreditbank').tooltip('show');
+      $('#kreditbank').focus();
+      return 0;
+    }
+    const transferjumlahv = Number($('#transferjumlah').val().split('.').join('').toString().replace(',','.'));
+    if (transferjumlahv > 0 && !$('#transferbank').val()){
+      $('#transferbank').attr('data-title','Bank Transfer harus diisi !');
+      $('#transferbank').tooltip('show');
+      $('#transferbank').focus();
+      return 0;
+    }
+    return 1;
+}
+
+$('#bokbayar').click(function(){
+    if (_CekBankPembayaran()===0) return;
+    $('#modalbayar').modal('hide');
+});
+
 var _IsValid = () => {
 
     if($('#idkontak').val()==''){
@@ -4359,8 +4477,10 @@ var _IsValid = () => {
         
         return 0;
       }
-    } 
-    
+    }
+
+    if (_CekBankPembayaran()===0) return 0;
+
     let a = _CekKelengkapanTindakan() ;
     if (a==0) return 0;
     
@@ -4783,7 +4903,31 @@ var _saveData = () => {
     }
  
  
+function _resizeNamaPasien() {
+  const teks = $('#namakontak').val() || $('#namakontak').attr('placeholder') || '';
+  $('#namakontak-measure').text(teks);
+  const lebar = $('#namakontak-measure').width();
+  $('#namakontak').css('width', (lebar + 14) + 'px');
+}
+
+function _cekKirimUlangEmail() {
+  $.ajax({
+    "url"    : base_url+"PJ_POS_HP/cekkirimulangemail",
+    "type"   : "POST",
+    "dataType" : "json",
+    "success": function(result) {
+      if(result.kirimemail==1){
+        $('#bkirimulangemail').removeClass('d-none');
+      } else {
+        $('#bkirimulangemail').addClass('d-none');
+      }
+    }
+  });
+}
+
 var _kirimemail = (noip) => {
+    console.log('_kirimemail dinonaktifkan sementara (data lokal)');
+    return;
     let xnoip = noip ;
  
   $.ajax({ 
@@ -5436,11 +5580,23 @@ window._cekharga = async (obj) => {
 
  
 window._hapusbaris = async (obj) => {
-  if($(obj).hasClass('disabled')) return;    
+  if($(obj).hasClass('disabled')) return;
 
-  $(obj).parent().parent().remove();
-  await _hitungsubtotal();
-  _hitungTotal();
+  const $row = $(obj).parent().parent();
+  const namaTindakan = $row.find("select[name^='item']").find('option:selected').text();
+
+  parent.window.Swal.fire({
+    title: `Apakah anda yakin akan menghapus baris ${namaTindakan} ini ?`,
+    showDenyButton: false,
+    showCancelButton: true,
+    confirmButtonText: `Iya`,
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      $row.remove();
+      await _hitungsubtotal();
+      _hitungTotal();
+    }
+  });
 }
 
 

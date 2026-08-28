@@ -26,12 +26,14 @@ var _kontakdatatable = function(){
     "pagingType":"simple",        
     "order": [[ 2, 'asc' ]],      
     "select":true,      
-    "dom": '<"#sTable"f><"top"p>tr<"clear">',        
+    "dom": '<"top"p>tr<"clear">',
     "ajax": {
         "url": base_url + "Datatable_Master/view_table_kontak_pos2/"+katId,
         "type":"post",
         "data": function(data){
           data.cabang = $('#cabang').val();
+          data.carifield = $('#carifield').val();
+          data.cari = $('#carikontak').val();
         },
         "beforeSend": function(){
           $(".loader-wrap").addClass("d-none");
@@ -62,15 +64,65 @@ var _kontakdatatable = function(){
       var total = tabelkontak.data().count();
 
       if(total>0){
-        $(".modal-body").removeClass("noresultfound");                                   
+        $(".modal-body").removeClass("noresultfound");
+        tabelkontak.rows(0).select();
       }else{
-        $(".modal-body").addClass("noresultfound");                                   
+        $(".modal-body").addClass("noresultfound");
       }
-      $('#modal input').focus();                                     
-      $('#contact-table').removeClass("d-none"); 
-    }        
-  });    
+      $('#carikontak').focus();
+      $('#contact-table').removeClass("d-none");
+    }
+  });
 }
+
+var _moveSelectionKontak = (direction) => {
+  var allIdx = tabelkontak.rows().indexes().toArray();
+  if(allIdx.length===0) return;
+
+  var selected = tabelkontak.rows({selected:true}).indexes().toArray();
+  var pos = selected.length ? allIdx.indexOf(selected[0]) : -1;
+  var newPos = pos + direction;
+  if(newPos < 0) newPos = 0;
+  if(newPos > allIdx.length-1) newPos = allIdx.length-1;
+
+  tabelkontak.rows().deselect();
+  tabelkontak.row(allIdx[newPos]).select();
+
+  var node = tabelkontak.row(allIdx[newPos]).node();
+  if(node) node.scrollIntoView({block:'nearest'});
+}
+
+$('.main-modal-body').off('keydown.carikontakpos').on('keydown.carikontakpos', '#carikontak, #contact-table', function(e){
+  if(e.keyCode==13){
+    e.preventDefault();
+    restable();
+  } else if(e.keyCode==40){
+    e.preventDefault();
+    _moveSelectionKontak(1);
+  } else if(e.keyCode==38){
+    e.preventDefault();
+    _moveSelectionKontak(-1);
+  }
+});
+
+$('#carifield').select2({
+    "theme":"bootstrap4",
+    "minimumResultsForSearch": -1,
+    "dropdownParent": $('#modal')
+});
+
+$('#carifield').on('change', function(){
+  if(tabelkontak) tabelkontak.ajax.reload();
+});
+
+var _cariKontakTimer = null;
+$('#carikontak').on('keyup', function(e){
+  if(e.keyCode==13 || e.keyCode==40 || e.keyCode==38) return;
+  clearTimeout(_cariKontakTimer);
+  _cariKontakTimer = setTimeout(function(){
+    if(tabelkontak) tabelkontak.ajax.reload();
+  }, 400);
+});
 
 var _lstkategorikontak = function(){
  
@@ -96,9 +148,8 @@ var _setjenis = function(){
               });
        
          
-  } 
-  }); 
-  _setcabang();
+  }
+  });
 }
 
 
@@ -165,7 +216,9 @@ const id = $('#contact-table').DataTable().cell($('#contact-table').DataTable().
       alamat = $('#contact-table').DataTable().cell($('#contact-table').DataTable().rows({selected:true}),5).data(),     
       trigger = $('#modaltrigger').val(),
       coltrigger = $('#coltrigger').val();
-  
+
+  if(id==null || typeof id=='undefined') return;
+
   if(coltrigger=='vendor'){
     $("#"+trigger).contents().find("#idkontak").val(id); 
     $("#"+trigger).contents().find("#kontak").val(kode);                     

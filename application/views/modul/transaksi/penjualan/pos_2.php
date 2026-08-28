@@ -25,103 +25,70 @@
   
   
          
-                                            <div class="form-group row my-0">
-                                                <label class="col-2 col-form-label text-sm px-1 font-weight-normal" >No Transaksi</label>
-                                                <div class="col-2">
-                                                    <input type="text" id="nomor" name="nomor" class="form-control form-control-sm kuncitext " placeholder="New Trans"   disabled>  
-                                                    <input type="hidden" id="idpaket" class="form-control form-control-sm " name="idpaket" value="">        
-                                                    <input type="hidden" id="jumlahkupon" class="form-control form-control-sm " name="jumlahkupon" value="">        
-                                                    <input type="hidden" id="jumlahpaket" class="form-control form-control-sm " name="jumlahpaket" value="0">        
-                                                    <input type="hidden" id="nopaketheader" class="form-control form-control-sm " name="nopaketheader" value=""> 
-                                                    <input type="hidden" id="idpromo" class="form-control form-control-sm " name="idpromo" value="">           
-                                                        <input type="hidden" id="medid" name="medid" class="form-control form-control-sm ">             
-                                                        <input type="hidden" id="webid" name="webid" class="form-control form-control-sm ">              
-                                                        <input type="hidden" id="webidbelumiv" name="webidbelumiv" class="form-control form-control-sm ">         
-                                                        <input type="hidden" id="txtidbarang" name="txtidbarang" class="form-control form-control-sm ">       
-                                                        <input type="hidden" id="appcanceltransaksi" name="appcanceltransaksi" class="form-control form-control-sm ">       
-                                                        <input type="hidden" id="cabang" name="cabang" class="form-control form-control-sm " value="<? echo @$_SESSION['cabang']; ?>">   
-                                                        <input type="hidden" id="nomorlama" name="nomorlama" class="form-control form-control-sm ">         
-                                                        <input type="hidden" id="iddiskonvocer" name="iddiskonvocer" class="form-control form-control-sm ">      
-                                                </div>   
-                                                
-                                               <label class="col-1 col-form-label text-sm px-1 font-weight-normal" >Pasien</label>
-                                                  <div class="col-3">
-                                                      <div class="input-group" data-target-input="nearest">
-                                                        <input type="hidden" id="idkontak" name="idkontak"> 
-                                                        <input type="hidden" id="kontaktipe" name="kontaktipe">   
-                                                        <input type="hidden" id="kontak" name="kontak">               
-                                                        <input type="text" id="namakontak" name="namakontak" class="form-control form-control-sm kuncitext">
-                                                        <div id="carikontak" class="input-group-append" role="button">
-                                                            <div class="input-group-text"><i class="fa fa-ellipsis-h"></i></div>
-                                                        </div>   
-                                                        <div id="bpasien" class="input-group-append" role="button">
-                                                            <div class="input-group-text"><i class="fa fa-info"></i></div>
-                                                        </div>     
-                                                        <div id="bpasienhistori" class="input-group-append" role="button">
-                                                            <div class="input-group-text"><i class="fa">H</i></div>
-                                                        </div>   
-                                                      </div>                
-                                                </div>  
-                                               
-                                               
-                                                <label class="col-2 col-form-label text-sm px-3 font-weight-normal " >Total</label>
-                                                <div class="col-2 px-3 ">
-                                                        <div class="container-fluid container-absolute2">
-                                                            <input id="totaltanpadp" type="hidden" class="form-control form-control-sm ">
-                                                            <input id="tsubtotal" type="text" class="total form-control form-control-sm numeric border-1 kuncitext "   value="0">
-                                                        </div>
-                                                </div>
-                                            </div>
-                                            
-                                            
-                                            
-                                            
-                                            <div class="form-group row my-0">
-                                                 <label class="col-2 col-form-label text-sm px-1 font-weight-normal">Tanggal *</label>
-                                                <div class="col-2">
-                                                       
-                                                        <input type="text" id="tgl" name="tgl" class="form-control form-control-sm datepicker kuncitext" autocomplete="off">
-                                                         <!--begin::Col <div class="input-group date">-->
-                                                         <!--begin::Col <div id="dTgl" class="input-group-append">-->
-                                                         <!--begin::Col     <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>-->
-                                                         <!--begin::Col </div>-->
-                                                      <!--begin::Co</div>   -->
-                                                </div>   
-                                                
-                                                <label class="col-1 col-form-label text-sm px-1 font-weight-normal" >Id Pasien</label>
-                                                  <div class="col-3">
-                                                  <div id="pasienid" class=" col-form-label text-sm font-weight-normal"></div>
+                                            <div class="total-wrap">
+                                            <div class="pos-header-top">
+                                              <div class="pos-pasien-col">
+
+                                                <input type="hidden" id="idkontak" name="idkontak">
+                                                <input type="hidden" id="kontaktipe" name="kontaktipe">
+                                                <input type="hidden" id="kontak" name="kontak">
+
+                                                <div class="d-flex align-items-center flex-wrap">
+                                                    <input type="text" id="namakontak" name="namakontak" class="pos-nama-pasien kuncitext" autocomplete="off">
+                                                    <div id="divtglexpiredmember" class="d-flex flex-wrap ml-2"></div>
+                                                    <span id="namakontak-measure" class="pos-nama-pasien-measure"></span>
                                                 </div>
 
-                                                <label class="col-2 col-form-label text-sm px-3 font-weight-normal" >Pembayaran</label>
-                                                <div class="col-2 px-3">
-                                                        <div class="container-fluid container-absolute2">
-                                                            <input id="totalbayar" type="text" class="total form-control form-control-sm numeric border-1 kuncitext" value="0">
-                                                        </div>
+                                                <div class="pos-idpasien-row">
+                                                    <span class="pos-meta-item"><i class="fa fa-id-card"></i><span id="pasienid"></span></span>
                                                 </div>
-                                            </div>
-                                            
-                                            
-                                             <div class="form-group row my-0">  
-                                             <label class="col-2 col-form-label text-sm px-1 font-weight-normal" >Kasir</label>
-                                              <div class="col-2">
-                                                <input type="hidden" id="idsalesman" name="idsalesman">
-                                                <input type="text" id="salesman" name="salesman" class="form-control form-control-sm border-0 ">
+
+                                                <div class="pos-actions-meta-row">
+                                                    <div class="pos-pasien-actions">
+                                                        <span id="carikontak" role="button" class="pos-btn-cari input-group-append"><i class="fa fa-search"></i>Cari Pasien</span>
+                                                        <span id="bpasien" role="button" class="pos-action-icon input-group-append"><i class="fa fa-info-circle"></i>Info</span>
+                                                        <span id="bpasienhistori" role="button" class="pos-action-icon input-group-append"><i class="fa fa-history"></i>History</span>
+                                                    </div>
+
+                                                    <div class="pos-meta-row">
+                                                        <span class="pos-meta-item"><i class="fa fa-hashtag"></i><input type="text" id="nomor" name="nomor" class="pos-meta-input kuncitext" placeholder="New Trans" disabled></span>
+                                                        <span class="pos-meta-item"><i class="fa fa-calendar-alt"></i><input type="text" id="tgl" name="tgl" class="pos-meta-input datepicker kuncitext" autocomplete="off"></span>
+                                                        <span class="pos-meta-item"><i class="fa fa-user"></i><input type="text" id="salesman" name="salesman" class="pos-meta-input" autocomplete="off"></span>
+                                                    </div>
+                                                </div>
 
                                               </div>
-                                               <div class="col-4" id="divtglexpiredmember"> </div>
 
-                                                <label class="col-2 col-form-label text-sm px-3 font-weight-normal label-total" >Sisa</label>
-                                                <div class="col-2 px-3">
-                                                        <div class="container-fluid container-absolute2">
-                                                            <input id="totalsisa" type="text" class="total form-control form-control-sm numeric border-1 kuncitext" value="0">
-                                                        </div>
-                                                </div>
+                                              <div class="total-overlay-static">
+                                                  <input id="tsubtotal" type="text" class="total numeric kuncitext" value="0">
+                                              </div>
                                             </div>
-                                            
-                                               
+
+                                            <div class="d-none">
+                                                <input type="hidden" id="idpaket" name="idpaket" value="">
+                                                <input type="hidden" id="jumlahkupon" name="jumlahkupon" value="">
+                                                <input type="hidden" id="jumlahpaket" name="jumlahpaket" value="0">
+                                                <input type="hidden" id="nopaketheader" name="nopaketheader" value="">
+                                                <input type="hidden" id="idpromo" name="idpromo" value="">
+                                                <input type="hidden" id="medid" name="medid">
+                                                <input type="hidden" id="webid" name="webid">
+                                                <input type="hidden" id="webidbelumiv" name="webidbelumiv">
+                                                <input type="hidden" id="txtidbarang" name="txtidbarang">
+                                                <input type="hidden" id="appcanceltransaksi" name="appcanceltransaksi">
+                                                <input type="hidden" id="cabang" name="cabang" value="<? echo @$_SESSION['cabang']; ?>">
+                                                <input type="hidden" id="nomorlama" name="nomorlama">
+                                                <input type="hidden" id="iddiskonvocer" name="iddiskonvocer">
+                                                <input id="totaltanpadp" type="hidden">
+                                                <input type="hidden" id="idsalesman" name="idsalesman">
+                                                <input id="totalbayar" type="text" class="total numeric kuncitext" value="0">
+                                                <input id="totalsisa" type="text" class="total numeric kuncitext" value="0">
+                                            </div>
+
+                                            </div>
+
+
                         </div>
-                    
+
         </div>
 
 
@@ -141,7 +108,7 @@
     <input type="text" class="noclear" id="bisapprove" name="bisapprove" value="<?= $bisapprove ?>">  
     
     
-    <section class="content" style="margin-top:150px;">  
+    <section class="content" style="margin-top:110px;">
       <div class="container-fluid">
                
           <div class="card card-primary card-outline card-outline-tabs mt-2" style="box-shadow: none">
@@ -158,18 +125,19 @@
                                     <tr>
                                       <th> 
                                       <div class="form-group row my-0">
-                                            <label class="col-3 col-form-label text-sm px-3 font-weight-normal"  >Nama </label>   
-                                            <label class="col-1 col-form-label text-sm px-1 font-weight-normal"  >Qty </label> 
-                                            <label class="col-2 col-form-label text-sm px-1 font-weight-normal"  >Harga </label> 
-                                            <label class="col-1 col-form-label text-sm px-1 font-weight-normal"  >Dis 1 </label> 
-                                            <label class="col-1 col-form-label text-sm px-1 font-weight-normal"  >Dis 2 </label> 
-                                            <label class="col-2 col-form-label text-sm px-1 font-weight-normal"  >Sub Total </label> 
-                                            <label class="col-1 col-form-label text-sm px-1 font-weight-normal"  >Aksi </label> 
-                                     </div> 
-                                      </th> 
+                                            <label class="col-3 col-form-label text-sm px-3 font-weight-bold pos-aksi-header"  >Nama </label>
+                                            <label class="col-1 col-form-label text-sm px-1 font-weight-bold text-right pos-aksi-header"  >Qty </label>
+                                            <label class="col-2 col-form-label text-sm px-1 font-weight-bold text-right pos-aksi-header"  >Harga </label>
+                                            <label class="col-1 col-form-label text-sm px-1 font-weight-bold pos-aksi-header"  >Dis 1 </label>
+                                            <label class="col-1 col-form-label text-sm px-1 font-weight-bold pos-aksi-header"  >Dis 2 </label>
+                                            <label class="col-2 col-form-label text-sm px-1 font-weight-bold text-right pos-aksi-header"  >Sub Total </label>
+                                            <label class="col-1 col-form-label text-sm px-1 font-weight-bold text-center pos-aksi-header"  >Aksi </label>
+                                     </div>
+                                      </th>
+                                      <th class="text-center pos-aksi-header">Hapus</th>
                                     </tr>
-                                  </thead> 
-                                    <tbody>   
+                                  </thead>
+                                    <tbody>
                                     </tbody> 
                                     <tfoot> 
                                     </tfoot>
@@ -244,7 +212,7 @@
                 <div class="form-group row my-0">
                     <div class="col-8  px-3 "> 
                         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                            <button type="button" id="btambahitem2" class="btn btn-success btn-step1 text-sm btn-sm buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Tambah Item</button>
+                            <button type="button" id="btambahitem2" class="btn btn-success btn-step1 text-sm btn-sm buttontambahan" role="button"><i class="fa fa-plus px-2"></i>F2 Tambah Item</button>
                             <button type="button" id="bpaket" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Paket</button>
                             <button type="button" id="bpromo" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Promo</button>
                             <button type="button" id="bpro" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>PRO</button>
@@ -260,7 +228,7 @@
                             </div>
 
 
-                     <!--begin::Col -->  <button type="button" id="bkirimulangemail" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-plus px-2"></i>Kirim Ulang Email</button>
+                     <!--begin::Col -->  <button type="button" id="bkirimulangemail" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan d-none" role="button"><i class="fa fa-plus px-2"></i>Kirim Ulang Email</button>
 
                      <button type="button" id="bkupon" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-plus px-2"></i>Kupon</button>
                      
@@ -270,9 +238,12 @@
                          <span id="loader-detil" class="ml-2 text-sm d-none"><i class="fas fa-spinner fa-spin mx-2"></i>loading data...</span>
                     </div>
                 
-                    <div class="col-4   px-0 "> 
-                            <button type="button" id="bbayar" class="btn btn-primary btn-step1 btn-block buttontambahan">Bayar</button>  
-                    </div>  
+                    <div class="col-2   px-0 ">
+                            <button type="button" id="bbayar" class="btn btn-primary btn-step1 btn-block buttontambahan">Bayar</button>
+                    </div>
+                    <div class="col-2   px-0 ">
+                            <button type="button" id="bsave" class="btn btn-success btn-step1 btn-block" title="Simpan">Simpan</button>
+                    </div>
                 </div>   
                 
                   <div class="form-group row my-0"> 
@@ -294,9 +265,6 @@
                             <a id="bprint" class="btn btn-app btn-step2 disabled" title="Cetak">
                               <i class="fas fa-print" title="Cetak"></i>
                             </a>        
-                            <a id="bsave" class="btn btn-app btn-step1" title="Simpan">
-                              <i class="fas fa-save" title="Simpan"></i>
-                            </a>                     
                             <a id="bcancel" class="btn btn-app btn-step1" title="Batal">
                               <i class="fas fa-times" title="Batal"></i>
                             </a>                      
@@ -572,7 +540,7 @@
                             <!-- Modal Header -->
                             <div class="modal-header">
                                 <h4 class="modal-title" id="labelModalKu">Catatan Planning</h4>
-                                <button type="button" class="close" data-dismiss="modal">
+                                <button type="button" class="close" data-dismiss="modal" id="btutupcatatanplanning">
                                     <span aria-hidden="true">&times;</span>
                                     <span class="sr-only">Tutup</span>
                                 </button>
@@ -600,7 +568,7 @@
                 
                             <!-- Modal Footer -->
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" id="bokmodalcatatanplanning">OK</button>  
+                                <button type="button" class="btn btn-primary btn-block" id="bokmodalcatatanplanning">OK</button>
                             </div>
                         </div>
                     </div>
@@ -806,26 +774,22 @@
                             
     
                 	<!-- Modal bawa kartu or tidak -->
-                <div class="modal fade" id="modalkartumember" role="dialog" data-backdrop="static" >
+                <div class="modal fade" id="modalkartumember" role="dialog" data-backdrop="static" data-keyboard="false" >
                     <div class="modal-dialog modal-sm ">
                         <div class="modal-content">
                             <!-- Modal Header -->
                             <div class="modal-header">
                                 <h5 class="modal-title" id="labelmodalkartumember">Konfirmasi</h5>
-                                <button type="button" class="close" data-dismiss="modal">
-                                    <span aria-hidden="true">&times;</span>
-                                    <span class="sr-only">Tutup</span>
-                                </button> 
-                            </div> 
+                            </div>
                             <!-- Modal Body -->
                             <div class="modal-body">
                                 <form role="form">  
                                     <div class="custom-radio radio-lg">
-                                        <input class="custom-radio-input"  type="radio" value="" id="optbawakartu" name="kartu" />
+                                        <input class="custom-radio-input"  type="radio" value="1" id="optbawakartu" name="kartu" checked />
                                         <label class="custom-radio-label"  for="optbawakartu">Bawa Kartu</label>
-                                    </div> 
+                                    </div>
                                     <div class="custom-radio radio-lg">
-                                        <input class="custom-radio-input"  type="radio" value="" id="opttidakbawakartu" name="kartu" />
+                                        <input class="custom-radio-input"  type="radio" value="0" id="opttidakbawakartu" name="kartu" />
                                         <label class="custom-radio-label"  for="opttidakbawakartu">Tidak Bawa</label>
                                     </div> 
                                          
@@ -1148,7 +1112,7 @@
                 
                             <!-- Modal Footer -->
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" id="bokbayar">OK</button>  
+                                <button type="button" class="btn btn-primary btn-block" id="bokbayar">OK</button>  
                             </div>
                         </div>
                     </div>
@@ -1403,16 +1367,12 @@
                 
                
                 	<!-- Modal ITEM -->
-                <div class="modal fade" id="modaloperator" role="dialog" data-backdrop="static">
+                <div class="modal fade" id="modaloperator" role="dialog" data-backdrop="static" data-keyboard="false">
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <!-- Modal Header -->
                             <div class="modal-header">
                                 <h4 class="modal-title" id="labelmodaloperator">Pilih Operator</h4>
-                                <button type="button" class="close" data-dismiss="modal">
-                                    <span aria-hidden="true">&times;</span>
-                                    <span class="sr-only">Tutup</span>
-                                </button>
                             </div>
                 
                             <!-- Modal Body -->
@@ -1426,7 +1386,7 @@
                 
                             <!-- Modal Footer -->
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" id="bokpilihoperator">OK</button>  
+                                <button type="button" class="btn btn-primary btn-block" id="bokpilihoperator">OK</button>
                             </div>
                         </div>
                     </div>
@@ -1436,7 +1396,7 @@
                                
  	
                 	<!-- Modal modaldokter -->
-                <div class="modal fade" id="modaldokter" role="dialog"  data-backdrop="static" >
+                <div class="modal fade" id="modaldokter" role="dialog"  data-backdrop="static" data-keyboard="false" >
                     <div class="modal-dialog  modal-lg">
                         <div class="modal-content">
                             <!-- Modal Header -->
@@ -1454,14 +1414,14 @@
                 
                             <!-- Modal Footer -->
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" id="bokpilihdokter">OK</button>  
+                                <button type="button" class="btn btn-primary btn-block" id="bokpilihdokter">OK</button>
                             </div>
                         </div>
                     </div>
                 </div> 
                 
                 
-                <div class="modal fade" id="modalnoref" role="dialog"  data-backdrop="static"   tabindex="-1" >
+                <div class="modal fade" id="modalnoref" role="dialog"  data-backdrop="static" data-keyboard="false"   tabindex="-1" >
                     <div class="modal-dialog modal-sm">
                         <div class="modal-content">
                             <!-- Modal Header -->
@@ -1481,7 +1441,7 @@
                 
                             <!-- Modal Footer -->
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" id="boknoref">OK</button>  
+                                <button type="button" class="btn btn-primary btn-block" id="boknoref">OK</button>
                             </div>
                         </div>
                     </div>
@@ -1489,7 +1449,7 @@
                 
                 
                 
-                <div class="modal" id="modalnoic" role="dialog"  data-backdrop="static"  tabindex="-1" >
+                <div class="modal" id="modalnoic" role="dialog"  data-backdrop="static" data-keyboard="false"  tabindex="-1" >
                     <div class="modal-dialog modal-sm">
                         <div class="modal-content">
                             <!-- Modal Header -->
@@ -1509,7 +1469,7 @@
                 
                             <!-- Modal Footer -->
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" id="boknoic" >OK</button>  
+                                <button type="button" class="btn btn-primary btn-block" id="boknoic" >OK</button>
                             </div>
                         </div>
                     </div>

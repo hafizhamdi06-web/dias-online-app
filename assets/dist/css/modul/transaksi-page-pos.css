@@ -242,11 +242,153 @@
   .buttontambahan {
     margin-right: 2px;
   }
+  .pos-aksi-header {
+    font-size: 16px !important;
+  }
+  #tdetil .qty,
+  #tdetil .harga,
+  #tdetil .dis1,
+  #tdetil .dis2,
+  #tdetil .subtotal {
+    font-size: 16px;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
   #tsubtotal,
   #totalbayar,
   #totalsisa {
     text-align: right;
     font-weight: bold;
+  }
+
+  /* POS header redesign: Nama Pasien besar di kiri-atas, Total besar di kanan-atas */
+  .pos-header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 8px 15px 4px;
+  }
+  .pos-pasien-col {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .pos-nama-pasien {
+    display: inline-block;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    height: auto !important;
+    padding: 2px 0 !important;
+    width: 40px;
+    min-width: 40px;
+    max-width: 100%;
+    flex: 0 0 auto;
+  }
+  .pos-nama-pasien-measure {
+    position: absolute;
+    visibility: hidden;
+    white-space: pre;
+    font-size: 28px;
+    font-weight: 800;
+  }
+  .pos-idpasien-row {
+    font-size: 13px;
+    color: #495057;
+    margin-bottom: 4px;
+  }
+  .pos-idpasien-row i {
+    margin-right: 6px;
+    color: #6c757d;
+  }
+  #divtglexpiredmember {
+    flex: 0 0 auto;
+  }
+  .pos-actions-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 2px 0 8px;
+  }
+  .pos-pasien-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 12px;
+    color: #6c757d;
+  }
+  .pos-btn-cari {
+    cursor: pointer;
+    margin-left: 0 !important;
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 4px;
+    padding: 4px 12px;
+  }
+  .pos-btn-cari i {
+    margin-right: 6px;
+  }
+  .pos-btn-cari:hover {
+    background-color: #0069d9;
+  }
+  .pos-action-icon {
+    cursor: pointer;
+    margin-left: 0 !important;
+  }
+  .pos-action-icon i {
+    margin-right: 4px;
+  }
+  .pos-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    align-items: center;
+  }
+  .pos-meta-item {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
+    color: #495057;
+  }
+  .pos-meta-item i {
+    margin-right: 6px;
+    color: #6c757d;
+  }
+  .pos-meta-input {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: 13px;
+    height: auto !important;
+    width: 130px;
+  }
+  #pasienid {
+    font-size: 13px;
+  }
+  .total-overlay-static {
+    flex: 0 0 auto;
+    margin-left: 20px;
+  }
+  .total-overlay-static #tsubtotal {
+    font-size: 52px;
+    font-weight: 800;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    height: auto;
+    padding: 10px 12px;
+    text-align: right;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
   }
 
   /* Footer toolbar: breathing room between rows, no ragged wrapping */

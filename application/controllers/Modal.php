@@ -219,6 +219,11 @@ class Modal extends CI_Controller {
         $this->loader('modul/administrator/form-profil');
     }
 
+    // Modal Verifikasi Permintaan Barang
+    function verifikasi_pmb(){
+        $this->loader('include/modal-verifikasi-pmb');
+    }
+
    // Modal Form Divisi
     function form_jenis_penyesuaian(){
         $this->loader('modul/master/form-jenis-penyesuaian');

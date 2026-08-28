@@ -6,17 +6,28 @@
   <input type="hidden" class="noclear" id="bisahapus" name="bisahapus" value="<?= $bisahapus ?>">
   <input type="hidden" class="noclear" id="bisaprint" name="bisaprint" value="<?= $bisaprint ?>">
 
+  <!-- Loading Page -->
+  <div class="loader-wrap d-none">
+    <div class="loader">
+      <div class="box-1 box"></div>
+      <div class="box-2 box"></div>
+      <div class="box-3 box"></div>
+      <div class="box-4 box"></div>
+      <div class="box-5 box"></div>
+    </div>
+  </div>
+
   <div class="content-wrapper tab-wrap mx-0">
     <div class="content-header bg-white px-4 py-2 position-fixed w-100">
       <div class="row">
       <div class="col-sm-11">
       <span class="text-md text-olive">Penjualan</span>
-      <h5><?= $page_caption;?></h5> 
+      <h5><?= $page_caption;?></h5>
       </div>
       <div id="btnsideright">
         <a class="nav-link text-lg" data-widget="control-sidebar" data-slide="true" href="#" role="button">
           <i class="fas fa-bars text-gray"></i>
-        </a>           
+        </a>
       </div>
       </div>
     </div>
@@ -28,17 +39,17 @@
     </div>
 
     <div class="content px-0 mx-0 ml-2" style="margin-top:70px;">
-      <div class="container-fluid mt-1 px-0 mx-0">      
-        <table id="table" class="table table-sm table-striped table-hover w-100 bg-light nowrap">
+      <div class="container-fluid mt-1 px-0 mx-0">
+        <table id="table" class="table table-sm table-striped table-hover w-100 nowrap d-none" style="table-layout:fixed;">
           <thead>
           <tr>
           <th class="d-none"></th>
-          <th></th>
-          <th class="text-sm">Nomor</th>
-          <th class="text-sm">Tanggal</th>
-          <th class="text-sm">Pelanggan</th>   
-          <th class="text-sm text-right">Total Transaksi</th>
-          <th class="text-sm">Status</th>  
+          <th style="width:30px"></th>
+          <th class="text-sm" style="width:22%">Nomor</th>
+          <th class="text-sm" style="width:10%">Tanggal</th>
+          <th class="text-sm" style="width:16%">Pasien</th>
+          <th class="text-sm" style="width:17%">No IP</th>
+          <th class="text-sm" style="width:35%">Uraian</th>
           </tr>
           </thead>
         </table>
@@ -49,12 +60,12 @@
               </div>
               <div class="col-sm-8">
                 <div class="input-group" data-target-input="nearest">
-                  <input type="hidden" name="idkontak" id="idkontak">                
+                  <input type="hidden" name="idkontak" id="idkontak">
                   <input type="text" id="kontak" name="kontak" class="form-control form-control-sm" autocomplete="off">
                   <div id="bfilterkontak" class="input-group-append" role="button">
                       <div class="input-group-text"><i class="fa fa-ellipsis-h"></i></div>
                   </div>
-                </div>                
+                </div>
               </div>
           </div>
           <div class="row mt-2 mx-1">
@@ -67,7 +78,7 @@
                   <div id="dtgldari" class="input-group-append" role="button">
                       <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>
                   </div>
-                </div>                                
+                </div>
               </div>
           </div>
           <div class="row mt-0 pt-0 mx-1">
@@ -80,47 +91,15 @@
                   <div id="dtglsampai" class="input-group-append" role="button">
                       <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>
                   </div>
-                </div>                                
+                </div>
               </div>
           </div>
-          
-          <div class="row mt-2 mx-1">
-              <div class="col-sm-4">
-                <label class="col-form-label text-sm font-weight-normal">Cara Bayar :</label>
-              </div>
-              <div class="col-sm-8">
-                
-                <select id="carabayar" class="form-control select2 form-control-sm"  data-trigger="manual" data-placement="auto">
-                    
-                     <option selected></option> 
-                      <option value="TUNAI">TUNAI</option>
-                      <option value="DEBIT">DEBIT</option>
-                      <option value="KREDIT">KREDIT</option>
-                      <option value="TRANSFER">TRANSFER</option>
-                      <option value="MERCHANT">MERCHANT</option>
-                </select>
-                            
-              </div>
-          </div>
-          
-          <div class="row mt-2 mx-1">
-              <div class="col-sm-4">
-                <label class="col-form-label text-sm font-weight-normal">Bank :</label>
-              </div>
-              <div class="col-sm-8"> 
-                  <input type="text" id="bank" name="bank" class="form-control form-control-sm" autocomplete="off">
-                            
-              </div>
-          </div>
-          
+
           <div class="row mt-4 pt-0 mx-1 px-1">
             <button type="button" id="submitfilter" class="btn btn-primary btn-sm btn-block">Tampilkan</button>
           </div>
-          <div class="row mt-2 pt-0 mx-1 px-1">
-            <button type="button" id="editdepo" class="btn btn-primary btn-sm btn-block">EDIT DEPO</button>
-          </div>
-                             
-        </div>        
+
+        </div>
       </div>
     </div>
   </div>
@@ -129,14 +108,8 @@
   <div class="bg-white btn-group-vertical btn-top">
   </div>
   <div class="btn-group-vertical">
-      <a id="badd" class="btn btn-app" >
-        <i class="fas fa-plus"></i> <span>Tambah</span>
-      </a>
       <a id="bedit" class="btn btn-app" >
         <i class="fas fa-edit"></i> <span>Edit</span>
-      </a>
-      <a id="bdelete" class="btn btn-app" >
-        <i class="fas fa-trash"></i> <span>Hapus</span>
       </a>
       <a id="bprint" class="btn btn-app" >
         <i class="fas fa-print"></i> <span>Cetak</span>
@@ -144,7 +117,7 @@
       <a id="brefresh" class="btn btn-app">
         <i class="fas fa-sync"></i> <span>Refresh</span>
       </a>
-  </div>    
+  </div>
   <aside id="control-sidebar-r" class="control-sidebar bg-transparent border-0">
   </aside>
   </form>
@@ -167,6 +140,6 @@
 <script src="<? echo base_url('assets/plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables/colResize.js'); ?>"></script>
 <!-- JS Custom -->
-<script type="module" src="<? echo app_url('assets/dist/js/modul/transaksi/penjualan/table-penjualan-tunai.js'); ?>"></script>
+<script type="module" src="<? echo app_url('assets/dist/js/modul/transaksi/penjualan/table-alkes.js'); ?>"></script>
 </body>
 </html>

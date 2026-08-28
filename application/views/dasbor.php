@@ -27,7 +27,7 @@
           <li class="nav-item dropdown d-sm-inline-block">
             <a href="#" class="nav-link bg-primary" data-toggle="dropdown" tabindex="-1">
               <i class="fas fa-user px-2 pt-1 text-light"></i>          
-              <b id="user-topnav" class="font-weight-normal"><? echo @$_SESSION['nama']; ?></b>
+              <b id="user-topnav" class="font-weight-normal"><? echo @$_SESSION['nama']; ?> - Cabang <? echo @$_SESSION['namagudang']; ?></b>
               <i class="fas fa-caret-down px-2"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">

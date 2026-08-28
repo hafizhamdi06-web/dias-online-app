@@ -188,6 +188,58 @@ class Datatable_Transaksi_Full extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
 
+   function view_verifikasi_permintaan_barang() {
+        $transcode = element('PB_Permintaan_Barang',NID);
+        $transcode = $this->M_transaksi->prefixtrans($transcode);
+        $query  = "SELECT A.pbuid 'id',A.pbunotransaksi 'nomor',DATE_FORMAT(A.pbutanggal,'%d/%m/%Y') 'tanggal',
+                          C.knama 'karyawan', A.pbuuraian 'keterangan', E.lnama 'tujuan',
+                          CASE A.pbustatus
+                               WHEN 0 THEN 'Belum Verifikasi'
+                               WHEN 1 THEN 'Pending'
+                               WHEN 2 THEN 'Verifikasi Finance'
+                               WHEN 3 THEN 'Perintah Kirim'
+                               WHEN 4 THEN 'Sedang DiKirim'
+                               WHEN 5 THEN 'Progress Diterima Cabang'
+                               WHEN 6 THEN 'Selesai Diterima Cabang'
+                               WHEN 7 THEN 'Konfirmasi Bag Pembelian'
+                          END 'status',
+                          IFNULL(F.unama,'') 'userverifikasi',
+                          CASE A.pbujenis WHEN 1 THEN 'Mutasi' WHEN 2 THEN 'Pembelian' ELSE '-' END 'jenis',
+                          G.gnama 'gudangtujuan',
+                          IFNULL(A.pbukonfirmasicatatan,'') 'catatanverifikasi'
+                     FROM fpermintaanbarangu A
+                LEFT JOIN bkontak C ON A.pbukaryawan=C.kid
+                LEFT JOIN blain E ON A.pbutipepermintaan=E.lid
+                LEFT JOIN auser F ON A.pbuapproveu=F.uid
+                LEFT JOIN bgudang G ON A.pbugudangsumber=G.gid";
+        $search = array('A.pbunotransaksi','C.knama');
+        $where  = null;
+        $isWhere = "A.pbusumber='".$transcode."'";
+
+        if(!empty($_POST['dari']) && !empty($_POST['sampai'])){
+          $isWhere .= " AND A.pbutanggal BETWEEN '".tgl_database($_POST['dari'])."' AND '".tgl_database($_POST['sampai'])."'";
+        }
+
+        if(!empty($_POST['idkontak'])){
+          $isWhere .= " AND A.pbukaryawan='".$_POST['idkontak']."'";
+        }
+
+        if(!empty($_POST['cabang'])){
+          $isWhere .= " AND A.pbugudang='".$_POST['cabang']."'";
+        }
+
+        if(!empty($_POST['tujuan'])){
+          $isWhere .= " AND A.pbutipepermintaan='".$_POST['tujuan']."'";
+        }
+
+        if(isset($_POST['status']) && $_POST['status'] !== ''){
+          $isWhere .= " AND A.pbustatus='".$_POST['status']."'";
+        }
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
+
    function view_uang_muka_pembelian() {
         $transcode = element('PB_Uang_Muka_Pembelian',NID);
         $transcode = $this->M_transaksi->prefixtrans($transcode);
@@ -505,6 +557,45 @@ class Datatable_Transaksi_Full extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
 
+
+    function view_alkes() {
+
+        $cabang  = !empty($_POST['cabang']) ? $_POST['cabang'] : @$_SESSION['cabang'] ;
+        $transcode = element('PJ_Editdepo',NID);
+        $transcode = $this->M_transaksi->prefixtrans($transcode);
+        $query  = "SELECT A.suid 'id',A.sunotransaksi 'nomor',DATE_FORMAT(A.sutanggal,'%d-%m-%Y') 'tanggal',
+                          B.knama 'kontak', A.sunoref 'noref', A.suuraian 'uraian', A.suidualkes 'idsupos'
+                     FROM fstoku A
+                LEFT JOIN bkontak B ON A.sukontak=B.kid";
+        $search = array('sunotransaksi','knama','sunoref');
+        $where  = null;
+
+        if(!empty($_POST['kontak'])){
+          $isWhere = "AND B.knama like '%".$_POST['kontak']."%'";
+        }else{
+          $isWhere = "";
+        }
+
+        if(!empty($_POST['notransaksi'])){
+          $isWhere .= " AND A.sunotransaksi like '%".$this->db->escape_like_str($_POST['notransaksi'])."%'";
+        }
+
+        if(!empty($_POST['noref'])){
+          $isWhere .= " AND A.sunoref like '%".$this->db->escape_like_str($_POST['noref'])."%'";
+        }
+
+        $isWhere2="";
+
+        if(!empty($cabang)){
+          $isWhere2 = "AND A.sucabang = '".$cabang."'";
+        }
+
+        $isWhere = "A.susumber='".$transcode."' AND  A.sutanggal BETWEEN '".tgl_database($_POST['dari'])."'
+                    AND '".tgl_database($_POST['sampai'])."' " . $isWhere  . $isWhere2;
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
 
 
     function view_persetujuankomisi() {

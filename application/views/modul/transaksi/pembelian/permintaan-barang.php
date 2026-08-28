@@ -119,6 +119,12 @@
             </div>
           </div>
           <div class="form-group row my-0">
+            <div class="col-5"></div>
+            <div class="col-2">
+              <button type="button" id="bverifikasibawah" class="btn btn-primary btn-sm btn-block btn-step2 disabled d-none"><i class="fas fa-check-circle"></i> Verifikasi</button>
+            </div>
+          </div>
+          <div class="form-group row my-0">
             <label class="col-2 col-form-label text-sm px-3 font-weight-normal">Tipe Permintaan *</label>
             <div class="col-2">
                   <select id="jenis" name="jenis" class="form-control select2 text-sm" style="width:100%">
@@ -229,6 +235,10 @@
     <a id="bprint" class="btn btn-app btn-step2 disabled" >
       <span class="badge bg-purple"></span>
       <i class="fas fa-print"></i> <span>Cetak</span>
+    </a>
+    <a id="bverifikasi" class="btn btn-app btn-step2 disabled d-none" >
+      <span class="badge bg-info"></span>
+      <i class="fas fa-check-circle"></i> <span>Verifikasi</span>
     </a>
     <a id="bsave" class="btn btn-app btn-step1">
       <span class="badge bg-success"></span>

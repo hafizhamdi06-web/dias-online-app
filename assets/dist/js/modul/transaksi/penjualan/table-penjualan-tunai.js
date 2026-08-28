@@ -46,8 +46,13 @@ $(function() {
 	}
 
 	clearFilter();
-	
-	
+
+	if($('#bisatambah').val()==0) $('#badd').addClass('disabled');
+	if($('#bisaedit').val()==0) { $('#bedit').addClass('disabled'); $('#editdepo').addClass('disabled'); }
+	if($('#bisahapus').val()==0) $('#bdelete').addClass('disabled');
+	if($('#bisaprint').val()==0) $('#bprint').addClass('disabled');
+
+
 	tabel=$('#table').DataTable({
 		"processing": true,
 		"serverSide": true,
@@ -216,6 +221,7 @@ $(function() {
 				  parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');
 				  
 				  parent.window._setjenis();
+				  parent.window._setcabang();
                   parent.window._lstkategorikontak();
                   parent.window._pilihkategorikontak(''); 
 
@@ -308,11 +314,14 @@ $(function() {
     
     
     
-$("#editdepo").click(function() { 
-    
+$("#editdepo").click(function() {
+
   const id = $('#table').DataTable().cell($('#table').DataTable().rows({selected:true}),0).data();
-   if(id=="" || id==null) return;
-  
+   if(id=="" || id==null) {
+     parent.window.toastr.error('Pilih data transaksi terlebih dahulu !');
+     return;
+   }
+
   $.ajax({ 
     "url"    : base_url+"Modal/form_editdepo", 
     "type"   : "POST", 

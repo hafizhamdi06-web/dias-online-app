@@ -24,6 +24,7 @@
 <!-- JS Custom -->
 <script src="<? echo app_url('assets/dist/js/modul/dasbor.js'); ?>"></script>
 <script type="module" src="<? echo app_url('assets/dist/js/modul/profil-akun.js'); ?>"></script>
+<script src="<? echo app_url('assets/dist/js/modul/pos-shortcut.js'); ?>"></script>
 
 </body>
 </html>

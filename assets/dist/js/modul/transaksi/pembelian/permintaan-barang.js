@@ -210,6 +210,37 @@ $(function () {
     window.open(`${base_url}Laporan/preview/page-pmb/${$("#id").val()}`)
   });
 
+  $("#bverifikasi, #bverifikasibawah").click(function() {
+    if($(this).hasClass('disabled')) return;
+    var id = $('#id').val();
+    if(id=='') return;
+
+    $.ajax({
+      "url"    : base_url+"Modal/verifikasi_pmb",
+      "type"   : "POST",
+      "dataType" : "html",
+      "beforeSend": function(){
+        parent.window.$(".loader-wrap").removeClass("d-none");
+        parent.window.$(".modal").modal("show");
+        parent.window.$(".modal-title").html("Verifikasi");
+        parent.window.$("#modaltrigger").val("iframe-page-pmb");
+      },
+      "error": function(){
+        console.log('error menampilkan modal verifikasi...');
+        parent.window.$(".loader-wrap").addClass("d-none");
+        return;
+      },
+      "success": function(result) {
+        parent.window.$(".main-modal-body").html(result);
+        parent.window._getVerifikasiData(id);
+        setTimeout(function (){
+             parent.window.$('#modal input').focus();
+        }, 500);
+        return;
+      }
+    });
+  });
+
   $("#baddrow").click(function() {
     _addRow();
     _inputFormat();
@@ -343,8 +374,10 @@ var _cekApprovePo = () => {
     "success": function(result) {
       if(result.approve==1){
         $('#tdetil').removeClass('pb-hide-stokakhir');
+        $('#bverifikasi, #bverifikasibawah').removeClass('d-none');
       }else{
         $('#tdetil').addClass('pb-hide-stokakhir');
+        $('#bverifikasi, #bverifikasibawah').addClass('d-none');
       }
     }
   });
@@ -382,6 +415,10 @@ window._pilihTransaksi = (id) => {
   $('#id').val(id);
   _formState2();
   _getDataTransaksi(id);
+}
+
+window._reloaddatatable = () => {
+  _getDataTransaksi($('#id').val());
 }
 
 var _isiItemBaris = async (idx, iditem) => {
