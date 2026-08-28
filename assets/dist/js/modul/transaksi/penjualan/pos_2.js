@@ -4926,8 +4926,6 @@ function _cekKirimUlangEmail() {
 }
 
 var _kirimemail = (noip) => {
-    console.log('_kirimemail dinonaktifkan sementara (data lokal)');
-    return;
     let xnoip = noip ;
  
   $.ajax({ 
