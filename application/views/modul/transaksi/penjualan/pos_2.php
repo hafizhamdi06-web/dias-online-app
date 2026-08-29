@@ -53,7 +53,7 @@
                                                     <div class="pos-meta-row">
                                                         <span class="pos-meta-item"><i class="fa fa-hashtag"></i><input type="text" id="nomor" name="nomor" class="pos-meta-input kuncitext" placeholder="New Trans" disabled></span>
                                                         <span class="pos-meta-item"><i class="fa fa-calendar-alt"></i><input type="text" id="tgl" name="tgl" class="pos-meta-input datepicker kuncitext" autocomplete="off"></span>
-                                                        <span class="pos-meta-item"><i class="fa fa-user"></i><input type="text" id="salesman" name="salesman" class="pos-meta-input" autocomplete="off"></span>
+                                                        <span class="pos-meta-item"><i class="fa fa-user"></i><input type="text" id="salesman" name="salesman" class="pos-meta-input kuncitext" autocomplete="off" disabled></span>
                                                     </div>
                                                 </div>
 
@@ -210,15 +210,15 @@
                   
             
                 <div class="form-group row my-0">
-                    <div class="col-8  px-3 "> 
+                    <div class="col-8  px-3 ">
+                        <button type="button" id="btambahitem2" class="btn btn-success btn-step1 btn-block pos-btn-tambahitem buttontambahan" role="button"><i class="fa fa-cart-plus px-2"></i>F2 Tambah Item</button>
                         <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                            <button type="button" id="btambahitem2" class="btn btn-success btn-step1 text-sm btn-sm buttontambahan" role="button"><i class="fa fa-plus px-2"></i>F2 Tambah Item</button>
-                            <button type="button" id="bpaket" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Paket</button>
-                            <button type="button" id="bpromo" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>Promo</button>
-                            <button type="button" id="bpro" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-plus px-2"></i>PRO</button>
+                            <button type="button" id="bpaket" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-box px-2"></i>Paket</button>
+                            <button type="button" id="bpromo" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-percent px-2"></i>Promo</button>
+                            <button type="button" id="bpro" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan" role="button"><i class="fa fa-briefcase-medical px-2"></i>PRO</button>
                             <div class="dropdown ">
                               <button class="btn btn-outline-secondary text-sm btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                Medlib
+                                <i class="fa fa-book-medical px-2"></i>Medlib
                               </button>
                               <div class="dropdown-menu">
                                 <a class="dropdown-item" href="javascript:void(0)" onclick="medlibbyjokul();" >Data Invoice by Jokul</a>
@@ -228,9 +228,9 @@
                             </div>
 
 
-                     <!--begin::Col -->  <button type="button" id="bkirimulangemail" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan d-none" role="button"><i class="fa fa-plus px-2"></i>Kirim Ulang Email</button>
+                     <!--begin::Col -->  <button type="button" id="bkirimulangemail" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan d-none" role="button"><i class="fa fa-envelope px-2"></i>Kirim Ulang Email</button>
 
-                     <button type="button" id="bkupon" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-plus px-2"></i>Kupon</button>
+                     <button type="button" id="bkupon" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-ticket-alt px-2"></i>Kupon</button>
                      
                      
                          
@@ -239,12 +239,12 @@
                     </div>
                 
                     <div class="col-2   px-0 ">
-                            <button type="button" id="bbayar" class="btn btn-primary btn-step1 btn-block buttontambahan">Bayar</button>
+                            <button type="button" id="bbayar" class="btn btn-primary btn-step1 btn-block buttontambahan"><i class="fa fa-money-bill-wave px-2"></i>Bayar</button>
                     </div>
                     <div class="col-2   px-0 ">
-                            <button type="button" id="bsave" class="btn btn-success btn-step1 btn-block" title="Simpan">Simpan</button>
+                            <button type="button" id="bsave" class="btn btn-success btn-step1 btn-block" title="Simpan"><i class="fa fa-save px-2"></i>Simpan</button>
                     </div>
-                </div>   
+                </div>
                 
                   <div class="form-group row my-0"> 
                 <div class="col-8 px-3 "> 
@@ -282,7 +282,7 @@
                             
                             <div class="dropdown ">
                               <button class="btn btn-outline-secondary text-sm btn-block dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-                                Data Lainnya
+                                <i class="fa fa-folder-open px-2"></i>Data Lainnya
                               </button>
                               <div class="dropdown-menu">
                                 <a class="dropdown-item" href="javascript:void(0)" onclick="datalainnya();" >Data Lainnya</a>
@@ -294,7 +294,7 @@
 
                   </div>
                 <div class="col-2 px-0 ">
-                            <button type="button" id="bdatasurgery" class="btn btn-outline-secondary btn-step1 btn-block buttontambahan">Data Surgery</button>
+                            <button type="button" id="bdatasurgery" class="btn btn-outline-secondary btn-step1 btn-block buttontambahan"><i class="fa fa-syringe px-2"></i>Data Surgery</button>
                   </div>
                 
                 </div>       

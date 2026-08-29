@@ -39,7 +39,7 @@
       z-index:1000;
     }
     .content2 {
-        margin-bottom: 150px;
+        margin-bottom: 210px;
         height: 50%;
     }
     .mainx-footer{
@@ -48,7 +48,7 @@
       position:fixed;
       right: 0;
       z-index: 1032;
-      height:100px;
+      height:160px;
     }
     .layout-footer-fixed .wrapper .main-footer {
       bottom: 0;
@@ -264,15 +264,12 @@
 
   /* POS header redesign: Nama Pasien besar di kiri-atas, Total besar di kanan-atas */
   .pos-header-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    position: relative;
     padding: 8px 15px 4px;
   }
   .pos-pasien-col {
-    flex: 1 1 auto;
     min-width: 0;
+    padding-right: 240px;
   }
   .pos-nama-pasien {
     display: inline-block;
@@ -309,10 +306,9 @@
   }
   .pos-actions-meta-row {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
     margin: 2px 0 8px;
   }
   .pos-pasien-actions {
@@ -365,26 +361,38 @@
   }
   .pos-meta-input {
     border: none !important;
+    border-bottom: 1px solid #ced4da !important;
     box-shadow: none !important;
     background: transparent !important;
-    padding: 0 !important;
+    padding: 0 0 1px !important;
     font-size: 13px;
     height: auto !important;
     width: 130px;
+    cursor: text;
+  }
+  .pos-meta-input:focus {
+    border-bottom-color: #007bff !important;
+  }
+  .pos-meta-input:disabled {
+    border-bottom-color: transparent !important;
+    color: #6c757d;
+    cursor: not-allowed;
   }
   #pasienid {
     font-size: 13px;
   }
   .total-overlay-static {
-    flex: 0 0 auto;
-    margin-left: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
   }
   .total-overlay-static #tsubtotal {
     font-size: 52px;
     font-weight: 800;
     font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    line-height: 1;
     height: auto;
-    padding: 10px 12px;
+    padding: 0 12px;
     text-align: right;
     border: none !important;
     box-shadow: none !important;
@@ -395,19 +403,29 @@
   #footer .form-group.row {
     margin-bottom: 6px;
   }
-  #footer .btn-group {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    max-width: 100%;
+  .pos-btn-tambahitem,
+  #bbayar,
+  #bsave {
+    font-size: 18px !important;
+    font-weight: 700;
+    padding: 10px !important;
   }
-  #footer .btn-group::-webkit-scrollbar {
-    height: 4px;
+  .pos-btn-tambahitem {
+    margin-bottom: 6px;
+  }
+  #footer .btn-group {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    max-width: 100%;
   }
   #footer .btn-group .btn,
   #footer .btn-group .dropdown {
     white-space: nowrap;
     flex: 0 0 auto;
+    font-size: 15px !important;
+  }
+  #footer .btn-group .dropdown .btn {
+    font-size: 15px !important;
   }
   #footer #loader-detil {
     display: inline-block;
@@ -415,4 +433,9 @@
   }
   .btn-app.disabled {
     opacity: .35;
+  }
+  #bsave,
+  #bdatasurgery {
+    width: calc(100% - 15px) !important;
+    margin-right: 15px;
   }
