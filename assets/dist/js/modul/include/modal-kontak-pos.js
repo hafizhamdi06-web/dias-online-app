@@ -172,11 +172,7 @@ var _setcabang = function(){
                  $('#cabang').append(list);
               });
 
-             var trigger = $('#modaltrigger').val();
-             var defaultCabang = $("#"+trigger).contents().find('#cabang').val();
-             if(defaultCabang){
-               $('#cabang').val(defaultCabang);
-             }
+             $('#cabang').val('');
              $('#cabang').trigger('change');
 
              _kontakdatatable();
