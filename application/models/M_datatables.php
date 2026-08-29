@@ -409,10 +409,10 @@ class M_datatables extends CI_Model {
             }
 
             if(!empty($iswhere))
-            {                
-                $sql_data = $this->db->query($query." WHERE $iswhere AND (".$cari.")".$order." LIMIT 20 " );
+            {
+                $sql_data = $this->db->query($query." WHERE $iswhere AND (".$cari.")".$order." LIMIT $start, $limit " );
             }else{
-                $sql_data = $this->db->query($query." WHERE (".$cari.")".$order." LIMIT 20 " );
+                $sql_data = $this->db->query($query." WHERE (".$cari.")".$order." LIMIT $start, $limit " );
             }
 
             if(isset($search))

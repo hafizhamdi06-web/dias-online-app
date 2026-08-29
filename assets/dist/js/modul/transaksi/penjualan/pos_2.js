@@ -2499,6 +2499,8 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
   });
 
   $("#bsave").click(function() {
+     if ($(this).hasClass('disabled')) return;
+
      if ($('#dkkwalkin').val()=='')
     {
      $('#modalDKK').modal('show');
@@ -5167,8 +5169,8 @@ var _getDataTransaksi = (id) => {
      
 
         if($('.btn-step1').hasClass('disabled')){
-          $('.btn-delrow').addClass('disabled');
-          $(":input").not(":button, :submit, :reset, :radio, .total").attr('disabled','disabled');   
+          $('.btn-step1').addClass('disabled');
+          $(":input").not(":button, :submit, :reset, :radio, .total").attr('disabled','disabled');
           $(":input").not(":button, :submit, :reset, :radio, .total").css("background-color", "#ffffff");
         }
         parent.window.$('.loader-wrap').addClass('d-none');                                       
