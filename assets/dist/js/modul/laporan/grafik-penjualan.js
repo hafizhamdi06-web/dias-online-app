@@ -95,13 +95,17 @@ var _renderChart = (canvasId, label, labels, data, warna) => {
 
   var ctx = document.getElementById(canvasId).getContext('2d');
   _chartInstances[canvasId] = new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels: labels,
       datasets: [{
         label: label,
         data: data,
-        backgroundColor: warna
+        borderColor: warna,
+        backgroundColor: warna,
+        pointBackgroundColor: warna,
+        fill: false,
+        lineTension: 0.2
       }]
     },
     options: {
