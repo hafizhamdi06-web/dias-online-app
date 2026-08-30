@@ -20,12 +20,28 @@ $(function() {
 
   Component_Inputmask_Date('.datepicker');
 
+  $('.datepicker').datepicker({
+    format: 'dd-mm-yyyy',
+    autoclose: true,
+    todayHighlight: true,
+    orientation: 'bottom',
+    container: 'body'
+  }).on('show', function(){
+    var $input = $(this);
+    var offset = $input.offset();
+    $('.datepicker.datepicker-dropdown:visible').css({
+      'z-index': 99999,
+      'top': (offset.top + $input.outerHeight()) + 'px',
+      'left': offset.left + 'px'
+    });
+  });
+
   $("#dtgldari").click(function() {
-    $("#tgldari").focus();
+    $("#tgldari").datepicker('show');
   });
 
   $("#dtglsampai").click(function() {
-    $("#tglsampai").focus();
+    $("#tglsampai").datepicker('show');
   });
 
   Component_Select2('#cabang', base_url+"Select_Master/view_gudang_pilihan");
@@ -56,16 +72,9 @@ $(function() {
 
 var _defaultRentangTanggal = () => {
   var hariIni = new Date();
-  var awalBulan = new Date(hariIni.getFullYear(), hariIni.getMonth(), 1);
-  $('#tgldari').val(_formatTglDDMMYYYY(awalBulan));
-  $('#tglsampai').val(_formatTglDDMMYYYY(hariIni));
-};
-
-var _formatTglDDMMYYYY = (dateObj) => {
-  var dd = String(dateObj.getDate()).padStart(2, '0');
-  var mm = String(dateObj.getMonth()+1).padStart(2, '0');
-  var yyyy = dateObj.getFullYear();
-  return dd+'-'+mm+'-'+yyyy;
+  var awalBulan = new Date(hariIni.getFullYear(), hariIni.getMonth()-2, 1);
+  $('#tgldari').datepicker('setDate', awalBulan);
+  $('#tglsampai').datepicker('setDate', hariIni);
 };
 
 var _namaBulan = (bulan) => {

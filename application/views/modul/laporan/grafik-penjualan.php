@@ -1,6 +1,7 @@
 <body id="<?= $id; ?>" class="layout-fixed overflow-hidden" data-panel-auto-height-mode="height">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/table-page.css');?>">
+  <link rel="stylesheet" href="<? echo base_url('assets/plugins/datepicker/datepicker3.css'); ?>">
   <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/grafik-penjualan.css');?>">
 
   <div class="content-wrapper tab-wrap mx-0">
