@@ -1,0 +1,94 @@
+.gp-ringkasan-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+  padding: 14px;
+  min-height: 80px;
+  margin-bottom: 1rem;
+}
+
+.gp-ringkasan-icon {
+  flex: 0 0 auto;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #fff;
+  margin-right: 14px;
+}
+
+.gp-ringkasan-success .gp-ringkasan-icon { background: #28a745; }
+.gp-ringkasan-primary .gp-ringkasan-icon { background: #007bff; }
+.gp-ringkasan-warning .gp-ringkasan-icon { background: #ffc107; }
+.gp-ringkasan-info .gp-ringkasan-icon { background: #17a2b8; }
+
+.gp-ringkasan-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gp-ringkasan-label {
+  font-size: 12px;
+  color: #777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gp-ringkasan-number {
+  font-size: 20px;
+  font-weight: 700;
+  color: #222;
+}
+
+.gp-btn-pdf {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.gp-btn-pdf i {
+  font-size: 14px;
+}
+
+.gp-ringkasan-note {
+  font-size: 10px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gp-print-only {
+  display: none;
+}
+
+@media print {
+  .content-header,
+  .gp-filter-card,
+  #bexportpdf {
+    display: none !important;
+  }
+  .content {
+    margin-top: 0 !important;
+  }
+  .gp-print-only {
+    display: block !important;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+    break-inside: avoid;
+  }
+}

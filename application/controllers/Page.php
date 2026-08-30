@@ -176,6 +176,10 @@ class Page extends CI_Controller {
         $this->loader('pos_mobile','modul/transaksi/penjualan/pos-mobile');
     }
 
+    function grafik_penjualan(){
+        $this->loader('grafik_penjualan','modul/laporan/grafik-penjualan');
+    }
+
     function umb(){
         $this->loader('umb','modul/transaksi/pembelian/uangmuka-pembelian');
     }
