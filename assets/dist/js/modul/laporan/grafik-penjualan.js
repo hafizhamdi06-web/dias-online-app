@@ -72,8 +72,8 @@ $(function() {
 
 var _defaultRentangTanggal = () => {
   var hariIni = new Date();
-  var awalBulan = new Date(hariIni.getFullYear(), hariIni.getMonth()-2, 1);
-  $('#tgldari').datepicker('setDate', awalBulan);
+  var awalTahun = new Date(hariIni.getFullYear(), 0, 1);
+  $('#tgldari').datepicker('setDate', awalTahun);
   $('#tglsampai').datepicker('setDate', hariIni);
 };
 
