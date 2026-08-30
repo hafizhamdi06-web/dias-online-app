@@ -161,11 +161,19 @@ class Page extends CI_Controller {
     }
 
     function pmbData(){
-        $this->loader('pmb','modul/transaksi/pembelian/table-permintaan-barang');
+        $this->loader('pmbData','modul/transaksi/pembelian/table-permintaan-barang');
     }
 
     function pmbverif(){
         $this->loader('pmbverif','modul/transaksi/pembelian/table-verifikasi-permintaan-barang');
+    }
+
+    function persetujuan(){
+        $this->loader('persetujuan','modul/transaksi/penjualan/table-persetujuan');
+    }
+
+    function pos_mobile(){
+        $this->loader('pos_mobile','modul/transaksi/penjualan/pos-mobile');
     }
 
     function umb(){

@@ -25,10 +25,10 @@ class M_select2 extends CI_Model {
         $order = " ORDER BY ".$order_field." ASC";  // limit 10
 
         if(!empty($iswhere))
-        {                
-            $sql_data = $this->db->query($query." WHERE $iswhere AND (".$cari.")".$order);
+        {
+            $sql_data = $this->db->query($query." WHERE $iswhere AND (".$cari.")".$order." LIMIT 20");
         }else{
-            $sql_data = $this->db->query($query." WHERE (".$cari.")".$order);
+            $sql_data = $this->db->query($query." WHERE (".$cari.")".$order." LIMIT 20");
         }
 
         $list = array();

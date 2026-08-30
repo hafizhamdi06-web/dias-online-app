@@ -6,8 +6,23 @@ class M_PJ_POS_HP extends CI_Model {
     {
         parent::__construct();
     }
-    
-    
+
+
+    function getRiwayatHariIni(){
+        $idkaryawan = @$_SESSION['idkaryawan'];
+        $query = "SELECT A.suid 'id', A.sunotransaksi 'nomor', DATE_FORMAT(A.sucreated,'%H:%i') 'jam',
+                          COALESCE(B.knama,'-') 'pasien', IFNULL(A.sutotaltransaksi,0) 'total'
+                     FROM fstoku A
+                LEFT JOIN bkontak B ON A.sukontak = B.kid
+                    WHERE A.susumber = 'IP' AND A.sustatus <> 9
+                      AND A.sukaryawan = '".$idkaryawan."'
+                      AND DATE(A.sutanggal) = CURDATE()
+                 ORDER BY A.sutanggal DESC";
+        $sql = $this->db->query($query);
+        return json_encode(array('data' => $sql->result_array()));
+    }
+
+
     function transfer_transaksi_cancel($idu){
         
          $sql = "SELECT * 
@@ -172,9 +187,35 @@ class M_PJ_POS_HP extends CI_Model {
         
     }
 
+    private function _cekApprovalOverduePOS($id)
+    {
+        $row = $this->db->query("SELECT sutanggal, sunotransaksi FROM fstoku WHERE suid='".$id."'")->row();
+        if (!$row) return true;
+
+        $selisihHari = (strtotime(date('Y-m-d')) - strtotime($row->sutanggal)) / 86400;
+        if ($selisihHari < 1) return true;
+
+        $approved = $this->db->query(
+            "SELECT APID FROM aapersetujuan
+              WHERE APIDUSERMINTA='".$this->session->id."'
+                AND APJENIS='Edit POS Overdue'
+                AND APREFERENSI='".$this->db->escape_str($row->sunotransaksi)."'
+                AND APSTATUS=1
+                AND APTGLEXPIRED > '".date('Y-m-d H:i:s')."'
+              ORDER BY APID DESC LIMIT 1"
+        )->row();
+
+        return $approved ? true : false;
+    }
+
     function ubahTransaksi(){
-        $id = $this->input->post('id'); 
-        
+        $id = $this->input->post('id');
+
+        if (!$this->_cekApprovalOverduePOS($id)) {
+            return json_encode(array('pesan'=>'butuh_persetujuan'));
+        }
+
+
         $surgerydp = 0 ;  
         if($_POST['surgerydptotal']!='0'){
             $surgerydp = 1 ;

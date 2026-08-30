@@ -2509,6 +2509,17 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
 
     if (_IsValid()===0) return;
 
+    if ($('#id').val()!='' && _isOverduePOS()) {
+      _cekPersetujuanPOS();
+      return;
+    }
+
+    _lanjutkanSimpanPOS();
+
+  });
+
+  var _lanjutkanSimpanPOS = () => {
+
     if ($('#rekammedis').val()==''){
         window._setCatatanPlanningMandatory(true);
          $('#modalcatatanplanning').off('shown.bs.modal').on('shown.bs.modal', function(){
@@ -2522,19 +2533,146 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
     if($('#id').val()!='')
     {
        if ($('#alasanedit').val()=='') {
-            $('#modalalasanedit').on('shown.bs.modal', function(){  
-                $('#alasanedit').focus(); 
-            });    
-            $('#modalalasanedit').modal('show'); 
+            $('#modalalasanedit').on('shown.bs.modal', function(){
+                $('#alasanedit').focus();
+            });
+            $('#modalalasanedit').modal('show');
             return ;
        }
-       
-       
-    } 
-    
-    _saveData(); 
-    
-  });
+
+
+    }
+
+    _saveData();
+
+  };
+
+  var _isOverduePOS = () => {
+    var val = $('#tgl').val();
+    if (!val) return false;
+
+    var parts = val.split('-');
+    if (parts.length !== 3) return false;
+
+    var tgltrans = new Date(parts[2], parts[1]-1, parts[0]);
+    var today = new Date();
+    today.setHours(0,0,0,0);
+    tgltrans.setHours(0,0,0,0);
+
+    var selisihHari = (today - tgltrans) / (1000*60*60*24);
+    return selisihHari >= 1;
+  };
+
+  var _cekPersetujuanPOS = () => {
+    $.ajax({
+      "url"    : base_url+"Persetujuan/cekstatus",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data"   : "jenis=Edit POS Overdue&referensi="+encodeURIComponent($('#nomor').val()),
+      "cache"  : false,
+      "beforeSend" : function(){
+        parent.window.$(".loader-wrap").removeClass("d-none");
+      },
+      "error"  : function(xhr,status,error){
+        parent.window.$(".loader-wrap").addClass("d-none");
+        parent.window.toastr.error("Err: "+xhr.status+", "+error);
+      },
+      "success" : function(result) {
+        parent.window.$(".loader-wrap").addClass("d-none");
+
+        if (result.status === 'disetujui') {
+          _lanjutkanSimpanPOS();
+        } else if (result.status === 'pending') {
+          parent.window.toastr.info("Menunggu persetujuan dari "+result.approver+", silakan coba lagi nanti.");
+        } else if (result.status === 'ditolak') {
+          parent.window.toastr.error("Pengajuan sebelumnya ditolak"+(result.catatan ? ' : '+result.catatan : '')+". Silakan ajukan ulang.");
+          _tampilkanAjukanPersetujuanPOS();
+        } else {
+          _tampilkanAjukanPersetujuanPOS();
+        }
+      }
+    });
+  };
+
+  var _tampilkanAjukanPersetujuanPOS = () => {
+    $.ajax({
+      "url"    : base_url+"Select_Master/view_user_approver",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data"   : "role=Approve Edit POS Overdue",
+      "cache"  : false,
+      "beforeSend" : function(){
+        parent.window.$(".loader-wrap").removeClass("d-none");
+      },
+      "error"  : function(){
+        parent.window.$(".loader-wrap").addClass("d-none");
+        parent.window.toastr.error("Gagal mengambil daftar approver !");
+      },
+      "success" : function(list) {
+        parent.window.$(".loader-wrap").addClass("d-none");
+
+        if (!list || list.length===0) {
+          parent.window.toastr.error("Belum ada user dengan hak approve. Hubungi Administrator.");
+          return;
+        }
+
+        var options = '';
+        list.forEach(function(u){
+          options += '<option value="'+u.id+'">'+u.text+'</option>';
+        });
+
+        parent.window.Swal.fire({
+          title: 'Ajukan Persetujuan',
+          html:
+            '<div class="text-left">'+
+            '<label class="text-sm">Tanggal transaksi sudah lewat, pilih approver untuk mengajukan persetujuan:</label>'+
+            '<select id="swal-approver-pos" class="form-control form-control-sm mb-2">'+options+'</select>'+
+            '<label class="text-sm">Keterangan</label>'+
+            '<input type="text" id="swal-keterangan-pos" class="form-control form-control-sm" value="EDIT POS No. '+$('#nomor').val()+'">'+
+            '</div>',
+          showCancelButton: true,
+          confirmButtonText: 'Ajukan',
+          cancelButtonText: 'Batal',
+          preConfirm: () => {
+            return {
+              iduserapprover: parent.window.document.getElementById('swal-approver-pos').value,
+              keterangan: parent.window.document.getElementById('swal-keterangan-pos').value
+            };
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            _ajukanPersetujuanPOS(result.value.iduserapprover, result.value.keterangan);
+          }
+        });
+      }
+    });
+  };
+
+  var _ajukanPersetujuanPOS = (iduserapprover, keterangan) => {
+    $.ajax({
+      "url"    : base_url+"Persetujuan/ajukan",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data"   : "jenis=Edit POS Overdue&referensi="+encodeURIComponent($('#nomor').val())+"&keterangan="+encodeURIComponent(keterangan)+"&iduserapprover="+iduserapprover,
+      "cache"  : false,
+      "beforeSend" : function(){
+        parent.window.$(".loader-wrap").removeClass("d-none");
+      },
+      "error"  : function(xhr,status,error){
+        parent.window.$(".loader-wrap").addClass("d-none");
+        parent.window.toastr.error("Err: "+xhr.status+", "+error);
+      },
+      "success" : function(result) {
+        parent.window.$(".loader-wrap").addClass("d-none");
+
+        if (result.pesan === 'sukses') {
+          parent.window.toastr.success("Permintaan terkirim, silakan tunggu persetujuan.");
+        } else {
+          parent.window.toastr.error("Gagal mengirim permintaan, silakan coba lagi.");
+        }
+      }
+    });
+  };
   
    $("#bokmodalalasanedit").click(function() {  
     
@@ -4873,14 +5011,17 @@ var _saveData = () => {
                                        //       } 
                                        //   })   
                                   //}
-          
-        
-      }                  
-    } 
+
+
+      } else if(result.pesan=='butuh_persetujuan'){
+        parent.window.toastr.error("Tanggal transaksi sudah lewat, butuh persetujuan yang masih berlaku sebelum bisa disimpan.");
+        _tampilkanAjukanPersetujuanPOS();
+      }
+    }
   })
 }
 
- $("#bkirimulangemail").click(function() {  
+ $("#bkirimulangemail").click(function() {
      
      _kirimemail($("#nomor").val());
  
@@ -4928,6 +5069,8 @@ function _cekKirimUlangEmail() {
 }
 
 var _kirimemail = (noip) => {
+    console.log('_kirimemail dinonaktifkan sementara (data lokal)');
+    return;
     let xnoip = noip ;
  
   $.ajax({ 

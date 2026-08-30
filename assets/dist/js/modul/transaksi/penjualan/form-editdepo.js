@@ -78,10 +78,149 @@ $(this).off('shown.bs.tooltip.editdepo').on('shown.bs.tooltip.editdepo', functio
 });
 /* End Form Init */
 
-$("#submit").click(function(){
+$("#submit").off('click.editdeposubmit').on('click.editdeposubmit', function(){
+  if ($(this).data('submitting')) return;
   if (_IsValid()===0) return;
+
+  $(this).data('submitting', true);
+  setTimeout(() => { $("#submit").data('submitting', false); }, 800);
+
+  if (_isOverdue()) {
+    _cekPersetujuan();
+    return;
+  }
+
   _saveData();
 });
+
+var _isOverdue = () => {
+  var val = $('#tanggalip').val();
+  if (!val) return false;
+
+  var parts = val.split('-');
+  if (parts.length !== 3) return false;
+
+  var tglip = new Date(parts[2], parts[1]-1, parts[0]);
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  tglip.setHours(0,0,0,0);
+
+  var selisihHari = (today - tglip) / (1000*60*60*24);
+  return selisihHari >= 1;
+};
+
+var _cekPersetujuan = () => {
+  $.ajax({
+    "url"    : base_url+"Persetujuan/cekstatus",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : "jenis=Edit Depo Overdue&referensi="+encodeURIComponent($('#noip').val()),
+    "cache"  : false,
+    "beforeSend" : function(){
+      $(".loader-wrap").removeClass("d-none");
+    },
+    "error"  : function(xhr,status,error){
+      $(".loader-wrap").addClass("d-none");
+      toastr.error("Err: "+xhr.status+", "+error);
+      return;
+    },
+    "success" : function(result) {
+      $(".loader-wrap").addClass("d-none");
+
+      if (result.status === 'disetujui') {
+        _saveData();
+      } else if (result.status === 'pending') {
+        toastr.info("Menunggu persetujuan dari "+result.approver+", silakan coba lagi nanti.");
+      } else if (result.status === 'ditolak') {
+        toastr.error("Pengajuan sebelumnya ditolak"+(result.catatan ? ' : '+result.catatan : '')+". Silakan ajukan ulang.");
+        _tampilkanAjukanPersetujuan();
+      } else {
+        _tampilkanAjukanPersetujuan();
+      }
+    }
+  });
+};
+
+var _tampilkanAjukanPersetujuan = () => {
+  $.ajax({
+    "url"    : base_url+"Select_Master/view_user_approver",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : "role=Approve Edit Depo Overdue",
+    "cache"  : false,
+    "beforeSend" : function(){
+      $(".loader-wrap").removeClass("d-none");
+    },
+    "error"  : function(){
+      $(".loader-wrap").addClass("d-none");
+      toastr.error("Gagal mengambil daftar approver !");
+    },
+    "success" : function(list) {
+      $(".loader-wrap").addClass("d-none");
+
+      if (!list || list.length===0) {
+        toastr.error("Belum ada user dengan hak approve. Hubungi Administrator.");
+        return;
+      }
+
+      var options = '';
+      list.forEach(function(u){
+        options += '<option value="'+u.id+'">'+u.text+'</option>';
+      });
+
+      Swal.fire({
+        title: 'Ajukan Persetujuan',
+        html:
+          '<div class="text-left">'+
+          '<label class="text-sm">Tanggal IP sudah lewat, pilih approver untuk mengajukan persetujuan:</label>'+
+          '<select id="swal-approver" class="form-control form-control-sm mb-2">'+options+'</select>'+
+          '<label class="text-sm">Keterangan</label>'+
+          '<input type="text" id="swal-keterangan" class="form-control form-control-sm" value="EDIT DEPO No. IP '+$('#noip').val()+'">'+
+          '</div>',
+        showCancelButton: true,
+        confirmButtonText: 'Ajukan',
+        cancelButtonText: 'Batal',
+        preConfirm: () => {
+          return {
+            iduserapprover: document.getElementById('swal-approver').value,
+            keterangan: document.getElementById('swal-keterangan').value
+          };
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          _ajukanPersetujuan(result.value.iduserapprover, result.value.keterangan);
+        }
+      });
+    }
+  });
+};
+
+var _ajukanPersetujuan = (iduserapprover, keterangan) => {
+  $.ajax({
+    "url"    : base_url+"Persetujuan/ajukan",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : "jenis=Edit Depo Overdue&referensi="+encodeURIComponent($('#noip').val())+"&keterangan="+encodeURIComponent(keterangan)+"&iduserapprover="+iduserapprover,
+    "cache"  : false,
+    "beforeSend" : function(){
+      $(".loader-wrap").removeClass("d-none");
+    },
+    "error"  : function(xhr,status,error){
+      $(".loader-wrap").addClass("d-none");
+      toastr.error("Err: "+xhr.status+", "+error);
+      return;
+    },
+    "success" : function(result) {
+      $(".loader-wrap").addClass("d-none");
+
+      if (result.pesan === 'sukses') {
+        toastr.success("Permintaan terkirim, silakan tunggu persetujuan.");
+      } else {
+        toastr.error("Gagal mengirim permintaan, silakan coba lagi.");
+      }
+    }
+  });
+};
 
 var _IsValid = () => {
     if ($('#tanggaldepo').val()==''){
@@ -134,6 +273,8 @@ var _saveData = () => {
   rey.set('namatindakan', namatindakan);
   rey.set('detil', JSON.stringify(detil));
 
+  $("#submit").data('submitting', true);
+
   $.ajax({
     "url"    : base_url+"PJ_Editdepo/savedata",
     "type"   : "POST",
@@ -145,6 +286,7 @@ var _saveData = () => {
       $(".loader-wrap").removeClass("d-none");
     },
     "error": function(xhr, status, error){
+      $("#submit").data('submitting', false);
       $(".loader-wrap").addClass("d-none");
       toastr.error("Perbaiki masalah ini : "+xhr.status+" "+error);
       console.log(xhr.responseText);
@@ -152,6 +294,7 @@ var _saveData = () => {
     },
     "success": function(result) {
       result = JSON.parse(result);
+      $("#submit").data('submitting', false);
       $(".loader-wrap").addClass("d-none");
 
       if(result.pesan=='sukses'){
@@ -159,6 +302,9 @@ var _saveData = () => {
         $tindakanRow.find("input[name^='sdidalkesnya']").val(result.id);
         $('#modal').modal('hide');
         toastr.success("Data Depo berhasil disimpan");
+        return;
+      } else if(result.pesan=='butuh_persetujuan'){
+        toastr.error("Tanggal IP sudah lewat, transaksi ini butuh persetujuan yang masih berlaku sebelum bisa disimpan. Silakan klik Simpan lagi untuk mengajukan/cek ulang.");
         return;
       } else {
         toastr.error("Gagal menyimpan data, silakan coba lagi");

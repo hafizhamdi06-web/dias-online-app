@@ -240,6 +240,21 @@ class Datatable_Transaksi_Full extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
 
+   function view_persetujuan() {
+        $query  = "SELECT A.APID 'id', A.APJENIS 'jenis', A.APKETERANGAN 'keterangan',
+                          COALESCE(B.unamalengkap,B.unama) 'pemohon',
+                          DATE_FORMAT(A.APTGLMINTA,'%d-%m-%Y %H:%i') 'tanggal'
+                     FROM aapersetujuan A
+                LEFT JOIN auser B ON A.APIDUSERMINTA=B.uid";
+        $search = array('A.APJENIS','A.APKETERANGAN','B.unama');
+        $where  = null;
+        $isWhere = "A.APIDUSERSETUJU='".$this->session->id."' AND A.APSTATUS=0";
+        $isOrder = 'A.APID DESC';
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere,$isOrder);
+    }
+
    function view_uang_muka_pembelian() {
         $transcode = element('PB_Uang_Muka_Pembelian',NID);
         $transcode = $this->M_transaksi->prefixtrans($transcode);

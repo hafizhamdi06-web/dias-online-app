@@ -41,7 +41,7 @@ var _kontakdatatable = function(){
     },
     "deferRender": true,
     "bInfo":false,
-    "pageLength": 5,
+    "pageLength": 10,
     "aLengthMenu": [[20, 50, 100],[20, 50, 100]],
     "language": 
     {          

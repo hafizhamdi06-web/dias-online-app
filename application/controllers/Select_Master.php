@@ -180,7 +180,7 @@ class Select_Master extends CI_Controller {
         $search = array('ikode','inama');
         $isOrder = 'ikode';
         $isWhere = null;
-        $isWhere = "istatus=0 and icabang like '%".$cabang."|%'  ";
+        $isWhere = "istatus=0 and icabang like '%|".$cabang."|%'  ";
         header('Content-Type: application/json');
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
     }           
@@ -288,6 +288,19 @@ class Select_Master extends CI_Controller {
         $search = array('A.ukode','A.unama');
         $isOrder = 'A.unama';
         $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_user_approver() {
+        $role = $this->input->post('role') ? $this->input->post('role') : 'Approve Edit Depo Overdue';
+        $query  = "SELECT A.uid AS 'id',CONCAT(A.ukode,' - ',COALESCE(A.unamalengkap,A.unama)) AS 'text',A.ukode AS 'kode'
+                     FROM auser A
+               INNER JOIN aauserrole B ON A.uid=B.AURIDUSER AND B.AURSTATUS=1
+               INNER JOIN aarole C ON B.AURIDROLE=C.ARID AND C.ARNAMAROLE='".$this->db->escape_str($role)."'";
+        $search = array('A.ukode','A.unama','A.unamalengkap');
+        $isOrder = 'A.unama';
+        $isWhere = "A.uactive=1 AND A.uid!='".$this->session->id."'";
         header('Content-Type: application/json');
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
     }

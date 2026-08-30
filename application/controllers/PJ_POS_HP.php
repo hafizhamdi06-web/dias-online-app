@@ -69,15 +69,21 @@ class PJ_POS_HP extends CI_Controller {
    			echo _pesanError("Id transaksi tidak ditemukan !");
   			exit;
    		}
-        $query  = "SELECT A.knama 'nama', A.k1alamat 'alamat', A.k1telp1 'nohp', A.kidpasien 'pasienid' , B.ktnama 'namatipe', A.ktipe 'tipeid' , A.k1email 'email'  
-                        , DATE_FORMAT(coalesce(f_tanggal_akhir (A.kid)),'%d-%m-%Y')  as tglakhir 
+        $query  = "SELECT A.knama 'nama', A.k1alamat 'alamat', A.k1telp1 'nohp', A.kidpasien 'pasienid' , B.ktnama 'namatipe', A.ktipe 'tipeid' , A.k1email 'email'
+                        , COALESCE(B.ktdiscount,0) 'ktdiscount'
+                        , DATE_FORMAT(coalesce(f_tanggal_akhir (A.kid)),'%d-%m-%Y')  as tglakhir
                         ,  case coalesce(f_tanggal_akhir (A.kid)) when '' then '' else coalesce(coalesce(f_tanggal_akhir (A.kid))  + INTERVAL 1 YEAR) end 'tglexpired'
                         ,  DATE_FORMAT(coalesce(A.kcreated),'%d-%m-%Y') 'tglbuat', DATE_FORMAT(current_date,'%d-%m-%Y') 'tglsekarang'
                      FROM bkontak A LEFT JOIN bkontaktipe B ON A.ktipe=B.ktid
                     WHERE A.kid='".$_POST['id']."' ";
         header('Content-Type: application/json');
         echo $this->M_transaksi->get_data_query($query);
-    }                       
+    }
+
+   function riwayathariini(){
+        header('Content-Type: application/json');
+        echo $this->M_PJ_POS_HP->getRiwayatHariIni();
+   }
 
    function getdata(){
    		if(empty($_POST['id'])) {
@@ -130,8 +136,9 @@ class PJ_POS_HP extends CI_Controller {
                        F.SDMEDIDU 'medidu', F.SDMEDIDD 'medidd',
                        A.suteman 'idteman', AB.kkode 'kodeteman',  concat(AB.knama,' (',AB.kidpasien,') ') 'namateman',
                        F.SDVOUCERID 'idvoucherwebdetil',F.SDPOINTKELUAR 'pointvoucherwebdetil', AC.VPIDVOUCHER 'novoucher' ,
-                       F.SDSODID 'medidd_sudahbayar', F.SDPRDID 'medidu_sudahbayar' , A.sulmcid 'lmcid' , A.SUJUMLAHKUPON 'jumlahkupon' 
-                    FROM fstoku A 
+                       F.SDSODID 'medidd_sudahbayar', F.SDPRDID 'medidu_sudahbayar' , A.sulmcid 'lmcid' , A.SUJUMLAHKUPON 'jumlahkupon' ,
+                       BG.GNAMAPT 'strukpt', BG.GNAMA 'strukcabang', BG.GALAMAT1 'strukalamat1', BG.GALAMAT2 'strukalamat2', BG.GNOHP 'struknohp'
+                    FROM fstoku A
                LEFT JOIN bkontak B ON A.sukontak=B.kid
                LEFT JOIN bkontak C ON A.sukaryawan=C.kid  
                LEFT JOIN fstokd F ON A.suid=F.sdidsu 
@@ -158,7 +165,8 @@ class PJ_POS_HP extends CI_Controller {
                LEFT JOIN bkontak AB ON A.suteman=AB.kid            
                LEFT JOIN bvoucherpoint AC ON AC.vpid=F.sdvoucerid  
                LEFT JOIN fstokdiscv AD on AD.SDVIDU=A.suid
-               
+               LEFT JOIN bgudang BG ON A.sucabang=BG.GID
+
                    WHERE A.susumber='".$transcode."' AND A.suid='".$_POST['id']."' ORDER BY F.sdurutan ASC ";
        
         header('Content-Type: application/json');

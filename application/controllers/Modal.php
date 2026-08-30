@@ -224,6 +224,10 @@ class Modal extends CI_Controller {
         $this->loader('include/modal-verifikasi-pmb');
     }
 
+    function persetujuan(){
+        $this->loader('include/modal-persetujuan');
+    }
+
    // Modal Form Divisi
     function form_jenis_penyesuaian(){
         $this->loader('modul/master/form-jenis-penyesuaian');

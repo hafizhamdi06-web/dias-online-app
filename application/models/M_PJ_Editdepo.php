@@ -69,8 +69,35 @@ class M_PJ_Editdepo extends CI_Model {
         $this->db->update('fstokd', array('sdidalkesnya' => $suid));
     }
 
+    private function _cekApprovalOverdue()
+    {
+        $idsupos = $_POST['idsupos'];
+
+        $row = $this->db->query("SELECT sutanggal FROM fstoku WHERE suid='".$idsupos."'")->row();
+        if (!$row) return true;
+
+        $selisihHari = (strtotime(date('Y-m-d')) - strtotime($row->sutanggal)) / 86400;
+        if ($selisihHari < 1) return true;
+
+        $approved = $this->db->query(
+            "SELECT APID FROM aapersetujuan
+              WHERE APIDUSERMINTA='".$this->session->id."'
+                AND APJENIS='Edit Depo Overdue'
+                AND APREFERENSI='".$this->db->escape_str($_POST['noip'])."'
+                AND APSTATUS=1
+                AND APTGLEXPIRED > '".date('Y-m-d H:i:s')."'
+              ORDER BY APID DESC LIMIT 1"
+        )->row();
+
+        return $approved ? true : false;
+    }
+
     function tambahData()
     {
+        if (!$this->_cekApprovalOverdue()) {
+            return json_encode(array('pesan'=>'butuh_persetujuan'));
+        }
+
         $tgl = tgl_database($_POST['tanggaldepo']);
         $cabang = $_POST['idcabang'];
         $sdidtindakan = $_POST['sdidtindakan'];
@@ -107,6 +134,10 @@ class M_PJ_Editdepo extends CI_Model {
 
     function ubahData()
     {
+        if (!$this->_cekApprovalOverdue()) {
+            return json_encode(array('pesan'=>'butuh_persetujuan'));
+        }
+
         $id = $_POST['id'];
         $tgl = tgl_database($_POST['tanggaldepo']);
         $cabang = $_POST['idcabang'];
