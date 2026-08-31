@@ -231,6 +231,8 @@
                      <!--begin::Col -->  <button type="button" id="bkirimulangemail" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan d-none" role="button"><i class="fa fa-envelope px-2"></i>Kirim Ulang Email</button>
 
                      <button type="button" id="bkupon" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-ticket-alt px-2"></i>Kupon</button>
+
+                     <button type="button" id="briwayathariini" class="btn btn-outline-secondary btn-step1 text-sm btn-sm  buttontambahan " role="button"><i class="fa fa-history px-2"></i>Transaksi Hari Ini</button>
                      
                      
                          
@@ -807,6 +809,48 @@
        
                            
     
+                	<!-- TRANSAKSI HARI INI -->
+                <div class="modal fade" id="modalriwayathariini" role="dialog" data-backdrop="static">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h5 class="modal-title">Transaksi Hari Ini</h5>
+                                <button type="button" class="close" data-dismiss="modal">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
+                            <!-- Modal Body -->
+                            <div class="modal-body">
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-hover">
+                                        <thead>
+                                        <tr>
+                                        <th class="text-sm">No Transaksi</th>
+                                        <th class="text-sm">Jam</th>
+                                        <th class="text-sm">Pasien</th>
+                                        <th class="text-sm text-right">Total</th>
+                                        <th class="text-sm"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody id="riwayathariini-body"></tbody>
+                                    </table>
+                                </div>
+                                <div id="riwayathariini-empty" class="text-center text-muted py-4 d-none">
+                                    <i class="fas fa-receipt fa-2x mb-2"></i>
+                                    <p class="mb-0">Belum ada transaksi hari ini.</p>
+                                </div>
+                            </div>
+
+                            <!-- Modal Footer -->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Tutup</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 	<!-- PEMBAYARAN -->
                 <div class="modal fade" id="modalbayar" role="dialog" data-backdrop="static">
                     <div class="modal-dialog modal-dialog-centered">

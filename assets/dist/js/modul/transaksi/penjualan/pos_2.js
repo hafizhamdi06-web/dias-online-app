@@ -2736,8 +2736,13 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
  
 
   $("#bprint").click(() => {
-      if($('#id').val()=='') return;    
-      window.open(`${base_url}Laporan/preview/page-pos_hp/${$("#id").val()}`)    
+      if($('#id').val()=='') return;
+      window.open(`${base_url}Laporan/preview/page-pos_hp/${$("#id").val()}`)
+  });
+
+  $("#briwayathariini").click(() => {
+      $('#modalriwayathariini').modal('show');
+      _muatRiwayatHariIniPOS();
   });
 
   $('#pajak').on('change',function(e){
@@ -5102,9 +5107,65 @@ var _kirimemail = (noip) => {
     
 }
 
+var _formatRupiahPOS = (angka) => {
+  return Number(angka || 0).toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+};
+
+var _muatRiwayatHariIniPOS = () => {
+  $.ajax({
+    "url"    : base_url+"PJ_POS_HP/riwayathariini",
+    "type"   : "POST",
+    "dataType" : "json",
+    "cache"  : false,
+    "beforeSend" : function(){
+      parent.window.$('.loader-wrap').removeClass('d-none');
+    },
+    "error"  : function(){
+      parent.window.$('.loader-wrap').addClass('d-none');
+      parent.window.toastr.error("Gagal mengambil data transaksi hari ini !");
+    },
+    "success" : function(result) {
+      parent.window.$('.loader-wrap').addClass('d-none');
+
+      var rows = result.data || [];
+      $('#riwayathariini-body').html('');
+
+      if (rows.length === 0) {
+        $('#riwayathariini-empty').removeClass('d-none');
+        return;
+      }
+      $('#riwayathariini-empty').addClass('d-none');
+
+      rows.forEach(function(row){
+        var tr =
+          '<tr>' +
+            '<td class="text-sm">'+row.nomor+'</td>' +
+            '<td class="text-sm">'+row.jam+'</td>' +
+            '<td class="text-sm">'+row.pasien+'</td>' +
+            '<td class="text-sm text-right">'+_formatRupiahPOS(row.total)+'</td>' +
+            '<td class="text-sm text-right text-nowrap">' +
+              '<button type="button" class="btn btn-outline-secondary btn-xs mr-1 briwayat-cetak" data-id="'+row.id+'" title="Cetak"><i class="fas fa-print"></i></button>' +
+              '<button type="button" class="btn btn-outline-primary btn-xs briwayat-edit" data-id="'+row.id+'" title="Edit"><i class="fas fa-edit"></i></button>' +
+            '</td>' +
+          '</tr>';
+        $('#riwayathariini-body').append(tr);
+      });
+
+      $('.briwayat-cetak').off('click').on('click', function(){
+        window.open(`${base_url}Laporan/preview/page-pos_hp/${$(this).data('id')}`);
+      });
+
+      $('.briwayat-edit').off('click').on('click', function(){
+        $('#modalriwayathariini').modal('hide');
+        $('#id').val($(this).data('id')).trigger('change');
+      });
+    }
+  });
+};
+
 var _getDataTransaksi = (id) => {
 
-  if(id=='' || id==null) return;    
+  if(id=='' || id==null) return;
 
   $.ajax({ 
     "url"    : base_url+"PJ_POS_HP/getdata",       
