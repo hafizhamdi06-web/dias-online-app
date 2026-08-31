@@ -1,10 +1,6 @@
 .DS_Store
 .env
 
-# Sensitive config with real credentials — never commit
-application/config/database.php
-application/config/database_medlib.php
-
 application/cache/*
 !application/cache/index.html
 
