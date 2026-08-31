@@ -114,6 +114,7 @@ $(function () {
         },
         "success":async (result) => {
           await parent.window.$(".main-modal-body").html(result);
+          await parent.window._getDataCabang('');
           parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');
           parent.window.$(".loader-wrap").addClass("d-none");
         }
@@ -164,6 +165,7 @@ $(function () {
         "success": async (result) => {
           await parent.window.$(".main-modal-body").html(result);
           await parent.window._getData(id);
+          await parent.window._getDataCabang(id);
           parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');
           parent.window.$(".loader-wrap").addClass("d-none");
         }

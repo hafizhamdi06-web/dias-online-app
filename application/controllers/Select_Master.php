@@ -539,8 +539,68 @@ class Select_Master extends CI_Controller {
         $isWhere = " LTIPE = 'Jenis Voucher' " ;
         header('Content-Type: application/json');
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
-    }                   
+    }
 
-    
-    
+   function view_coa_tipe_pendapatan() {
+        $query  = "SELECT A.ctid AS 'id',A.ctnama AS 'text',null AS 'kode'
+                     FROM bcoatipe_pendapatan A";
+        $search = array('ctnama');
+        $isOrder = 'cttipeid';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_itemjenis() {
+        $query  = "SELECT A.jid AS 'id',A.jkode AS 'text',null AS 'kode'
+                     FROM bitemjenis A";
+        $search = array('jkode');
+        $isOrder = 'jid';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_itemkelompok2021() {
+        $query  = "SELECT A.ik21id AS 'id',A.ik21kode AS 'text',null AS 'kode'
+                     FROM bitemkelompok2021 A";
+        $search = array('ik21kode');
+        $isOrder = 'ik21id';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_itemkelompok2023() {
+        $query  = "SELECT A.ik23id AS 'id',A.ik23kode AS 'text',null AS 'kode'
+                     FROM bitemkelompok2023 A";
+        $search = array('ik23kode');
+        $isOrder = 'ik23kode';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_coa_tipe_perpt() {
+        $query  = "SELECT A.ctid AS 'id',A.ctnama AS 'text',null AS 'kode'
+                     FROM bcoatipe_perpt A";
+        $search = array('ctnama');
+        $isOrder = 'cttipeid';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_itemjenisweb() {
+        $query  = "SELECT A.ijid AS 'id',A.ijkode AS 'text',null AS 'kode'
+                     FROM bitemjenisweb A";
+        $search = array('ijkode');
+        $isOrder = 'ijid';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+
+
 }
