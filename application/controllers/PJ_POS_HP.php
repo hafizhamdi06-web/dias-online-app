@@ -55,14 +55,18 @@ class PJ_POS_HP extends CI_Controller {
    
 
    function get_item() {
-        $query  = "SELECT A.isatuan 'idsatuan', B.snama 'namasatuan', A.iid 'iditem', A.inama 'namaitem', 
-                         A.ihargajual1 'hargajual', A.idiskon 'diskon' , A.ikelompok2020 'kelompok2020' , jwajibdokter 'wajibdokter', jbisaeditharga 'bisaeditharga',ISUBKATEGORI 'cetak', ijenisitem 'jenisitem'
+        $cabang = @$_SESSION['cabang'];
+        $hargaField = ($cabang == 18) ? "C.I2HARGAJUALMP" : "A.ihargajual1";
+
+        $query  = "SELECT A.isatuan 'idsatuan', B.snama 'namasatuan', A.iid 'iditem', A.inama 'namaitem',
+                         ".$hargaField." 'hargajual', A.idiskon 'diskon' , A.ikelompok2020 'kelompok2020' , jwajibdokter 'wajibdokter', jbisaeditharga 'bisaeditharga',ISUBKATEGORI 'cetak', ijenisitem 'jenisitem'
                          , idiskonweb 'diskonweb'
                      FROM bitem A LEFT JOIN bsatuan B ON A.isatuan=B.sid LEFT JOIN bitemjenis on ijenisitem=JID
+                     LEFT JOIN bitem2 C ON C.I2IDITEM=A.iid
                     WHERE A.iid='".$_POST['id']."' ";
         header('Content-Type: application/json');
         echo $this->M_transaksi->get_data_query($query);
-    }   
+    }
 
    function get_detail_pasien() {
    		if(empty($_POST['id'])) {

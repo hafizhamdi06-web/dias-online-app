@@ -83,19 +83,55 @@ class Datatable_Administrator extends CI_Controller {
     }        
 
    function view_table_userlog() {
-        $query  = "SELECT ulid AS 'id',ulusername AS 'user',ulcomputer AS 'komputer',DATE_FORMAT(uldate,'%d/%m/%Y') AS 'tanggal',
-                          DATE_FORMAT(ultime,'%r') AS 'jam',ulactivity AS 'kegiatan',
-                          CASE WHEN ullevel=0 THEN 'Hapus' 
-                               WHEN ullevel=1 THEN 'Tambah' 
-                               WHEN ullevel=2 THEN 'Edit' 
-                               WHEN ullevel=3 THEN 'Cetak' 
-                          END AS 'level' 
-                     FROM aauserlog";
-        $search = array('ulusername','ulcomputer');
-        $where  = null;         
-        $isWhere = null;
+        $query  = "SELECT A.ulid AS 'id',A.ulusername AS 'user',A.ulcomputer AS 'komputer',DATE_FORMAT(A.uldate,'%d/%m/%Y') AS 'tanggal',
+                          DATE_FORMAT(A.ultime,'%r') AS 'jam',A.ulactivity AS 'kegiatan',
+                          CASE WHEN A.ullevel=0 THEN 'Hapus'
+                               WHEN A.ullevel=1 THEN 'Tambah'
+                               WHEN A.ullevel=2 THEN 'Edit'
+                               WHEN A.ullevel=3 THEN 'Cetak'
+                          END AS 'level'
+                     FROM aauserlog A
+                LEFT JOIN auser B ON A.ULUSER=B.uid";
+        $search = array('A.ulusername','A.ulcomputer');
+        $where  = null;
+
+        $isWhere = "1=1";
+
+        $tgldari = @$_POST['tgldari'];
+        $tglsampai = @$_POST['tglsampai'];
+        if (!empty($tgldari) && !empty($tglsampai)) {
+          $isWhere .= " AND DATE(A.uldate) BETWEEN '".tgl_database($tgldari)."' AND '".tgl_database($tglsampai)."'";
+        }
+
+        $cabang = $this->_cabangValidUserlog(@$_POST['cabang']);
+        if (!empty($cabang)) {
+          $isWhere .= " AND B.ucabang='".$cabang."'";
+        }
+
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
-    }    
+    }
+
+    private function _cabangValidUserlog($cabang) {
+        if (empty($cabang)) {
+          return '';
+        }
+
+        if (!empty($this->session->allcabang) && $this->session->allcabang == 1) {
+          return (int) $cabang;
+        }
+
+        $ucabangpilih = '';
+        $sql = "SELECT UCABANGPILIH FROM auser WHERE UID='".$this->session->id."'";
+        $res = $this->db->query($sql);
+        foreach ($res->result() as $row) {
+          $ucabangpilih = $row->UCABANGPILIH;
+        }
+        $allowed = array_filter(array_map('trim', explode(',', $ucabangpilih)));
+        if (!in_array($cabang, $allowed)) {
+          return 0;
+        }
+        return (int) $cabang;
+    }
 
 }

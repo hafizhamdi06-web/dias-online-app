@@ -269,10 +269,32 @@ class Datatable_Transaksi_Full extends CI_Controller {
         $search = array('A.APJENIS','A.APKETERANGAN','B.unama','C.unama');
         $where  = null;
 
+        $isWhere = "1=1";
+
         $status = @$_POST['status'];
-        $isWhere = "";
         if ($status !== '' && in_array($status, array('0','1','2'), true)) {
-            $isWhere = "A.APSTATUS='".$status."'";
+            $isWhere .= " AND A.APSTATUS='".$status."'";
+        }
+
+        $jenis = trim(@$_POST['jenis']);
+        if ($jenis !== '') {
+            $isWhere .= " AND A.APJENIS LIKE '%".$this->db->escape_like_str($jenis)."%'";
+        }
+
+        $referensi = trim(@$_POST['referensi']);
+        if ($referensi !== '') {
+            $isWhere .= " AND A.APREFERENSI LIKE '%".$this->db->escape_like_str($referensi)."%'";
+        }
+
+        $keterangan = trim(@$_POST['keterangan']);
+        if ($keterangan !== '') {
+            $isWhere .= " AND A.APKETERANGAN LIKE '%".$this->db->escape_like_str($keterangan)."%'";
+        }
+
+        $tgldari = trim(@$_POST['tgldari']);
+        $tglsampai = trim(@$_POST['tglsampai']);
+        if ($tgldari !== '' && $tglsampai !== '') {
+            $isWhere .= " AND DATE(A.APTGLMINTA) BETWEEN '".tgl_database($tgldari)."' AND '".tgl_database($tglsampai)."'";
         }
 
         $isOrder = 'A.APID DESC';

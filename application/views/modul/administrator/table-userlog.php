@@ -1,6 +1,7 @@
 <body id="<? echo $id; ?>" class="layout-fixed overflow-hidden" data-panel-auto-height-mode="height">
-  <!-- Custom CSS -->  
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/table-page.css');?>">
+  <link rel="stylesheet" href="<? echo base_url('assets/plugins/datepicker/datepicker3.css'); ?>">
 
   <!-- Loading Page -->  
   <div class="loader-wrap d-none">
@@ -31,9 +32,18 @@
     </div>
     <!-- /.content-header -->
 
+    <div class="table-utils d-none">
+      <button id="bfilter" type="button" class="btn btn-light btn-sm" style="text-shadow: none;">
+        <i class="fas fa-filter text-sm text-primary"></i> Filter Data
+      </button>
+    </div>
+
     <!-- Main content -->
     <div class="content px-0 mx-0 ml-2" style="margin-top: 70px;">
-      <div class="container-fluid mt-1 px-0 mx-0">      
+      <div class="container-fluid mt-1 px-0 mx-0">
+        <input type="hidden" id="cabangdefault" value="<? echo @$_SESSION['cabang']; ?>">
+        <input type="hidden" id="namacabangdefault" value="<? echo @$_SESSION['namagudang']; ?>">
+
         <table id="userlog-table" class="table table-sm table-striped table-hover w-100 nowrap d-none">
           <thead>
           <tr>
@@ -43,13 +53,46 @@
           <th class="text-sm">Identitas</th>
           <th class="text-sm">Tanggal</th>
           <th class="text-sm">Jam</th>
-          <th class="text-sm">Aktivitas</th>          
-          <th class="text-sm">Level</th>                    
+          <th class="text-sm">Aktivitas</th>
+          <th class="text-sm">Level</th>
           </tr>
           </thead>
         </table>
+        <div id="fDataTable" class="fDataTable d-none">
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">Dari Tanggal :</label>
+                <div class="input-group date">
+                  <input id="tgldari" type="text" class="form-control form-control-sm datepicker">
+                  <div id="dtgldari" class="input-group-append" role="button">
+                      <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="row mt-0 pt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">Sampai Tanggal :</label>
+                <div class="input-group date">
+                  <input id="tglsampai" type="text" class="form-control form-control-sm datepicker">
+                  <div id="dtglsampai" class="input-group-append" role="button">
+                      <div class="input-group-text"><i class="fa fa-calendar-alt"></i></div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">Cabang :</label>
+                <select id="cabang" class="form-control select2 form-control-sm" style="width:100%"></select>
+              </div>
+          </div>
+          <div class="row ml-3 mt-4 pt-0">
+            <button type="button" id="submitfilter" class="btn btn-primary btn-sm">Tampilkan</button>
+          </div>
+        </div>
       </div>
-    </div>    
+    </div>
     <!-- /.Main content -->
   </div>
 
@@ -72,6 +115,7 @@
 <script src="<? echo base_url('assets/plugins/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/dist/js/adminlte.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/select2/select2.full.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/input-mask/jquery.inputmask.bundle.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.js'); ?>"></script>

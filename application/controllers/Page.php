@@ -188,6 +188,10 @@ class Page extends CI_Controller {
         $this->loader('import_shopee_income','modul/laporan/import-shopee-income');
     }
 
+    function item_pos(){
+        $this->loader('item_pos','modul/master/table-item-pos');
+    }
+
     function umb(){
         $this->loader('umb','modul/transaksi/pembelian/uangmuka-pembelian');
     }

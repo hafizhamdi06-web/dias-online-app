@@ -114,8 +114,136 @@ $(function(){
         }).each(function(){
           $(this).find('.view,.add,.edit,.delete,.print').prop('checked', isChecked);
         });
+      } else if(isChecked){
+        // menu anak dicentang -> menu induk ikut dicentang
+        var mparent = $row.data('mparent');
+        $("#tmenu tbody tr").filter(function(){
+          return $(this).data('mid')==mparent;
+        }).find('.view,.add,.edit,.delete,.print').prop('checked', true);
       }
     })
+
+    $(document).off("click.bupdatebaris").on("click.bupdatebaris",".bupdatebaris", function(){
+      var iduser = $("#id").val();
+      if(!iduser){
+        toastr.error("Simpan data user terlebih dahulu sebelum update per baris menu !");
+        return;
+      }
+
+      var $row = $(this).closest('tr');
+      var idmenu = $row.data('mid');
+      var $btn = $(this);
+
+      var data = {
+        id: iduser,
+        idmenu: idmenu,
+        buka: $row.find('.view').prop('checked') ? 1 : 0,
+        tambah: $row.find('.add').prop('checked') ? 1 : 0,
+        edit: $row.find('.edit').prop('checked') ? 1 : 0,
+        delete: $row.find('.delete').prop('checked') ? 1 : 0,
+        print: $row.find('.print').prop('checked') ? 1 : 0
+      };
+
+      $.ajax({
+        "url"    : base_url+"Admin_User/updatesatumenu",
+        "type"   : "POST",
+        "dataType" : "json",
+        "data"   : data,
+        "cache"  : false,
+        "beforeSend" : function(){
+          $btn.prop('disabled', true);
+        },
+        "error": function(xhr, status, error){
+          $btn.prop('disabled', false);
+          toastr.error("Gagal update baris ini : "+xhr.status+" "+error);
+        },
+        "success": function(result){
+          $btn.prop('disabled', false);
+          if(result.pesan=='sukses'){
+            toastr.success("Baris menu berhasil diupdate");
+          } else {
+            toastr.error("Gagal update baris ini.");
+          }
+        }
+      });
+    });
+
+    $(document).off("click.bupdategudang").on("click.bupdategudang","#bupdategudang", function(){
+      var iduser = $("#id").val();
+      if(!iduser){
+        toastr.error("Simpan data user terlebih dahulu sebelum update pilihan gudang !");
+        return;
+      }
+
+      var ucabangpilih = [];
+      $("#tgudang input[name^='isgudang']:checked").each(function(){
+        ucabangpilih.push($(this).val());
+      });
+      ucabangpilih = ucabangpilih.join(',');
+
+      var $btn = $(this);
+
+      $.ajax({
+        "url"    : base_url+"Admin_User/updategudang",
+        "type"   : "POST",
+        "dataType" : "json",
+        "data"   : { id: iduser, ucabangpilih: ucabangpilih },
+        "cache"  : false,
+        "beforeSend" : function(){
+          $btn.prop('disabled', true);
+        },
+        "error": function(xhr, status, error){
+          $btn.prop('disabled', false);
+          toastr.error("Gagal update pilihan gudang : "+xhr.status+" "+error);
+        },
+        "success": function(result){
+          $btn.prop('disabled', false);
+          if(result.pesan=='sukses'){
+            toastr.success("Pilihan gudang berhasil diupdate");
+          } else {
+            toastr.error("Gagal update pilihan gudang.");
+          }
+        }
+      });
+    });
+
+    $(document).off("click.bupdaterole").on("click.bupdaterole","#bupdaterole", function(){
+      var iduser = $("#id").val();
+      if(!iduser){
+        toastr.error("Simpan data user terlebih dahulu sebelum update role !");
+        return;
+      }
+
+      var rolepilih = [];
+      $("#trole input[name^='isrole']:checked").each(function(){
+        rolepilih.push($(this).val());
+      });
+
+      var $btn = $(this);
+
+      $.ajax({
+        "url"    : base_url+"Admin_User/updaterole",
+        "type"   : "POST",
+        "dataType" : "json",
+        "data"   : { id: iduser, rolepilih: JSON.stringify(rolepilih) },
+        "cache"  : false,
+        "beforeSend" : function(){
+          $btn.prop('disabled', true);
+        },
+        "error": function(xhr, status, error){
+          $btn.prop('disabled', false);
+          toastr.error("Gagal update role : "+xhr.status+" "+error);
+        },
+        "success": function(result){
+          $btn.prop('disabled', false);
+          if(result.pesan=='sukses'){
+            toastr.success("Role berhasil diupdate");
+          } else {
+            toastr.error("Gagal update role.");
+          }
+        }
+      });
+    });
 
     $(document).on("click","#pilihsemuagudang", function(e){
       var isChecked = $(this).prop("checked");
@@ -279,7 +407,7 @@ function _getDataAksesMenu(sourceId){
           $.each(result.data, function() {
           	if(result.data[rows]['mgroup'] !== lastgroup){
           		lastgroup = result.data[rows]['mgroup'];
-          		$('#tmenu tbody').append("<tr class=\"bg-light\"><td class=\"border-0 py-1 px-1\"></td><td class=\"border-0 py-1\" colspan=\"6\"><strong>"+lastgroup+"</strong></td></tr>");
+          		$('#tmenu tbody').append("<tr class=\"bg-light\"><td class=\"border-0 py-1 px-1\"></td><td class=\"border-0 py-1\" colspan=\"7\"><strong>"+lastgroup+"</strong></td></tr>");
           	}
   		      var newrow = " <tr data-mid=\""+result.data[rows]['mid']+"\" data-mparent=\""+result.data[rows]['mparent']+"\">";
   		    	newrow += "<td class=\"border-0 py-1 px-1\"><input type=\"hidden\" name=\"idmenu\" value=\""+result.data[rows]['mid']+"\"><i class=\"fas fa-caret-right\"></i></td>";
@@ -314,6 +442,8 @@ function _getDataAksesMenu(sourceId){
     		   	}else{
     		   		newrow += "<td class=\"border-0 py-1 text-center\"><input type=\"checkbox\" name=\"isprint[]\" class=\"print\"></td>";
     		   	}
+
+    		   	newrow += "<td class=\"border-0 py-1 text-center\"><button type=\"button\" class=\"btn btn-primary btn-xs bupdatebaris\" title=\"Update baris ini\"><i class=\"fas fa-sync\"></i></button></td>";
 
   	        newrow += "</tr>";
     		    $('#tmenu tbody').append(newrow);          	

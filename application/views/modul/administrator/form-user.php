@@ -86,6 +86,7 @@
                                 <th class="text-sm text-label text-center border-0 font-weight-normal" style="width: 70px">Edit</th>
                                 <th class="text-sm text-label text-center border-0 font-weight-normal" style="width: 70px">Hapus</th>
                                 <th class="text-sm text-label text-center border-0 font-weight-normal" style="width: 70px">Cetak</th>
+                                <th class="text-sm text-label text-center border-0 font-weight-normal" style="width: 70px">Update</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -133,6 +134,9 @@
                             </tfoot>
                           </table>
                     </div>
+                    <div class="col-12 text-right mt-2">
+                      <button type="button" id="bupdategudang" class="btn btn-primary btn-sm">Update</button>
+                    </div>
                     </div>
             </div>
             <div class="tab-pane fade text-sm" id="tab-role" role="tabpanel" aria-labelledby="btn-tab-role">
@@ -151,6 +155,9 @@
                             <tfoot>
                             </tfoot>
                           </table>
+                    </div>
+                    <div class="col-12 text-right mt-2">
+                      <button type="button" id="bupdaterole" class="btn btn-primary btn-sm">Update</button>
                     </div>
                     </div>
             </div>
