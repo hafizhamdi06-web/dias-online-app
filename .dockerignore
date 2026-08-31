@@ -1,0 +1,19 @@
+.git
+.env
+docker-compose.yml
+vendor
+node_modules
+
+# CI3 writable dirs get (re)populated at runtime — keep only the index.html guards
+application/cache/*
+application/logs/*
+!application/cache/index.html
+!application/logs/index.html
+
+# Repo meta / tooling, not needed at runtime
+.claude
+.agents
+tests
+user_guide_src
+*.md
+!README.md

@@ -1,11 +1,29 @@
+# Sample deploy for the published image. DB (mysqli) and memcached stay
+# external — point them via .env (DB_HOSTNAME, MEMCACHED_HOST, ...).
+#
+# Traefik is assumed to be running on the host. Adjust:
+#   - networks.traefik-public.name  -> your real Traefik network
+#   - Host(`...`) rule + certresolver
+#
+# To run from the registry instead of building locally, comment out `build:`
+# and uncomment `image:`.
 services:
-  dias-online:
-    build: ./
-    container_name: dias-online
-    volumes:
-      - /home/nmwtech/sites/dias-online:/var/www/html
-    ports:
-      - "9074:9000"
+  app:
+    # image: ghcr.io/<owner>/dias-online:latest
+    build: .
+    env_file: .env
     restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      # Replace with the real domain
+      - "traefik.http.routers.dias-online.rule=Host(`dias-online.example.com`)"
+      - "traefik.http.routers.dias-online.entrypoints=websecure"
+      - "traefik.http.routers.dias-online.tls.certresolver=myresolver"
+      - "traefik.http.services.dias-online.loadbalancer.server.port=80"
+
+networks:
+  traefik-public:
+    external: true
+    name: traefik-public # <- change to the actual Traefik network name
