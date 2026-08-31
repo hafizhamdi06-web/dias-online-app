@@ -255,6 +255,32 @@ class Datatable_Transaksi_Full extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere,$isOrder);
     }
 
+   function view_persetujuan_riwayat() {
+        $query  = "SELECT A.APID 'id', A.APJENIS 'jenis', A.APREFERENSI 'referensi', A.APKETERANGAN 'keterangan',
+                          COALESCE(B.unamalengkap,B.unama) 'pemohon',
+                          COALESCE(C.unamalengkap,C.unama) 'approver',
+                          CASE A.APSTATUS WHEN 0 THEN 'Pending' WHEN 1 THEN 'Disetujui' WHEN 2 THEN 'Ditolak' ELSE '-' END 'status',
+                          DATE_FORMAT(A.APTGLMINTA,'%d-%m-%Y %H:%i') 'tglminta',
+                          DATE_FORMAT(A.APTGLRESPON,'%d-%m-%Y %H:%i') 'tglrespon',
+                          A.APCATATAN 'catatan'
+                     FROM aapersetujuan A
+                LEFT JOIN auser B ON A.APIDUSERMINTA=B.uid
+                LEFT JOIN auser C ON A.APIDUSERSETUJU=C.uid";
+        $search = array('A.APJENIS','A.APKETERANGAN','B.unama','C.unama');
+        $where  = null;
+
+        $status = @$_POST['status'];
+        $isWhere = "";
+        if ($status !== '' && in_array($status, array('0','1','2'), true)) {
+            $isWhere = "A.APSTATUS='".$status."'";
+        }
+
+        $isOrder = 'A.APID DESC';
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere,$isOrder);
+    }
+
    function view_uang_muka_pembelian() {
         $transcode = element('PB_Uang_Muka_Pembelian',NID);
         $transcode = $this->M_transaksi->prefixtrans($transcode);

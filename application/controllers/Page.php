@@ -172,12 +172,20 @@ class Page extends CI_Controller {
         $this->loader('persetujuan','modul/transaksi/penjualan/table-persetujuan');
     }
 
+    function persetujuan_riwayat(){
+        $this->loader('persetujuan_riwayat','modul/transaksi/penjualan/table-persetujuan-riwayat');
+    }
+
     function pos_mobile(){
         $this->loader('pos_mobile','modul/transaksi/penjualan/pos-mobile');
     }
 
     function grafik_penjualan(){
         $this->loader('grafik_penjualan','modul/laporan/grafik-penjualan');
+    }
+
+    function import_shopee_income(){
+        $this->loader('import_shopee_income','modul/laporan/import-shopee-income');
     }
 
     function umb(){
