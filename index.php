@@ -53,7 +53,16 @@
  *
  * NOTE: If you change these, also change the error_reporting() code below
  */
-	define('ENVIRONMENT', isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development');
+	if (file_exists(__DIR__.'/vendor/autoload.php'))
+	{
+		require_once __DIR__.'/vendor/autoload.php';
+		if (file_exists(__DIR__.'/.env'))
+		{
+			Dotenv\Dotenv::createUnsafeImmutable(__DIR__)->safeLoad();
+		}
+	}
+
+	define('ENVIRONMENT', getenv('CI_ENV') ?: (isset($_SERVER['CI_ENV']) ? $_SERVER['CI_ENV'] : 'development'));
 
 /*
  *---------------------------------------------------------------

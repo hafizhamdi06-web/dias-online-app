@@ -7,13 +7,7 @@ $config['hak_cipta'] = 'Prodeus Nusantara';
 $config['vendor_text'] = 'By Prodeus Nusantara';
 $config['versi'] = 'Beta';
 $config['dasbor_msg'] = '&nbsp;';
-
-//codeigniter configuration
-$config['base_url'] = 'http://localhost/dias';
-$config['base_url'] = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? "https" : "http");
-$config['base_url'] .= "://" . $_SERVER['HTTP_HOST'];
-$config['base_url'] .= str_replace(basename($_SERVER['SCRIPT_NAME']), "", $_SERVER['SCRIPT_NAME']);
-
+$config['base_url'] = getenv('BASE_URL') ?: 'http://localhost/dias';
 $config['app_url'] = '';
 $config['index_page'] = '';
 $config['uri_protocol']	= 'REQUEST_URI';
@@ -22,7 +16,7 @@ $config['language']	= 'english';
 $config['charset'] = 'UTF-8';
 $config['enable_hooks'] = FALSE;
 $config['subclass_prefix'] = 'MY_';
-$config['composer_autoload'] = 'mpdf/autoload.php';
+$config['composer_autoload'] = 'vendor/autoload.php';
 $config['permitted_uri_chars'] = 'a-z 0-9~%.:_\-';
 $config['enable_query_strings'] = FALSE;
 $config['controller_trigger'] = 'c';
@@ -37,7 +31,7 @@ $config['log_date_format'] = 'Y-m-d H:i:s';
 $config['error_views_path'] = '';
 $config['cache_path'] = '';
 $config['cache_query_string'] = FALSE;
-$config['encryption_key'] = 'diasonlinecodeigniter3';
+$config['encryption_key'] = getenv('ENCRYPTION_KEY') ?: 'diasonlinecodeigniter3';
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'sess_dias';
 $config['sess_expiration'] = 7200;

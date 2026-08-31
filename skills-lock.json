@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "codeigniter": {
+      "source": "yasserstudio/codeigniter-skills",
+      "sourceType": "github",
+      "skillPath": "skills/codeigniter/SKILL.md",
+      "computedHash": "bb9848450212d9150df90faa19dcfbb87527340aa6ae09610e9ebdb566e46a84"
+    },
+    "grill-me": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/productivity/grill-me/SKILL.md",
+      "computedHash": "9cdbb4b8f7a3aeaef82e6230c9e823500d4a8a1214c726cf342cf9829d34fc7d"
+    },
+    "humanizer": {
+      "source": "blader/humanizer",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "a9e52ffc97e9d8fdda35a6fb3967ace6fbc1ae3a0b7703774ad077fcf1e27153"
+    }
+  }
+}

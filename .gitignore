@@ -1,11 +1,9 @@
 .DS_Store
+.env
 
 # Sensitive config with real credentials — never commit
 application/config/database.php
 application/config/database_medlib.php
-
-# Unused duplicate copy
-/nmw1/
 
 application/cache/*
 !application/cache/index.html
@@ -34,3 +32,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 *.sublime-project
 /tests/tests/
 /tests/results/
+
+.agents
+.claude
