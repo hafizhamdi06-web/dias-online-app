@@ -25,15 +25,13 @@ var _kontakdatatable = function(){
     "ordering": true,
     "pagingType":"simple",        
     "order": [[ 2, 'asc' ]],      
-    "select":true,      
-    "dom": '<"top"p>tr<"clear">',
+    "select":true,
+    "dom": '<"top"fp>tr<"clear">',
     "ajax": {
         "url": base_url + "Datatable_Master/view_table_kontak_pos2/"+katId,
         "type":"post",
         "data": function(data){
           data.cabang = $('#cabang').val();
-          data.carifield = $('#carifield').val();
-          data.cari = $('#carikontak').val();
         },
         "beforeSend": function(){
           $(".loader-wrap").addClass("d-none");
@@ -69,7 +67,7 @@ var _kontakdatatable = function(){
       }else{
         $(".modal-body").addClass("noresultfound");
       }
-      $('#carikontak').focus();
+      $('#contact-table_filter input').focus();
       $('#contact-table').removeClass("d-none");
     }
   });
@@ -92,7 +90,7 @@ var _moveSelectionKontak = (direction) => {
   if(node) node.scrollIntoView({block:'nearest'});
 }
 
-$('.main-modal-body').off('keydown.carikontakpos').on('keydown.carikontakpos', '#carikontak, #contact-table', function(e){
+$('.main-modal-body').off('keydown.carikontakpos').on('keydown.carikontakpos', '#contact-table_filter input, #contact-table', function(e){
   if(e.keyCode==13){
     e.preventDefault();
     restable();
@@ -103,25 +101,6 @@ $('.main-modal-body').off('keydown.carikontakpos').on('keydown.carikontakpos', '
     e.preventDefault();
     _moveSelectionKontak(-1);
   }
-});
-
-$('#carifield').select2({
-    "theme":"bootstrap4",
-    "minimumResultsForSearch": -1,
-    "dropdownParent": $('#modal')
-});
-
-$('#carifield').on('change', function(){
-  if(tabelkontak) tabelkontak.ajax.reload();
-});
-
-var _cariKontakTimer = null;
-$('#carikontak').on('keyup', function(e){
-  if(e.keyCode==13 || e.keyCode==40 || e.keyCode==38) return;
-  clearTimeout(_cariKontakTimer);
-  _cariKontakTimer = setTimeout(function(){
-    if(tabelkontak) tabelkontak.ajax.reload();
-  }, 400);
 });
 
 var _lstkategorikontak = function(){

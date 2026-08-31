@@ -41,21 +41,6 @@
 
                     </div>
                 </div>
-                <div class="col-12">
-                    <div class="form-group row my-0">
-                        <div class="col-4">
-                               <select id="carifield" name="carifield" class="form-control select2 form-control-sm" data-trigger="manual" data-placement="auto">
-                                 <option value="nama" selected>Nama</option>
-                                 <option value="kode">Kode</option>
-                                 <option value="idpasien">ID Pasien</option>
-                                 <option value="noktp">No KTP</option>
-                               </select>
-                        </div>
-                        <div class="col-7">
-                               <input type="text" id="carikontak" name="carikontak" class="form-control form-control-sm" placeholder="Ketik untuk mencari..." autocomplete="off">
-                        </div>
-                    </div>
-                </div>
     </div>
                                   
                                   

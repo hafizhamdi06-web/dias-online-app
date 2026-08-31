@@ -311,24 +311,6 @@ class Datatable_Master extends CI_Controller {
           $isWhere .= " AND A.ktipe='".$katId."'";
         }
 
-        $cari = trim(@$_POST['cari']);
-        if($cari!==""){
-          $carifield = @$_POST['carifield'];
-          if($carifield=='kode'){
-            $isWhere .= " AND A.kkode LIKE '".$cari."%'";
-          }elseif($carifield=='idpasien'){
-            $isWhere .= " AND A.kidpasien LIKE '".$cari."%'";
-          }elseif($carifield=='noktp'){
-            $isWhere .= " AND A.knoktp LIKE '".$cari."%'";
-          }else{
-            $cariFt = preg_replace('/[+\-><()~*"@]/', ' ', $cari);
-            $cariFt = trim($cariFt);
-            if($cariFt!==""){
-              $isWhere .= " AND MATCH(A.knama) AGAINST('".$this->db->escape_str($cariFt)."*' IN BOOLEAN MODE)";
-            }
-          }
-        }
-
         if(!empty($this->input->post('kategori')) && $this->input->post('kategori') != null) {
           $isWhere .= " AND A.ktipe='".$this->input->post('kategori')."' ";
         }
