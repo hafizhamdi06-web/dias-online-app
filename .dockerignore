@@ -8,6 +8,9 @@ node_modules
 application/cache/*
 application/logs/*
 !application/cache/index.html
+!application/cache/sessions/
+application/cache/sessions/*
+!application/cache/sessions/index.html
 !application/logs/index.html
 
 # Repo meta / tooling, not needed at runtime

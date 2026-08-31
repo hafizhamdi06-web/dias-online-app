@@ -1,5 +1,5 @@
-# Sample deploy for the published image. DB (mysqli) and memcached stay
-# external — point them via .env (DB_HOSTNAME, MEMCACHED_HOST, ...).
+# Sample deploy for the published image. The database stays external;
+# point the application to it via .env (DB_HOSTNAME, DB_USERNAME, ...).
 #
 # Traefik is assumed to be running on the host. Adjust:
 #   - networks.traefik-public.name  -> your real Traefik network
