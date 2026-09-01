@@ -16,8 +16,23 @@ class Admin_User extends CI_Controller {
         if($this->input->post('id')==''){
           echo $this->M_Admin_User->tambahData();
         }else{
-          echo $this->M_Admin_User->ubahData();      
+          echo $this->M_Admin_User->ubahData();
         }
+    }
+
+    function updatesatumenu(){
+        header('Content-Type: application/json');
+        echo $this->M_Admin_User->ubahSatuMenu();
+    }
+
+    function updategudang(){
+        header('Content-Type: application/json');
+        echo $this->M_Admin_User->ubahGudangPilihan();
+    }
+
+    function updaterole(){
+        header('Content-Type: application/json');
+        echo $this->M_Admin_User->ubahRolePilihan();
     }
 
     function deletedata(){

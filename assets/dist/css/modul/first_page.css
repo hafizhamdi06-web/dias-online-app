@@ -10,3 +10,24 @@
 	line-height: 1.35em;
 	height: 15px;
 }
+
+.gp-ringkasan-secondary .gp-ringkasan-icon { background: #6c757d; }
+.gp-ringkasan-danger .gp-ringkasan-icon { background: #dc3545; }
+.gp-ringkasan-dark .gp-ringkasan-icon { background: #343a40; }
+
+.rb-body {
+	flex: 1 1 auto;
+	min-width: 0;
+	width: 100%;
+}
+
+.rb-title {
+	font-size: 13px;
+	font-weight: 700;
+	color: #333;
+	white-space: normal;
+}
+
+.rb-sub-number {
+	font-size: 16px;
+}

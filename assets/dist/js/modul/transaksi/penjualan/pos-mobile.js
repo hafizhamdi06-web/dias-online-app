@@ -323,7 +323,7 @@ var _ambilDetailItem = (iid, namaitem) => {
       itemSeq++;
 
       var idiskon = Number(row.diskon) || 0;
-      var dis1 = (pasienDiscount > 0) ? idiskon : 0;
+      var dis1 = (pasienDiscount > 0 && $('#cabang').val() != 18) ? idiskon : 0;
 
       items.push({
         seq: itemSeq,

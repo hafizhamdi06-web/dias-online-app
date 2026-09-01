@@ -298,17 +298,25 @@ class M_PJ_POS_HP extends CI_Model {
         $gudang = $_POST['cabang'] ;
         $r=1;
         $d = json_decode($_POST['detil']);
+        if ($gudang == 18) {
+            foreach ($d as $item) {
+                $item->dis1 = 0;
+                $item->dis2 = 0;
+                $item->diskon = 0;
+                $item->diskon2 = 0;
+            }
+        }
         foreach($d as $item){
             $dokter=$item->dokter ;
-            if($dokter=='')  $dokter= NULL ; 
+            if($dokter=='')  $dokter= NULL ;
             $operator=$item->operator ;
-            if($operator=='')  $operator= NULL ; 
-            
+            if($operator=='')  $operator= NULL ;
+
             $cetak=$item->cetak;
             if($cetak=='') $cetak=1;
-           
-             
-            $data_detil_bkg = array( 
+
+
+            $data_detil_bkg = array(
                     'sdurutan' => $r,
                     'sdidsu' => $id,
                     'sdsumber' => 'IP',
@@ -417,22 +425,27 @@ class M_PJ_POS_HP extends CI_Model {
        
        
        // edn save voucher
-       
-        
-         
+
+
+
         // USERLOG
         $uactivity = _anomor(element('PJ_Penjualan_Tunai',NID));
-        $uactivity = $uactivity['keterangan'];        
+        $uactivity = $uactivity['keterangan'];
+        $nomorAsli = $this->input->post('nomor');
+        if (empty($nomorAsli)) {
+            $rowNomor = $this->db->select('sunotransaksi')->where('suid', $id)->get('fstoku')->row();
+            $nomorAsli = $rowNomor ? $rowNomor->sunotransaksi : '';
+        }
         $userlog = array(
             'uluser' => $this->session->id,
             'ulusername' => $this->session->nama,
             'ulcomputer' => $this->input->ip_address(),
-            'ulactivity' => $uactivity.' '.$this->input->post('nomor'),
-            'ullevel'=> 2                                                                                    
+            'ulactivity' => $uactivity.' '.$nomorAsli,
+            'ullevel'=> 2
         );
-        $this->db->insert('aauserlog',$userlog);  
+        $this->db->insert('aauserlog',$userlog);
 
-        $this->db->trans_complete(); 
+        $this->db->trans_complete();
 
         if($this->db->trans_status() === FALSE){
             $callback = array(    
@@ -608,8 +621,16 @@ class M_PJ_POS_HP extends CI_Model {
           
         // Insert Detil Trans
         $r=1;
-        
+
         $d = json_decode($_POST['detil']);
+        if ($gudang == 18) {
+            foreach ($d as $item) {
+                $item->dis1 = 0;
+                $item->dis2 = 0;
+                $item->diskon = 0;
+                $item->diskon2 = 0;
+            }
+        }
         foreach($d as $item){
             $dokter=$item->dokter ;
             if($dokter=='')  $dokter= NULL ; 

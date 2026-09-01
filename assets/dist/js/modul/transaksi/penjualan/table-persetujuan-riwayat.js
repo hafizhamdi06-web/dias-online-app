@@ -8,6 +8,59 @@ $(function () {
 
   $("#brefresh").focus();
 
+  $('.datepicker').inputmask({
+    alias:'dd/mm/yyyy',
+    mask: "1-2-y",
+    placeholder: "_",
+    leapday: "-02-29",
+    separator: "-"
+  });
+
+  $('.datepicker').datepicker({
+    format: 'dd-mm-yyyy',
+    autoclose: true,
+    todayHighlight: true,
+    orientation: 'bottom',
+    container: 'body'
+  }).on('show', function(){
+    var $input = $(this);
+    var offset = $input.offset();
+    $('.datepicker.datepicker-dropdown:visible').css({
+      'z-index': 99999,
+      'top': (offset.top + $input.outerHeight()) + 'px',
+      'left': offset.left + 'px'
+    });
+  });
+
+  $("#dtgldari").click(function() {
+    $("#tgldari").datepicker('show');
+  });
+
+  $("#dtglsampai").click(function() {
+    $("#tglsampai").datepicker('show');
+  });
+
+  $("#bfilter").click(function() {
+    if($("#fDataTable").hasClass("d-none")){
+      $("#riwayat-table").removeClass("w-100");
+      $("#riwayat-table").addClass("w-75");
+      $("#fDataTable").removeClass("d-none");
+    }else {
+      $("#riwayat-table").removeClass("w-75");
+      $("#riwayat-table").addClass("w-100");
+      $("#fDataTable").addClass("d-none");
+    }
+  });
+
+  $("#submitfilter").click(function() {
+    _reloaddatatable();
+    if (window.matchMedia('screen and (max-width: 768px)').matches) {
+      $("#riwayat-table").removeClass("w-75");
+      $("#riwayat-table").addClass("w-100");
+      $("#fDataTable").addClass("d-none");
+    }
+  });
+
   $('.tab-wrap').overlayScrollbars({
   className: "os-theme-dark",
   overflowBehavior : {
@@ -22,6 +75,7 @@ $(function () {
   });
 
   tabel=$('#riwayat-table').DataTable({
+    "destroy": true,
     "processing": true,
     "serverSide": true,
     "lengthChange": false,
@@ -36,6 +90,11 @@ $(function () {
         "type":"post",
         "data": function(data){
           data.status = $('#status').val();
+          data.jenis = $('#jenis').val();
+          data.referensi = $('#referensi').val();
+          data.keterangan = $('#keterangan').val();
+          data.tgldari = $('#tgldari').val();
+          data.tglsampai = $('#tglsampai').val();
         }
     },
     "deferRender": true,
@@ -66,6 +125,9 @@ $(function () {
       if(!parent.window.$(".loader-wrap").hasClass("d-none")){
         parent.window.$(".loader-wrap").addClass("d-none");
       }
+      if($(".table-utils").hasClass("d-none")){
+        $(".table-utils").removeClass("d-none");
+      }
       if($(".table").hasClass("d-none")){
         $(".table").removeClass("d-none");
       }
@@ -91,10 +153,6 @@ $(function () {
   });
 
   $("#brefresh").click(function() {
-    _reloaddatatable();
-  });
-
-  $("#status").change(function() {
     _reloaddatatable();
   });
 

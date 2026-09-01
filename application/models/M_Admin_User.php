@@ -82,6 +82,91 @@ class M_Admin_User extends CI_Model {
         }
     }
 
+    function ubahSatuMenu()
+    {
+        $iduser = $_POST['id'];
+        $idmenu = $_POST['idmenu'];
+
+        $data = array(
+                'auiduser' => $iduser,
+                'auidmenu' => $idmenu,
+                'auadd' => $_POST['tambah'],
+                'auedit' => $_POST['edit'],
+                'audell' => $_POST['delete'],
+                'auprint' => $_POST['print'],
+                'auapprove' => $_POST['buka']
+        );
+
+        $this->db->where('auiduser', $iduser);
+        $this->db->where('auidmenu', $idmenu);
+        $existing = $this->db->get('aausermenu')->row();
+
+        $this->db->trans_begin();
+
+        if ($existing) {
+            $this->db->where('auiduser', $iduser);
+            $this->db->where('auidmenu', $idmenu);
+            $this->db->update('aausermenu', $data);
+        } else {
+            $this->db->insert('aausermenu', $data);
+        }
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return json_encode(array('pesan' => 'rollback'));
+        } else {
+            $this->db->trans_commit();
+            return json_encode(array('pesan' => 'sukses'));
+        }
+    }
+
+    function ubahGudangPilihan()
+    {
+        $iduser = $_POST['id'];
+        $ucabangpilih = empty($_POST['ucabangpilih']) ? null : $_POST['ucabangpilih'];
+
+        $this->db->trans_begin();
+
+        $this->db->where('uid', $iduser);
+        $this->db->update('auser', array('ucabangpilih' => $ucabangpilih));
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return json_encode(array('pesan' => 'rollback'));
+        } else {
+            $this->db->trans_commit();
+            return json_encode(array('pesan' => 'sukses'));
+        }
+    }
+
+    function ubahRolePilihan()
+    {
+        $iduser = $_POST['id'];
+        $d = json_decode($_POST['rolepilih']);
+
+        $this->db->trans_begin();
+
+        $this->db->where('AURIDUSER', $iduser);
+        $this->db->delete('aauserrole');
+
+        foreach ($d as $idrole) {
+            $data_role = array(
+                'AURIDUSER' => $iduser,
+                'AURIDROLE' => $idrole,
+                'AURSTATUS' => 1
+            );
+            $this->db->insert('aauserrole', $data_role);
+        }
+
+        if($this->db->trans_status() === FALSE){
+            $this->db->trans_rollback();
+            return json_encode(array('pesan' => 'rollback'));
+        } else {
+            $this->db->trans_commit();
+            return json_encode(array('pesan' => 'sukses'));
+        }
+    }
+
     function hapusData()
     {
         $id = $_POST['id'];

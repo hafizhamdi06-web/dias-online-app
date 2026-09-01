@@ -5509,8 +5509,15 @@ var _hitungJumlahDetil = (idx) => {
      
       vdis1 = Number($("input[name^='dis1']").eq(idx).val().split('.').join('').toString().replace(',','.')),
       vdis2 = Number($("input[name^='dis2']").eq(idx).val().split('.').join('').toString().replace(',','.')),
-      vsubtotal = 0, vdiskon1=0, vdiskon2=0, vharganet1=0, vdiskon=0 ; 
- 
+      vsubtotal = 0, vdiskon1=0, vdiskon2=0, vharganet1=0, vdiskon=0 ;
+
+  if($('#cabang').val()==18){
+    vdis1 = 0;
+    vdis2 = 0;
+    $("input[name^='dis1']").eq(idx).val('0');
+    $("input[name^='dis2']").eq(idx).val('0');
+  }
+
   vharganet1=vharga;
   if(vdis1>0 && vharga>0 && vqty >0)
   {

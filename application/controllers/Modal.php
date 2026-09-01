@@ -152,7 +152,11 @@ class Modal extends CI_Controller {
     // Modal Form Item & Jasa
     function form_item(){
         $this->loader('modul/master/form-item');
-    }            
+    }
+
+    function form_item_pos(){
+        $this->loader('modul/master/form-item-pos');
+    }
 
     // Modal Form Kontak
     function form_kontak(){

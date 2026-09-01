@@ -59,9 +59,7 @@ $(function () {
           { "data": "satuan" },
           { "data": "jenis" },                    
           { "data": "hbeli" },
-          { "data": "hjual" },
-          { "data": "coa" },
-          { "data": "coanama" }                                                                                                                        
+          { "data": "hjual" }
     ],
     "columnDefs": [
           {
@@ -77,7 +75,7 @@ $(function () {
                  data = "<span title='"+data+"'>"+data+"</span>";
                  return data;
             },
-            "targets": [3,10]
+            "targets": [3]
           },                    
     ],
     "drawCallback": () => {
