@@ -21,7 +21,13 @@ class Fina_Kas_Masuk extends CI_Controller {
    }
 
    function deletedata(){
-    echo $this->M_Fina_Kas_Masuk->hapusTransaksi();          
+    echo $this->M_Fina_Kas_Masuk->hapusTransaksi();
+   }
+
+   function getketerangan(){
+      $query = "SELECT NKETERANGAN 'keterangan' FROM aanomor WHERE NID='".element('Fina_Kas_Masuk',NID)."'";
+      header('Content-Type: application/json');
+      echo $this->M_transaksi->get_data_query($query);
    }
 
    function getdata(){

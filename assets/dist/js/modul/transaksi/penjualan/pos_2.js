@@ -2673,8 +2673,123 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
       }
     });
   };
-  
-   $("#bokmodalalasanedit").click(function() {  
+
+  var _cekPersetujuanHargaPOS = (idx, iditem) => {
+    $.ajax({
+      "url"    : base_url+"Persetujuan/cekstatus",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data"   : "jenis=Buka Kunci Harga POS&referensi="+encodeURIComponent(iditem),
+      "cache"  : false,
+      "beforeSend" : function(){
+        parent.window.$(".loader-wrap").removeClass("d-none");
+      },
+      "error"  : function(xhr,status,error){
+        parent.window.$(".loader-wrap").addClass("d-none");
+        parent.window.toastr.error("Err: "+xhr.status+", "+error);
+      },
+      "success" : function(result) {
+        parent.window.$(".loader-wrap").addClass("d-none");
+
+        if (result.status === 'disetujui') {
+          $("input[name^='harga']").eq(idx).removeAttr('disabled');
+          $("input[name^='hargaunlocked']").eq(idx).val('1');
+          parent.window.toastr.success("Sukses membuka Kunci harga " + $("select[name^='spannama']").eq(idx).text());
+        } else if (result.status === 'pending') {
+          parent.window.toastr.info("Menunggu persetujuan dari "+result.approver+", silakan coba lagi nanti.");
+        } else if (result.status === 'ditolak') {
+          parent.window.toastr.error("Pengajuan sebelumnya ditolak"+(result.catatan ? ' : '+result.catatan : '')+". Silakan ajukan ulang.");
+          _tampilkanAjukanPersetujuanHargaPOS(idx, iditem);
+        } else {
+          _tampilkanAjukanPersetujuanHargaPOS(idx, iditem);
+        }
+      }
+    });
+  };
+
+  var _tampilkanAjukanPersetujuanHargaPOS = (idx, iditem) => {
+    $.ajax({
+      "url"    : base_url+"Select_Master/view_user_approver",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data"   : "role=Approve Buka Kunci Harga POS",
+      "cache"  : false,
+      "beforeSend" : function(){
+        parent.window.$(".loader-wrap").removeClass("d-none");
+      },
+      "error"  : function(){
+        parent.window.$(".loader-wrap").addClass("d-none");
+        parent.window.toastr.error("Gagal mengambil daftar approver !");
+      },
+      "success" : function(list) {
+        parent.window.$(".loader-wrap").addClass("d-none");
+
+        if (!list || list.length===0) {
+          parent.window.toastr.error("Belum ada user dengan hak approve. Hubungi Administrator.");
+          return;
+        }
+
+        var options = '';
+        list.forEach(function(u){
+          options += '<option value="'+u.id+'">'+u.text+'</option>';
+        });
+
+        var _namaitem = $("select[name^='spannama']").eq(idx).text();
+
+        parent.window.Swal.fire({
+          title: 'Ajukan Persetujuan',
+          html:
+            '<div class="text-left">'+
+            '<label class="text-sm">Harga item terkunci, pilih approver untuk mengajukan persetujuan buka kunci harga:</label>'+
+            '<select id="swal-approver-harga" class="form-control form-control-sm mb-2">'+options+'</select>'+
+            '<label class="text-sm">Keterangan</label>'+
+            '<input type="text" id="swal-keterangan-harga" class="form-control form-control-sm" value="BUKA HARGA - '+_namaitem+'">'+
+            '</div>',
+          showCancelButton: true,
+          confirmButtonText: 'Ajukan',
+          cancelButtonText: 'Batal',
+          preConfirm: () => {
+            return {
+              iduserapprover: parent.window.document.getElementById('swal-approver-harga').value,
+              keterangan: parent.window.document.getElementById('swal-keterangan-harga').value
+            };
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            _ajukanPersetujuanHargaPOS(idx, iditem, result.value.iduserapprover, result.value.keterangan);
+          }
+        });
+      }
+    });
+  };
+
+  var _ajukanPersetujuanHargaPOS = (idx, iditem, iduserapprover, keterangan) => {
+    $.ajax({
+      "url"    : base_url+"Persetujuan/ajukan",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data"   : "jenis=Buka Kunci Harga POS&referensi="+encodeURIComponent(iditem)+"&keterangan="+encodeURIComponent(keterangan)+"&iduserapprover="+iduserapprover,
+      "cache"  : false,
+      "beforeSend" : function(){
+        parent.window.$(".loader-wrap").removeClass("d-none");
+      },
+      "error"  : function(xhr,status,error){
+        parent.window.$(".loader-wrap").addClass("d-none");
+        parent.window.toastr.error("Err: "+xhr.status+", "+error);
+      },
+      "success" : function(result) {
+        parent.window.$(".loader-wrap").addClass("d-none");
+
+        if (result.pesan === 'sukses') {
+          parent.window.toastr.success("Permintaan terkirim, silakan tunggu persetujuan.");
+        } else {
+          parent.window.toastr.error("Gagal mengirim permintaan, silakan coba lagi.");
+        }
+      }
+    });
+  };
+
+   $("#bokmodalalasanedit").click(function() {
     
      if ($('#alasanedit').val()==''){  
            $('#alasanedit').attr('data-title','Masukkan alasan edit');
@@ -3646,9 +3761,12 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
    
   
   
-  var _SetDataBarang = (_idx,_idbarang) => { 
-      
-        $.ajax({ 
+  var _SetDataBarang = (_idx,_idbarang) => {
+
+        $("input[name^='hargaunlocked']").eq(_idx).val('0');
+        $("input[name^='harga']").eq(_idx).attr('disabled','disabled');
+
+        $.ajax({
         "url"    : base_url+"PJ_POS_HP/get_item", 
         "type"   : "POST", 
         "data"   : "id="+_idbarang+"&kontak="+$("#idkontak").val(),
@@ -4227,20 +4345,21 @@ var _ambildetailvocer = () => {
   
   
       $(this).on("click", "button[name^='beditharga']", async function(){
-             let _idbaris = $(this).index('.beditharga'), novocer=''; 
-             
-            // novocer = $("input[name^='novoucherwebdetil']").eq(_idbaris).val();
-             
-            $('#modalpassword').on('shown.bs.modal', function(){ 
-                $('#keberapa').val(_idbaris); 
-                $('#jenispassword').val('editharga');  
-                $('#username').val(''); 
-                $('#password').val(''); 
-                //$('#novoucherweb').focus(); 
-                //$("input[name^='novoucherwebdetil']").eq(_idbaris).val(novocer);  
-            });      
-              $('#modalpassword').modal('show'); 
-        });  
+             let _idbaris = $(this).index('.beditharga');
+             let _iditem = $("select[name^='item']").eq(_idbaris).val();
+
+             if (!_iditem) {
+                 parent.window.toastr.error("Pilih item terlebih dahulu !");
+                 return;
+             }
+
+             if ($("input[name^='harga']").eq(_idbaris).prop('disabled')===false) {
+                 parent.window.toastr.info("Harga item ini sudah bisa diedit.");
+                 return;
+             }
+
+             _cekPersetujuanHargaPOS(_idbaris, _iditem);
+        });
  
  
         
@@ -4358,7 +4477,8 @@ var _addRow = () => {
         newrow += "<span class=\"spannama col-3 col-form-label text-sm px-3 font-weight-normal\" id=\"spannama[]\" name=\"spannama[]\">Keterangan Produk</span>"; 
         newrow += "<input name=\"qty[]\" type=\"tel\" class=\"qty col-1 form-control form-control-sm\"  autocomplete=\"off\"  value=\"0\">"; 
         newrow += "<input name=\"harga[]\" type=\"tel\" class=\"harga col-2 form-control form-control-sm numeric kuncitext \" autocomplete=\"off\"  value=\"0\">";
-        newrow += "<input name=\"bisaeditharga[]\" type=\"hidden\" value=\"0\">";  
+        newrow += "<input name=\"bisaeditharga[]\" type=\"hidden\" value=\"0\">";
+        newrow += "<input name=\"hargaunlocked[]\" type=\"hidden\" value=\"0\">";
         newrow += "<input name=\"dis1[]\" type=\"text\" class=\"dis1 col-1 form-control form-control-sm kuncitext\" value=\"0\">";
         newrow += "<input name=\"dis2[]\" type=\"text\" class=\"dis2 col-1  form-control form-control-sm kuncitext\" value=\"0\">";
         newrow += "<input name=\"subtotal[]\" type=\"text\" class=\"subtotal col-2 form-control form-control-sm numeric kuncitext\" autocomplete=\"off\" tabindex=\"-1\" value=\"0\">"; 
@@ -4372,9 +4492,10 @@ var _addRow = () => {
                 newrow += "<button class=\"btn btn-warning text-sm btn-sm dropdown-toggle\" type=\"button\" data-toggle=\"dropdown\" aria-expanded=\"false\">";  
                 newrow += "<i class=\"fa fa-ellipsis-h\"></i></button>";  
                 newrow += "<div class=\"dropdown-menu\">";   
-                newrow += "<button class=\"bvoucherweb dropdown-item\" type=\"button\" id=\"bvoucherweb\" name=\"bvoucherweb\" >Voucher Web</button>"; 
-                newrow += "<button class=\"bdiskonvocher dropdown-item\" type=\"button\" id=\"bdiskonvocher\" name=\"bdiskonvocher\" >Diskon Voucher</button>";  
-                newrow += "<button class=\"binputdesimal dropdown-item\" type=\"button\" id=\"binputdesimal\" name=\"binputdesimal\" >Input Desimal</button>";  
+                newrow += "<button class=\"bvoucherweb dropdown-item\" type=\"button\" id=\"bvoucherweb\" name=\"bvoucherweb\" >Voucher Web</button>";
+                newrow += "<button class=\"bdiskonvocher dropdown-item\" type=\"button\" id=\"bdiskonvocher\" name=\"bdiskonvocher\" >Diskon Voucher</button>";
+                newrow += "<button class=\"binputdesimal dropdown-item\" type=\"button\" id=\"binputdesimal\" name=\"binputdesimal\" >Input Desimal</button>";
+                newrow += "<button class=\"beditharga dropdown-item\" type=\"button\" id=\"beditharga\" name=\"beditharga\" >Edit Harga</button>";
                 
                 
                 newrow += "</div>";  
@@ -4798,9 +4919,10 @@ var _saveData = () => {
                cetak:($("input[name^='cetak']").eq(index).val())                      , 
                idvoucherwebdetil:($("input[name^='idvoucherwebdetil']").eq(index).val())                      , 
                pointvoucherwebdetil:Number($("input[name^='pointvoucherwebdetil']").eq(index).val()) , 
-               medidu_sudahbayar:($("input[name^='medidu_sudahbayar']").eq(index).val())                   , 
-               medidd_sudahbayar:($("input[name^='medidd_sudahbayar']").eq(index).val())   
-               
+               medidu_sudahbayar:($("input[name^='medidu_sudahbayar']").eq(index).val())                   ,
+               medidd_sudahbayar:($("input[name^='medidd_sudahbayar']").eq(index).val())   ,
+               hargaunlocked:($("input[name^='hargaunlocked']").eq(index).val())
+
              });
 
   }); 
@@ -5021,6 +5143,8 @@ var _saveData = () => {
       } else if(result.pesan=='butuh_persetujuan'){
         parent.window.toastr.error("Tanggal transaksi sudah lewat, butuh persetujuan yang masih berlaku sebelum bisa disimpan.");
         _tampilkanAjukanPersetujuanPOS();
+      } else if(result.pesan=='butuh_persetujuan_harga'){
+        parent.window.toastr.error("Persetujuan buka kunci harga sudah kadaluarsa/tidak valid, silakan klik \"Edit Harga\" pada baris terkait untuk mengajukan ulang.");
       }
     }
   })

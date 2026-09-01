@@ -14,6 +14,62 @@ $(function () {
 
   $("#badd").focus();
 
+  $('#status').select2({
+    "theme":"bootstrap4",
+    "dropdownParent": $('#fDataTable'),
+    "minimumResultsForSearch": "Infinity"
+  });
+
+  $('#tipepersediaan').select2({
+    "theme":"bootstrap4",
+    "dropdownParent": $('#fDataTable'),
+    "minimumResultsForSearch": "Infinity"
+  });
+
+  $('#kelompok2020').select2({
+    "allowClear": true,
+    "theme":"bootstrap4",
+    "dropdownParent": $('#fDataTable'),
+    "ajax": {
+       "url": base_url+"Select_Master/view_kategori_itemkelompok2020",
+       "type": "post",
+       "dataType": "json",
+       "delay": 800,
+       "data": function(params) {
+         return {
+           search: params.term
+         }
+       },
+       "processResults": function (data, page) {
+       return {
+         results: data
+       };
+     },
+   }
+  });
+
+  $('#jeniscoapendapatan').select2({
+    "allowClear": true,
+    "theme":"bootstrap4",
+    "dropdownParent": $('#fDataTable'),
+    "ajax": {
+       "url": base_url+"Select_Master/view_coa_tipe_pendapatan",
+       "type": "post",
+       "dataType": "json",
+       "delay": 800,
+       "data": function(params) {
+         return {
+           search: params.term
+         }
+       },
+       "processResults": function (data, page) {
+       return {
+         results: data
+       };
+     },
+   }
+  });
+
   tabel=$('#item-pos-table').DataTable({
     "processing": true,
     "serverSide": true,
@@ -30,6 +86,10 @@ $(function () {
         "data": (data) => {
           data.kode = $('#kode').val();
           data.nama = $('#nama').val();
+          data.status = $('#status').val();
+          data.kelompok2020 = $('#kelompok2020').val();
+          data.tipepersediaan = $('#tipepersediaan').val();
+          data.jeniscoapendapatan = $('#jeniscoapendapatan').val();
         }
     },
     "deferRender": true,
@@ -248,4 +308,8 @@ function _reloaddatatable(){
 
 function clearFilter(){
   $('#kode,#nama').val('');
+  $('#status').val('0').trigger('change');
+  $('#kelompok2020').val('').trigger('change');
+  $('#tipepersediaan').val('').trigger('change');
+  $('#jeniscoapendapatan').val('').trigger('change');
 }

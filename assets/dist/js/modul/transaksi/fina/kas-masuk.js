@@ -18,12 +18,10 @@ $(function() {
 
   Component_Inputmask_Date('.datepicker');
   Component_Scrollbars('.tab-wrap','hidden','scroll');
-  Component_Select2_Account(
-    `#coadebet`,
-    `${base_url}Select_Master/view_coa_kas`,
-    `form_coa`,
-    `Akun`
-  );
+  $('#coadebet').select2({
+      "theme":"bootstrap4",
+      "minimumResultsForSearch": "Infinity"
+  });
 
   if(!parent.window.$(".loader-wrap").hasClass("d-none")){
       parent.window.$(".loader-wrap").addClass("d-none");
@@ -105,7 +103,7 @@ $(function() {
                   parent.window.$(".main-modal-body").html(result);
                   parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');          
                   parent.window._lstkategorikontak();
-                  parent.window._kontakdatatable();
+                  parent.window._pilihkategorikontak(16);
                   setTimeout(function (){
                        parent.window.$('#modal input').focus();
                   }, 500);                    
@@ -117,9 +115,11 @@ $(function() {
 
   $("#badd").click(() => {
       _clearForm();
-      _addRow();      
-      _inputFormat();         
+      _addRow();
+      _inputFormat();
       _formState1();
+      _isiKeteranganDefault();
+      $('#coadebet').val('5').trigger('change');
   });
 
   $("#bedit").click(() => {
@@ -262,6 +262,17 @@ $(function() {
 /**/
 
 /* ========================================================================================== */
+
+  var _isiKeteranganDefault = () => {
+      $.ajax({
+          "url"    : base_url+"Fina_Kas_Masuk/getketerangan",
+          "type"   : "POST",
+          "dataType" : "json",
+          "success": function(result) {
+              $('#uraian').val(result.data[0]['keterangan']);
+          }
+      });
+  }
 
   var _clearForm = () => {
       $(":input").not(":button, :submit, :reset, :checkbox, :radio, .noclear").val('');
@@ -613,7 +624,9 @@ $(function() {
       _clearForm();
       _addRow();
       _inputFormat();
-      _formState1();  
+      _formState1();
+      _isiKeteranganDefault();
+      $('#coadebet').val('5').trigger('change');
   }
 
 });

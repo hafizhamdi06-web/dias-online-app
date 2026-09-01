@@ -108,8 +108,9 @@
         <div class="row">
           <label class="col-sm-2 col-form-label text-sm px-3 font-weight-normal">COA Kas [D] *</label>
           <div class="col-sm-3">
-              <select id="coadebet" name="coadebet" class="form-control form-control-sm select2 select2-hidden-accessible" data-trigger="manual" data-placement="top" style="width: 100%">
-              </select>     
+              <select id="coadebet" name="coadebet" class="form-control form-control-sm select2 select2-hidden-accessible" data-trigger="manual" data-placement="top" style="width: 100%" disabled>
+                <option value="5" selected>Kas Kecil</option>
+              </select>
           </div>
           <div class="col-sm-3"></div>
           <label class="col-sm-1 col-form-label text-sm px-3 font-weight-normal">Uang</label>

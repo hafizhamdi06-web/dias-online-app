@@ -75,10 +75,27 @@ class Datatable_Master extends CI_Controller {
                           CASE A.istatus WHEN 0 THEN 'Aktif' WHEN 1 THEN 'Tidak Aktif' WHEN 2 THEN 'Tidak Terpakai' ELSE '' END AS 'status',
                           B.skode AS 'satuan'
                      FROM bitem A
-                LEFT JOIN bsatuan B ON A.isatuan=B.sid";
+                LEFT JOIN bsatuan B ON A.isatuan=B.sid
+                LEFT JOIN bitem2 C ON C.I2IDITEM=A.iid";
         $search = array('A.ikode','A.inama');
         $where  = null;
         $isWhere = "A.ikode LIKE '%".@$_POST['kode']."%' AND A.inama LIKE'%".@$_POST['nama']."%'";
+
+        if($this->input->post('status') !== null && $this->input->post('status') !== '') {
+          $isWhere .= " AND A.istatus=".(int)$this->input->post('status');
+        }
+
+        if($this->input->post('kelompok2020') !== null && $this->input->post('kelompok2020') !== '') {
+          $isWhere .= " AND A.ikelompok2020=".(int)$this->input->post('kelompok2020');
+        }
+
+        if($this->input->post('tipepersediaan') !== null && $this->input->post('tipepersediaan') !== '') {
+          $isWhere .= " AND A.itipeitem=".(int)$this->input->post('tipepersediaan');
+        }
+
+        if($this->input->post('jeniscoapendapatan') !== null && $this->input->post('jeniscoapendapatan') !== '') {
+          $isWhere .= " AND C.I2COAPENDAPATAN=".(int)$this->input->post('jeniscoapendapatan');
+        }
 
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
