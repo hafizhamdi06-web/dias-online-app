@@ -31,8 +31,9 @@ class Master_Akun extends CI_Controller {
         $query = "SELECT A.cid 'id', A.cnama 'nama', A.ctipe 'idtipe', B.cgnama 'tipe', A.cnocoa 'nomor', A.cgd 'gd',
                          A.cparent 'idparent', C.cnama 'parent', A.csubdari 'sub', A.cuang 'iduang', D.ukode 'uang',
                          A.cdivisi 'iddivisi', E.dnama 'divisi', A.cbank 'idbank', F.bkode 'bank', A.cnoac 'nobank',
-                         A.cactive 'status',G.csid 'said', G.cskontak 'saidkontak', DATE_FORMAT(G.cstanggal,'%d-%m-%Y') 'satanggal',
-                         G.csjumlah 'sajumlah', H.knama 'sakontak'   
+                         A.cactive 'status', IFNULL(A.ckasmasuk,0) 'kasmasuk', IFNULL(A.ckaskeluar,0) 'kaskeluar',
+                         G.csid 'said', G.cskontak 'saidkontak', DATE_FORMAT(G.cstanggal,'%d-%m-%Y') 'satanggal',
+                         G.csjumlah 'sajumlah', H.knama 'sakontak'
                     FROM bcoa A
                LEFT JOIN bcoagrup B ON A.ctipe=B.cgid
                LEFT JOIN bcoa C ON A.cparent=C.cid  

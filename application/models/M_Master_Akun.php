@@ -34,9 +34,11 @@ class M_Master_Akun extends CI_Model {
                 'cbank' => $_POST['bank'],
                 'cnoac' => $_POST['nomorbank'],
                 'cdivisi' => $_POST['divisi'],
-                'cactive' => $_POST['status'],                
-                'cmodifu' => $this->session->id                
-        );        
+                'cactive' => $_POST['status'],
+                'ckasmasuk' => $_POST['kasmasuk'],
+                'ckaskeluar' => $_POST['kaskeluar'],
+                'cmodifu' => $this->session->id
+        );
         $this->db->trans_start();
         $this->db->where('cid',$id);        
         $this->db->update('bcoa',$data);
@@ -129,9 +131,11 @@ class M_Master_Akun extends CI_Model {
                 'cbank' => $_POST['bank'],
                 'cnoac' => $_POST['nomorbank'],
                 'cdivisi' => $_POST['divisi'],
-                'cactive' => $_POST['status'],                                
-                'ccreateu' => $this->session->id                
-        );        
+                'cactive' => $_POST['status'],
+                'ckasmasuk' => $_POST['kasmasuk'],
+                'ckaskeluar' => $_POST['kaskeluar'],
+                'ccreateu' => $this->session->id
+        );
         $this->db->trans_start();
         $this->db->insert('bcoa',$data);
         $cid = $this->db->insert_id();

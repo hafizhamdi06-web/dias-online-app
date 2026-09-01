@@ -69,7 +69,17 @@
                 <label class="label-filter font-weight-normal">Nama :</label>
                 <div class="input-group" data-target-input="nearest">
                   <input type="text" id="nama" name="nama" class="form-control form-control-sm" autocomplete="off">
-                </div>                
+                </div>
+              </div>
+          </div>
+          <div class="row mt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="label-filter font-weight-normal">Kas Masuk/Keluar :</label>
+                <select id="filterkas" name="filterkas" class="form-control select2 form-control-sm" style="width:100%">
+                  <option value="" selected>Semua</option>
+                  <option value="kasmasuk">Kas Masuk</option>
+                  <option value="kaskeluar">Kas Keluar</option>
+                </select>
               </div>
           </div>
           <div class="btn-group pt-4 pl-3">

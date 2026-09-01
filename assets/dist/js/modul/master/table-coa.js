@@ -10,6 +10,11 @@ $(function () {
   Component_Scrollbars('.tab-wrap','scroll','scroll');
   Component_Select2('#tipe',`${base_url}Select_Master/view_coa_tipe`);
 
+  $('#filterkas').select2({
+    "theme":"bootstrap4",
+    "minimumResultsForSearch": "Infinity"
+  });
+
   this.addEventListener('contextmenu', (e) => {
     e.preventDefault();
   });
@@ -37,6 +42,7 @@ $(function () {
           data.tipe = $('#tipe').val();
           data.kode = $('#kode').val();
           data.nama = $('#nama').val();
+          data.filterkas = $('#filterkas').val();
         }
     },
     "deferRender": true,
@@ -258,4 +264,5 @@ function _reloaddatatable(){
 
 function clearFilter(){
   $('#kode,#nama').val('');
+  $('#filterkas').val('').trigger('change');
 }

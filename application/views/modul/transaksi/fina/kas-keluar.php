@@ -107,8 +107,9 @@
         <div class="row">
           <label for="" class="col-sm-2 col-form-label text-sm px-3 font-weight-normal">COA Kas [K] *</label>
           <div class="col-sm-3">
-              <select id="coakredit" name="coakredit" class="form-control form-control-sm select2" data-trigger="manual" data-placement="top" style="width: 100%">
-              </select>     
+              <select id="coakredit" name="coakredit" class="form-control form-control-sm select2" data-trigger="manual" data-placement="top" style="width: 100%" disabled>
+                <option value="5" selected>Kas Kecil</option>
+              </select>
           </div>
           <div class="col-sm-3"></div>
           <label class="col-sm-1 col-form-label text-sm px-3 font-weight-normal">Uang</label>

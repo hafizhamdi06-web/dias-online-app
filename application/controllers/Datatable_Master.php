@@ -24,9 +24,15 @@ class Datatable_Master extends CI_Controller {
           $isWhere .= " AND A.ctipe='".$this->input->post('tipe')."'";
         }
 
+        if($this->input->post('filterkas')=='kasmasuk') {
+          $isWhere .= " AND A.ckasmasuk=1";
+        } elseif($this->input->post('filterkas')=='kaskeluar') {
+          $isWhere .= " AND A.ckaskeluar=1";
+        }
+
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
-    }    
+    }
 
    function view_table_item() {
         $info = _ainfo(1);

@@ -91,9 +91,27 @@
                   <div class="form-check">
                     <input type="checkbox" class="form-check-input" id="aktif">
                     <label class="form-check-label text-sm" for="aktif">Aktif</label>
-                  </div>                    
+                  </div>
                 </div>
-              </div>                                                                                                                                                      
+              </div>
+              <div class="row mt-1">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-9">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="kasmasuk">
+                    <label class="form-check-label text-sm" for="kasmasuk">Dipakai di Kas Masuk</label>
+                  </div>
+                </div>
+              </div>
+              <div class="row mt-1">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-9">
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="kaskeluar">
+                    <label class="form-check-label text-sm" for="kaskeluar">Dipakai di Kas Keluar</label>
+                  </div>
+                </div>
+              </div>
               <div style='clear:both'></div>
             </div>
             <div class="tab-pane fade text-sm" id="tab-saldoawalcoa" role="tabpanel" aria-labelledby="btn-tab-saldoawalcoa">

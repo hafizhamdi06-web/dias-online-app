@@ -83,14 +83,34 @@ class Select_Master extends CI_Controller {
     }        
 
    function view_coa() {
-        $query  = "SELECT A.cid AS 'id',A.cnama AS 'text',A.cnocoa AS 'kode' 
+        $query  = "SELECT A.cid AS 'id',A.cnama AS 'text',A.cnocoa AS 'kode'
                      FROM bcoa A";
         $search = array('cnocoa','cnama');
         $isOrder = 'cnocoa';
         $isWhere = "A.cgd='D'";
         header('Content-Type: application/json');
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
-    }       
+    }
+
+   function view_coa_kasmasuk() {
+        $query  = "SELECT A.cid AS 'id',A.cnama AS 'text',A.cnocoa AS 'kode'
+                     FROM bcoa A";
+        $search = array('cnocoa','cnama');
+        $isOrder = 'cnocoa';
+        $isWhere = "A.cgd='D' AND A.ckasmasuk=1";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_coa_kaskeluar() {
+        $query  = "SELECT A.cid AS 'id',A.cnama AS 'text',A.cnocoa AS 'kode'
+                     FROM bcoa A";
+        $search = array('cnocoa','cnama');
+        $isOrder = 'cnocoa';
+        $isWhere = "A.cgd='D' AND A.ckaskeluar=1";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
 
    function view_coa_kas() {
         $query  = "SELECT A.cid AS 'id',A.cnama AS 'text',A.cnocoa AS 'kode' 

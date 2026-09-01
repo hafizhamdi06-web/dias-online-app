@@ -18,12 +18,10 @@ $(function() {
 
   Component_Inputmask_Date('.datepicker');
   Component_Scrollbars('.tab-wrap','hidden','scroll');
-  Component_Select2_Account(
-    `#coakredit`,
-    `${base_url}Select_Master/view_coa_kas`,
-    `form_coa`,
-    `Akun`
-  );
+  $('#coakredit').select2({
+      "theme":"bootstrap4",
+      "minimumResultsForSearch": "Infinity"
+  });
 
   if(!parent.window.$(".loader-wrap").hasClass("d-none")){
       parent.window.$(".loader-wrap").addClass("d-none");
@@ -123,6 +121,7 @@ $(function() {
       _inputFormat();
       _formState1();
       _isiKeteranganDefault();
+      $('#coakredit').val('5').trigger('change');
   });
 
   $("#bedit").click(() => {
@@ -266,7 +265,7 @@ $(function() {
 
   var _inputFormat = () => {
       Component_Inputmask_Numeric('.numeric');
-      Component_Select2_Account('.coadebet',`${base_url}Select_Master/view_coa`,'form_coa','Akun');
+      Component_Select2_Account('.coadebet',`${base_url}Select_Master/view_coa_kaskeluar`);
       Component_Select2('.divisi',`${base_url}Select_Master/view_divisi_kode`,'form_divisi','Divisi');
       Component_Select2('.proyek',`${base_url}Select_Master/view_proyek_kode`,'form_proyek','Proyek');
   }
@@ -624,6 +623,7 @@ var _getDataTransaksiNomor = (nomor) => {
       _inputFormat();
       _formState1();
       _isiKeteranganDefault();
+      $('#coakredit').val('5').trigger('change');
   }
 
 });
