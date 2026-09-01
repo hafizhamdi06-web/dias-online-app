@@ -5,12 +5,12 @@
 #   - networks.traefik-public.name  -> your real Traefik network
 #   - Host(`...`) rule + certresolver
 #
-# To run from the registry instead of building locally, comment out `build:`
-# and uncomment `image:`.
+# The image is published by .github/workflows/docker-publish.yml.
+# Set DIAS_ONLINE_IMAGE to pin a release, for example:
+# ghcr.io/nmwclinic/dias-online:1.2.0
 services:
   app:
-    # image: ghcr.io/<owner>/dias-online:latest
-    build: .
+    image: ghcr.io/nmwclinic/dias-online:latest
     env_file: .env
     restart: unless-stopped
     networks:
