@@ -21,8 +21,9 @@ class M_Fina_Kas_Keluar extends CI_Model {
                         'cutotaltransv' => $this->input->post('totalValas'),
                         'cuuang' => $this->input->post('uangcr'),
                         'cukurs' => $this->input->post('kurscr'),
-                        'cumodifu' => $this->session->id                
-        );        
+                        'cucabang' => $_SESSION['cabang'],
+                        'cumodifu' => $this->session->id
+        );
         $this->db->trans_begin();
         $this->db->where('cuid', $id);
         $this->db->update('ctransaksiu',$data_header);
@@ -112,8 +113,9 @@ class M_Fina_Kas_Keluar extends CI_Model {
                         'cuuang' => $this->input->post('uangcr'),
                         'cukurs' => $this->input->post('kurscr'),
                         'custatus' => 0,
-                        'cucreateu' => $this->session->id                
-        );        
+                        'cucabang' => $_SESSION['cabang'],
+                        'cucreateu' => $this->session->id
+        );
         $this->db->trans_begin();
         $this->db->insert('ctransaksiu',$data_header);
         $id = $this->db->insert_id();
@@ -215,15 +217,17 @@ class M_Fina_Kas_Keluar extends CI_Model {
     }
 
     function autonumber($tgl){
+        $cabang  = @$_SESSION['cabang'];
+        $kodecabang  = @$_SESSION['kodecabang'];
         $nomor = 0;
         $nomor1 = $this->M_transaksi->prefixtrans(element('Fina_Kas_Keluar',NID));
-        $nomor2 = tgl_notrans($tgl);  
+        $nomor2 = tgl_notrans($tgl);
 
         $notrans_length = strlen($nomor1)+4;
 
-        $sql = "SELECT MAX(RIGHT(cunotransaksi,4)) as 'maks' 
-                  FROM ctransaksiu 
-                 WHERE LEFT(cunotransaksi,".$notrans_length.")='".$nomor1.$nomor2."'";
+        $sql = "SELECT MAX(RIGHT(cunotransaksi,4)) as 'maks'
+                  FROM ctransaksiu
+                 WHERE MID(cunotransaksi,4,".$notrans_length.")='".$nomor1.$nomor2."' and cucabang='".$cabang."'";
 
         $query = $this->db->query($sql);
         foreach ($query->result() as $res) {
@@ -244,8 +248,9 @@ class M_Fina_Kas_Keluar extends CI_Model {
           $nomor=$nomor1.$nomor2.$nomor;
           break;
         }
-        
+        $nomor=$kodecabang."-".$nomor ;
+
         return $nomor;
-    }        
+    }
 
 }

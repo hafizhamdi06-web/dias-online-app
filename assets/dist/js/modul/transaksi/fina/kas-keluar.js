@@ -107,7 +107,7 @@ $(function() {
                   parent.window.$(".main-modal-body").html(result);
                   parent.window.$('.modal-body').css('min-height','calc(100vh - 30vh)');          
                   parent.window._lstkategorikontak();
-                  parent.window._kontakdatatable();
+                  parent.window._pilihkategorikontak(16);
                   setTimeout(function (){
                        parent.window.$('#modal input').focus();
                   }, 500);
@@ -119,9 +119,10 @@ $(function() {
 
   $("#badd").click(() => {
       _clearForm();
-      _addRow();      
+      _addRow();
       _inputFormat();
       _formState1();
+      _isiKeteranganDefault();
   });
 
   $("#bedit").click(() => {
@@ -270,9 +271,20 @@ $(function() {
       Component_Select2('.proyek',`${base_url}Select_Master/view_proyek_kode`,'form_proyek','Proyek');
   }
 
+  var _isiKeteranganDefault = () => {
+      $.ajax({
+          "url"    : base_url+"Fina_Kas_Keluar/getketerangan",
+          "type"   : "POST",
+          "dataType" : "json",
+          "success": function(result) {
+              $('#uraian').val(result.data[0]['keterangan']);
+          }
+      });
+  }
+
   var _clearForm = () => {
       $(":input").not(":button, :submit, :reset, :checkbox, :radio, .noclear").val('');
-      $(":checkbox").prop("checked", false); 
+      $(":checkbox").prop("checked", false);
       $('.select2').val('').change(); 
       $('#namakontak').html('');       
       $('#tdetil tbody').html('');                                    
@@ -610,7 +622,8 @@ var _getDataTransaksiNomor = (nomor) => {
       _clearForm();
       _addRow();
       _inputFormat();
-      _formState1();  
+      _formState1();
+      _isiKeteranganDefault();
   }
 
 });

@@ -67,6 +67,43 @@
                 </div>
               </div>
           </div>
+          <div class="row mt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="label-filter font-weight-normal">Status :</label>
+                <select id="status" name="status" class="form-control select2 form-control-sm" style="width:100%">
+                  <option value="">Semua</option>
+                  <option value="0" selected>Aktif</option>
+                  <option value="1">Tidak Aktif</option>
+                  <option value="2">Tidak Terpakai</option>
+                </select>
+              </div>
+          </div>
+          <div class="row mt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="label-filter font-weight-normal">Kelompok 2020 :</label>
+                <select id="kelompok2020" name="kelompok2020" class="form-control select2 form-control-sm" style="width:100%">
+                  <option value="" selected>Semua</option>
+                </select>
+              </div>
+          </div>
+          <div class="row mt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="label-filter font-weight-normal">Tipe Persediaan :</label>
+                <select id="tipepersediaan" name="tipepersediaan" class="form-control select2 form-control-sm" style="width:100%">
+                  <option value="" selected>Semua</option>
+                  <option value="0">Stok</option>
+                  <option value="1">Non Stok</option>
+                </select>
+              </div>
+          </div>
+          <div class="row mt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="label-filter font-weight-normal">Jenis COA Pendapatan :</label>
+                <select id="jeniscoapendapatan" name="jeniscoapendapatan" class="form-control select2 form-control-sm" style="width:100%">
+                  <option value="" selected>Semua</option>
+                </select>
+              </div>
+          </div>
           <div class="btn-group pt-4 pl-3">
             <button type="button" id="submitfilter" class="btn btn-primary btn-sm"><i class="fas fa-check"></i> Tampilkan</button>
           </div>

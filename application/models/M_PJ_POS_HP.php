@@ -208,6 +208,33 @@ class M_PJ_POS_HP extends CI_Model {
         return $approved ? true : false;
     }
 
+    private function _cekPersetujuanHargaPOS($iditem)
+    {
+        $approved = $this->db->query(
+            "SELECT APID FROM aapersetujuan
+              WHERE APIDUSERMINTA='".$this->session->id."'
+                AND APJENIS='Buka Kunci Harga POS'
+                AND APREFERENSI='".$this->db->escape_str($iditem)."'
+                AND APSTATUS=1
+                AND APTGLEXPIRED > '".date('Y-m-d H:i:s')."'
+              ORDER BY APID DESC LIMIT 1"
+        )->row();
+
+        return $approved ? true : false;
+    }
+
+    private function _cekSemuaHargaUnlockPOS($d)
+    {
+        foreach ($d as $item) {
+            if (!empty($item->hargaunlocked) && $item->hargaunlocked == 1) {
+                if (!$this->_cekPersetujuanHargaPOS($item->item)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     function ubahTransaksi(){
         $id = $this->input->post('id');
 
@@ -298,6 +325,12 @@ class M_PJ_POS_HP extends CI_Model {
         $gudang = $_POST['cabang'] ;
         $r=1;
         $d = json_decode($_POST['detil']);
+
+        if (!$this->_cekSemuaHargaUnlockPOS($d)) {
+            $this->db->trans_rollback();
+            return json_encode(array('pesan'=>'butuh_persetujuan_harga'));
+        }
+
         if ($gudang == 18) {
             foreach ($d as $item) {
                 $item->dis1 = 0;
@@ -623,6 +656,12 @@ class M_PJ_POS_HP extends CI_Model {
         $r=1;
 
         $d = json_decode($_POST['detil']);
+
+        if (!$this->_cekSemuaHargaUnlockPOS($d)) {
+            $this->db->trans_rollback();
+            return json_encode(array('pesan'=>'butuh_persetujuan_harga'));
+        }
+
         if ($gudang == 18) {
             foreach ($d as $item) {
                 $item->dis1 = 0;
