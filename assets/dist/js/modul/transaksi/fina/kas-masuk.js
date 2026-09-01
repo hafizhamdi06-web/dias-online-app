@@ -312,7 +312,7 @@ $(function() {
 
   var _inputFormat = () => {
       Component_Inputmask_Numeric('.numeric');
-      Component_Select2_Account('.coakredit',`${base_url}Select_Master/view_coa`,'form_coa','Akun');
+      Component_Select2_Account('.coakredit',`${base_url}Select_Master/view_coa_kasmasuk`);
       Component_Select2('.divisi',`${base_url}Select_Master/view_divisi_kode`,'form_divisi','Divisi');
       Component_Select2('.proyek',`${base_url}Select_Master/view_proyek_kode`,'form_proyek','Proyek');
   }

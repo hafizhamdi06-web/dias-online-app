@@ -275,9 +275,13 @@ var _saveData = function(){
         divisi = $("#divisi").val()!==null ? $("#divisi").val() : undefined;
 
   var status = 1,
+      kasmasuk = 0,
+      kaskeluar = 0,
       saldoawal = [];
 
-  if($("#aktif").prop('checked')==false) status=0;  
+  if($("#aktif").prop('checked')==false) status=0;
+  if($("#kasmasuk").prop('checked')==true) kasmasuk=1;
+  if($("#kaskeluar").prop('checked')==true) kaskeluar=1;
 
   $("select[name^='kontak']").each(function(index,element){  
       saldoawal.push({
@@ -303,8 +307,10 @@ var _saveData = function(){
   rey.set('bank',bank);
   rey.set('divisi',divisi);  
   rey.set('nomorbank',nomorbank);  
-  rey.set('status',status);   
-  rey.set('saldoawal',saldoawal);     
+  rey.set('status',status);
+  rey.set('kasmasuk',kasmasuk);
+  rey.set('kaskeluar',kaskeluar);
+  rey.set('saldoawal',saldoawal);
 
   $.ajax({ 
     "url"    : base_url+"Master_Akun/savedata", 
@@ -386,8 +392,16 @@ function _getData(id){
           }
 
           if(result.data[0]['status']=='1'){
-            $("#aktif").prop('checked',true);            
-          }   
+            $("#aktif").prop('checked',true);
+          }
+
+          if(result.data[0]['kasmasuk']=='1'){
+            $("#kasmasuk").prop('checked',true);
+          }
+
+          if(result.data[0]['kaskeluar']=='1'){
+            $("#kaskeluar").prop('checked',true);
+          }
 
           esaldoawal();
 
