@@ -71,7 +71,12 @@ class Laporan extends CI_Controller {
       if($mode==1 || empty($mode)){ // pdf print preview
           $report = $this->load->view('modul/laporan/'.$link, $data, TRUE);
           $filename = $title.".pdf";
-          $mpdf = new \Mpdf\Mpdf(['format' => $size.'-'.$orientasi,'margin_left' => $ml,'margin_top' => $mt]);
+          $mpdf = new \Mpdf\Mpdf([
+              'format' => $size.'-'.$orientasi,
+              'margin_left' => $ml,
+              'margin_top' => $mt,
+              'tempDir' => APPPATH.'cache',
+          ]);
           $mpdf->SetTitle($title);  
           $mpdf->SetAuthor($this->config->item('hak_cipta'));  
           //$mpdf->SetFooter('Page : {PAGENO}');    
@@ -88,7 +93,12 @@ class Laporan extends CI_Controller {
       } else { // download pdf
           $report = $this->load->view('modul/laporan/'.$link, $data, TRUE);
           $filename = $title.".pdf";
-          $mpdf = new \Mpdf\Mpdf(['format' => $size.'-'.$orientasi,'margin_left' => $ml,'margin_top' => $mt]);
+          $mpdf = new \Mpdf\Mpdf([
+              'format' => $size.'-'.$orientasi,
+              'margin_left' => $ml,
+              'margin_top' => $mt,
+              'tempDir' => APPPATH.'cache',
+          ]);
           $mpdf->SetTitle($title);  
           $mpdf->SetAuthor($this->config->item('hak_cipta'));  
           //$mpdf->SetFooter('Page : {PAGENO}');    
