@@ -56,7 +56,13 @@
         </div>
         <div class="card-body card-outline-tabs-body border-0 bg-light">
           <div class="tab-content">
-            <div id="tabcontent" class="row">                                   
+            <div class="row">
+              <div id="listindukcol" class="col-md-3 col-12 d-none">
+                <div class="list-group" id="listinduk"></div>
+              </div>
+              <div id="tabcontentcol" class="col-md-12 col-12">
+                <div id="tabcontent" class="row"></div>
+              </div>
             </div>
           </div>
         </div>

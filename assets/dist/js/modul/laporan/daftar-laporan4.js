@@ -53,18 +53,34 @@ $.ajax({
 })
 
 
+window._cardRpt = function(row){
+  var cek = row['file'] ? "<i class='fas fa-check-square text-primary'></i>" : "";
+  return `<div class="col-sm-4 col-12">
+            <div class='ribbon-small ribbon'>
+              <div class='ribbon bg-transparent'>`+cek+`</div>
+            </div>
+            <div class="small-box bg-white" role="button" onClick="openRpt('`+row['file']+`','`+row['rptid']+`')">
+              <div class="inner mt-2">
+                <h6 class='text-dark font-weight-normal'>`+row['MCAPTION1']+`</h5>
+                <p class="text-sm">`+(row['MDESCRIPTION']||'')+`</p>
+              </div>
+              <div class="icon py-2"></div>
+            </div>
+          </div>`;
+};
+
 window.renderrpt = function(id){
-   $.ajax({ 
-      "url"    : base_url+"Laporan/getreportlist",       
-      "type"   : "POST", 
-      "dataType" : "json", 
+   $.ajax({
+      "url"    : base_url+"Laporan/getreportlist",
+      "type"   : "POST",
+      "dataType" : "json",
       "data"   : "id="+id,
       "cache"  : false,
       "beforeSend" : () => {
         parent.window.$('.loader-wrap').removeClass('d-none');
       },
       "error"  : () => {
-        parent.window.$('.loader-wrap').addClass('d-none');        
+        parent.window.$('.loader-wrap').addClass('d-none');
         parent.window.Swal.fire({
           title: 'Kesalahan : Gagal Mengambil Data Laporan ke server !',
           showDenyButton: false,
@@ -75,31 +91,62 @@ window.renderrpt = function(id){
       },
       "success" : (result) => {
           $("#tabcontent").html("");
-          var rows = 0;
-          $.each(result.data, function() {
-            if(result.data[rows]['file']){
-              var cek = "<i class='fas fa-check-square text-primary'></i>";
-            }else{
-              var cek = "";
-            }
-            var html = `<div class="col-sm-4 col-12">
-                        <div class='ribbon-small ribbon'>
-                          <div class='ribbon bg-transparent'>
-                          `+cek+`
-                          </div>
-                        </div>                
-                        <div class="small-box bg-white" role="button" onClick="openRpt('`+result.data[rows]['file']+`','`+result.data[rows]['rptid']+`')">
-                        <div class="inner mt-2">
-                          <h6 class='text-dark font-weight-normal'>`+result.data[rows]['MCAPTION1']+`</h5>
-                          <p class="text-sm">`+result.data[rows]['MDESCRIPTION']+`</p>
-                        </div>                
-                        <div class="icon py-2"></div>
-                        </div>
-                      </div>`;
-            $("#tabcontent").append(html);
-            rows++;
+          $("#listinduk").html("");
+
+          var induk = [], reports = [];
+          $.each(result.data, function(i, row){
+            if (String(row['MLINK']).toLowerCase() === 'induk') induk.push(row);
+            else reports.push(row);
           });
-          parent.window.$('.loader-wrap').addClass('d-none');          
+
+          if (induk.length > 0) {
+            // 3 level: tab > induk (kiri) > laporan (kanan)
+            $("#listindukcol").removeClass('d-none');
+            $("#tabcontentcol").removeClass('col-md-12').addClass('col-md-9');
+
+            induk.forEach(function(row, idx){
+              $("#listinduk").append(
+                '<a href="javascript:void(0)" class="list-group-item list-group-item-action py-2 '+(idx===0?'active':'')+'" '
+                + 'onClick="renderchild(this,'+row['MID']+')">'+row['MCAPTION1']+'</a>'
+              );
+            });
+            renderchild($("#listinduk .list-group-item").first()[0], induk[0]['MID']);
+          } else {
+            // 2 level (perilaku lama): tab > laporan (kanan)
+            $("#listindukcol").addClass('d-none');
+            $("#tabcontentcol").removeClass('col-md-9').addClass('col-md-12');
+            reports.forEach(function(row){ $("#tabcontent").append(window._cardRpt(row)); });
+          }
+
+          parent.window.$('.loader-wrap').addClass('d-none');
+          return;
+      }
+  })
+}
+
+window.renderchild = function(el, id){
+   $("#listinduk .list-group-item").removeClass('active');
+   if (el) $(el).addClass('active');
+
+   $.ajax({
+      "url"    : base_url+"Laporan/getreportlist",
+      "type"   : "POST",
+      "dataType" : "json",
+      "data"   : "id="+id,
+      "cache"  : false,
+      "beforeSend" : () => {
+        parent.window.$('.loader-wrap').removeClass('d-none');
+      },
+      "error"  : () => {
+        parent.window.$('.loader-wrap').addClass('d-none');
+        return;
+      },
+      "success" : (result) => {
+          $("#tabcontent").html("");
+          $.each(result.data, function(i, row){
+            $("#tabcontent").append(window._cardRpt(row));
+          });
+          parent.window.$('.loader-wrap').addClass('d-none');
           return;
       }
   })

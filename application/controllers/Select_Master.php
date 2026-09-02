@@ -466,11 +466,19 @@ class Select_Master extends CI_Controller {
     }     
 
    function view_parent_menu() {
-        $query  = "SELECT A.mid AS 'id',A.mnama AS 'text',null AS 'kode' 
+        $tipe = (int) $this->input->post('tipe');
+        $query  = "SELECT A.mid AS 'id',
+                          CASE WHEN A.mparent<>0 THEN CONCAT('  - ',A.mnama) ELSE A.mnama END AS 'text',
+                          null AS 'kode'
                      FROM aamenu A";
         $search = array('mnama');
-        $isOrder = "mid";
-        $isWhere = "mparent=0 AND mtype=".$_POST['tipe'];
+        $isOrder = "mparent, murutan, mid";
+        if ($tipe === 1) {
+            // Laporan: bisa induk (mparent=0) atau Induk Menu (mlink='induk')
+            $isWhere = "A.mtype=1 AND (A.mparent=0 OR A.mlink='induk')";
+        } else {
+            $isWhere = "A.mparent=0 AND A.mtype=".$tipe;
+        }
         header('Content-Type: application/json');
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
     } 
