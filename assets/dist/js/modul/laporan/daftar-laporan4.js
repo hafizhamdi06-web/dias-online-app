@@ -60,12 +60,14 @@ window._cardRpt = function(row){
             <div class='ribbon-small ribbon'>
               <div class='ribbon bg-transparent'>`+cek+`</div>
             </div>
-            <div class="small-box bg-white" role="button" onClick="openRpt('`+row['file']+`','`+row['rptid']+`')">
-              <div class="inner mt-2">
-                <h6 class='text-dark font-weight-normal'><i class="`+ic+` text-primary mr-2"></i>`+row['MCAPTION1']+`</h5>
-                <p class="text-sm">`+(row['MDESCRIPTION']||'')+`</p>
+            <div class="small-box bg-white rpt-card" role="button" onClick="openRpt('`+row['file']+`','`+row['rptid']+`')">
+              <div class="rpt-body">
+                <div class="rpt-ic"><i class="`+ic+`"></i></div>
+                <div class="rpt-txt">
+                  <h6 class='text-dark font-weight-normal mb-1'>`+row['MCAPTION1']+`</h6>
+                  <p class="text-sm text-muted mb-0">`+(row['MDESCRIPTION']||'')+`</p>
+                </div>
               </div>
-              <div class="icon py-2"><i class="`+ic+`"></i></div>
             </div>
           </div>`;
 };

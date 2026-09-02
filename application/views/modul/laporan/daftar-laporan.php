@@ -16,16 +16,30 @@
     .content-header{
       height: 40px;
     }
-    /* Beri ruang di kanan supaya caption tidak tertumpuk ceklist (ribbon) */
-    #tabcontent .small-box .inner{
-      padding-right: 34px;
-    }
-    #tabcontent .small-box .inner h6,
-    #tabcontent .small-box .inner h5{
-      word-break: break-word;
-    }
     #tabcontent .ribbon-small.ribbon{
       z-index: 3;
+    }
+    /* Kartu laporan: 1 ikon di kiri + teks di kanan */
+    #tabcontent .rpt-body{
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 34px 14px 14px;
+    }
+    #tabcontent .rpt-ic{
+      flex: 0 0 auto;
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: rgba(0,123,255,.10);
+      color: #007bff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    #tabcontent .rpt-txt h6{
+      word-break: break-word;
     }
     #listindukcol .table{
       background: #fff;
@@ -54,24 +68,6 @@
     }
     #tabcontent .small-box{
       min-height: 92px;
-    }
-    #tabcontent .small-box .icon{
-      top: auto;
-      bottom: 6px;
-      right: 10px;
-    }
-    #tabcontent .small-box .icon i{
-      font-size: 34px;
-      color: rgba(0,123,255,.12);
-      transition: none;
-    }
-    #tabcontent .small-box:hover .icon i{
-      font-size: 34px;
-      color: rgba(0,123,255,.20);
-    }
-    #tabcontent .small-box .inner h6 i{
-      width: 16px;
-      text-align: center;
     }
     @media (max-width:767px){
       .tab-content{
