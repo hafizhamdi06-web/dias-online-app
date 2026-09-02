@@ -15,7 +15,22 @@
     } 
     .content-header{
       height: 40px;
-    }         
+    }
+    /* Beri ruang di kanan supaya caption tidak tertumpuk ceklist (ribbon) */
+    #tabcontent .small-box .inner{
+      padding-right: 34px;
+    }
+    #tabcontent .small-box .inner h6,
+    #tabcontent .small-box .inner h5{
+      word-break: break-word;
+    }
+    #tabcontent .ribbon-small.ribbon{
+      z-index: 3;
+    }
+    #listinduk .list-group-item{
+      cursor: pointer;
+      font-weight: 600;
+    }
     @media (max-width:767px){
       .tab-content{
         padding:10px;
