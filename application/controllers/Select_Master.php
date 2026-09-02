@@ -474,8 +474,10 @@ class Select_Master extends CI_Controller {
         $search = array('mnama');
         $isOrder = "mparent, murutan, mid";
         if ($tipe === 1) {
-            // Laporan: bisa induk (mparent=0) atau Induk Menu (mlink='induk')
-            $isWhere = "A.mtype=1 AND (A.mparent=0 OR A.mlink='induk')";
+            // Laporan bisa berinduk ke:
+            //  - tab paling atas (mparent=0), atau
+            //  - Induk Menu = menu Laporan tanpa report & bukan link page (mis. 'POS')
+            $isWhere = "A.mtype=1 AND (A.mparent=0 OR (IFNULL(A.mreport,0)=0 AND IFNULL(A.mlink,'') NOT LIKE 'page/%'))";
         } else {
             $isWhere = "A.mparent=0 AND A.mtype=".$tipe;
         }
