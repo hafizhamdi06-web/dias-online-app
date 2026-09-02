@@ -306,6 +306,14 @@ window.openRpt = function(rpt,rptid){
                                 </select>
                               </div>
                             </div>`;
+                  $html += `<div class="row mx-2 mt-1">
+                              <label class="col-sm-3 col-form-label text-sm font-weight-normal">Kecualikan PT</label>
+                              <div class="col-sm-8">
+                                <select id="filterpt" name="filterpt" class="form-control form-control-sm select2" style="width: 100%">
+                                  <option value="">(Tidak ada)</option>
+                                </select>
+                              </div>
+                            </div>`;
               }
 
 
@@ -410,6 +418,7 @@ window.openRpt = function(rpt,rptid){
              // Component_Select2("#item",`${base_url}Select_Master/view_item`,null,null,true);                       
               Component_Select2("#mode",null,null,null,true);
               Component_Select2("#merchant",`${base_url}Select_Master/view_merchant_jenis`,null,null,true);
+              Component_Select2("#filterpt",`${base_url}Select_Master/view_namapt`,null,null,true);
               parent.window.$(".datepicker").datepicker('setDate', 'dd-mm-yy');
               //parent.window.$("#tgldari").datepicker('setDate', '01-mm-yy');     
               

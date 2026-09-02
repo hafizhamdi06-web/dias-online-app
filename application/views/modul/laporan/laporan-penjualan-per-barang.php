@@ -6,6 +6,7 @@
 
     $idgudang = isset($_POST['gudang'])   ? $_POST['gudang']   : "";
     $merchant = isset($_POST['merchant']) ? $_POST['merchant'] : "";
+    $filterpt = isset($_POST['filterpt']) ? $_POST['filterpt'] : "";
 
     $CI =& get_instance();
 
@@ -42,6 +43,9 @@
     }
     if ($merchant != "") {
         $query .= " AND H.sumerchantjenis = '".$CI->db->escape_str($merchant)."'";
+    }
+    if ($filterpt != "") {
+        $query .= " AND IFNULL(G.gpt,0) <> '".$CI->db->escape_str($filterpt)."'";
     }
 
     $query .= " ORDER BY G.gkode, H.sutanggal, H.sunotransaksi, I.inama";
