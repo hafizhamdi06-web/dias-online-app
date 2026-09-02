@@ -55,16 +55,17 @@ $.ajax({
 
 window._cardRpt = function(row){
   var cek = row['file'] ? "<i class='fas fa-check-square text-primary'></i>" : "";
+  var ic  = (row['MICON'] && String(row['MICON']).trim()) ? String(row['MICON']).trim() : 'far fa-file-alt';
   return `<div class="col-sm-4 col-12">
             <div class='ribbon-small ribbon'>
               <div class='ribbon bg-transparent'>`+cek+`</div>
             </div>
             <div class="small-box bg-white" role="button" onClick="openRpt('`+row['file']+`','`+row['rptid']+`')">
               <div class="inner mt-2">
-                <h6 class='text-dark font-weight-normal'>`+row['MCAPTION1']+`</h5>
+                <h6 class='text-dark font-weight-normal'><i class="`+ic+` text-primary mr-2"></i>`+row['MCAPTION1']+`</h5>
                 <p class="text-sm">`+(row['MDESCRIPTION']||'')+`</p>
               </div>
-              <div class="icon py-2"></div>
+              <div class="icon py-2"><i class="`+ic+`"></i></div>
             </div>
           </div>`;
 };

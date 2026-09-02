@@ -55,6 +55,24 @@
     #tabcontent .small-box{
       min-height: 92px;
     }
+    #tabcontent .small-box .icon{
+      top: auto;
+      bottom: 6px;
+      right: 10px;
+    }
+    #tabcontent .small-box .icon i{
+      font-size: 34px;
+      color: rgba(0,123,255,.12);
+      transition: none;
+    }
+    #tabcontent .small-box:hover .icon i{
+      font-size: 34px;
+      color: rgba(0,123,255,.20);
+    }
+    #tabcontent .small-box .inner h6 i{
+      width: 16px;
+      text-align: center;
+    }
     @media (max-width:767px){
       .tab-content{
         padding:10px;
