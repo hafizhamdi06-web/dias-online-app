@@ -11,9 +11,10 @@
     	$gudang = $_POST['gudang'];
     } else {
     	$gudang = "";
-    }	
-    
-    
+    }
+    $merchant = isset($_POST['merchant']) ? $_POST['merchant'] : "";
+
+
       $cabang  = @$_SESSION['cabang'] ;
 
 
@@ -55,6 +56,10 @@
     
     if($gudang != ""){
     	$query .= " AND A.sucabang='".$gudang."'";
+    }
+
+    if($merchant != ""){
+    	$query .= " AND A.sumerchantjenis='".$CI->db->escape_str($merchant)."'";
     }
 
     $query .= " GROUP BY A.suid,A.sunotransaksi,A.sutanggal";

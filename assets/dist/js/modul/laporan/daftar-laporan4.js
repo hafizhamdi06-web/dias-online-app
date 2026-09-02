@@ -297,7 +297,9 @@ window.openRpt = function(rpt,rptid){
                             </div>`;                            
               }
 
-              if(result.data[0]['ARLINK']=='laporan-penjualan-per-barang'){
+              var _arlink = result.data[0]['ARLINK'];
+
+              if(_arlink=='laporan-penjualan-per-barang' || _arlink=='xlap-daftar-penjualan-tunai'){
                   $html += `<div class="row mx-2 mt-1">
                               <label class="col-sm-3 col-form-label text-sm font-weight-normal">Jenis Merchant</label>
                               <div class="col-sm-8">
@@ -306,6 +308,9 @@ window.openRpt = function(rpt,rptid){
                                 </select>
                               </div>
                             </div>`;
+              }
+
+              if(_arlink=='laporan-penjualan-per-barang'){
                   $html += `<div class="row mx-2 mt-1">
                               <label class="col-sm-3 col-form-label text-sm font-weight-normal">Kecualikan PT</label>
                               <div class="col-sm-8">
