@@ -30,6 +30,20 @@
     #listinduk .list-group-item{
       cursor: pointer;
       font-weight: 600;
+      min-height: 92px;
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      border: 0 !important;
+      border-radius: .25rem !important;
+      box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+    }
+    #listinduk .list-group-item.active{
+      background-color: #007bff;
+      color: #fff;
+    }
+    #tabcontent .small-box{
+      min-height: 92px;
     }
     @media (max-width:767px){
       .tab-content{
