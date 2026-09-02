@@ -14,7 +14,7 @@
                  DATE_FORMAT(H.sutanggal,'%Y%m') 'ym',
                  DATE_FORMAT(H.sutanggal,'%M %Y') 'periode',
                  I.inama 'barang',
-                 SUM(D.sdkeluar) 'qty',
+                 SUM(CASE WHEN IFNULL(D.sdkedatangan,0)=0 THEN D.sdkeluar ELSE 0 END) 'qty',
                  SUM(D.sdkeluar*(D.sdharga - D.sddiskon)) 'nilai',
                  COUNT(DISTINCT H.sukontak) 'pasien'
             FROM fstokd D
