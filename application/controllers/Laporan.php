@@ -131,13 +131,17 @@ class Laporan extends CI_Controller {
    }
 
    function getreportlist(){
-        $query = "SELECT A.*,C.arname 'file',C.arid 'rptid' FROM aamenu A INNER JOIN aausermenu B ON A.MID=B.AUIDMENU AND B.AUAPPROVE=1 AND B.AUIDUSER=".$this->session->id." 
-        			 LEFT JOIN aareport C ON A.mreport=C.arid  
-                   WHERE A.mtype=1 AND A.mactive=1 AND A.mparent=".$_POST['id']." ORDER BY A.murutan ASC";
-       
+        $id = (int) $this->input->post('id');
+        $query = "SELECT A.*, C.arname 'file', C.arid 'rptid',
+                         (SELECT COUNT(*) FROM aamenu X WHERE X.mparent=A.MID AND X.mtype=1 AND X.mactive=1) 'childcount'
+                    FROM aamenu A
+              INNER JOIN aausermenu B ON A.MID=B.AUIDMENU AND B.AUAPPROVE=1 AND B.AUIDUSER=".$this->session->id."
+               LEFT JOIN aareport C ON A.mreport=C.arid
+                   WHERE A.mtype=1 AND A.mactive=1 AND A.mparent=".$id." ORDER BY A.murutan ASC";
+
         header('Content-Type: application/json');
         echo $this->M_transaksi->get_data_query($query);
-   }   
+   }
 
    function getinforeport(){
         if($_POST['id'] == '' || $_POST['id'] == null) {

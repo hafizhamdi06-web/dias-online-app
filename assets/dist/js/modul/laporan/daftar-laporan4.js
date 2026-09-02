@@ -95,7 +95,9 @@ window.renderrpt = function(id){
 
           var induk = [], reports = [];
           $.each(result.data, function(i, row){
-            if (String(row['MLINK']).toLowerCase() === 'induk') induk.push(row);
+            var isInduk = String(row['MLINK']).toLowerCase() === 'induk'
+                       || (!row['file'] && Number(row['childcount']) > 0);
+            if (isInduk) induk.push(row);
             else reports.push(row);
           });
 
