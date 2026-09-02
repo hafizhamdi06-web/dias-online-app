@@ -23,7 +23,7 @@
            LEFT JOIN bgudang G  ON G.gid = H.sucabang
            LEFT JOIN bwilayah W1 ON K.k1kota      = W1.bwid
            LEFT JOIN bwilayah W2 ON K.k1kecamatan = W2.bwid
-               WHERE H.sustatus <> 9 AND H.susumber IN ('IP','AL')
+               WHERE H.sustatus <> 9 AND H.susumber = 'IP'
                  AND H.sutanggal BETWEEN '".tgl_database($date1)."' AND '".tgl_database($date2)."'";
 
     if ($idgudang != "") $query .= " AND H.sucabang = '".$CI->db->escape_str($idgudang)."'";
@@ -36,7 +36,7 @@
 <div class="header-report">
     <h4 class="text-blue"><?= $company_name; ?></h4>
     <h3><?= $title; ?></h3>
-    <span>Periode : <?= $date1; ?> s/d <?= $date2; ?> &nbsp;|&nbsp; Sumber : IP &amp; AL</span>
+    <span>Periode : <?= $date1; ?> s/d <?= $date2; ?> &nbsp;|&nbsp; Sumber : IP</span>
 </div>
 <div class="content-report">
     <table class="table" border="1">
