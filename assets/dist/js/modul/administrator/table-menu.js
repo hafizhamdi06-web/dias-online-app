@@ -57,8 +57,11 @@ $(function () {
             {
             "data": "mnama",
             "render": (data, type, row) => {
-                 if(row.mparent != 0){
-                      data = "<span style='margin-left:20px;'>"+data+"</span>";
+                 var depth = Number(row.mdepth) || 1;
+                 if(depth > 1){
+                      var ml = (depth - 1) * 22;
+                      var caret = depth >= 3 ? "<i class='fas fa-level-up-alt fa-rotate-90 text-muted text-sm mr-1'></i>" : "";
+                      data = "<span style='margin-left:"+ml+"px;'>"+caret+data+"</span>";
                  }
                  return data;
             }

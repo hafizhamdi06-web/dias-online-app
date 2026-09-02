@@ -37,6 +37,7 @@ class Datatable_Administrator extends CI_Controller {
     }    
 
    function view_table_menu() {
+        // A  = menu, P1 = induk langsung, P2 = induk dari induk (kakek)
         $query  = "SELECT A.mid,A.mnama,A.mdescription,
                           CASE WHEN A.mtype=0 THEN 'Module'
                                WHEN A.mtype=1 THEN 'Laporan'
@@ -46,9 +47,21 @@ class Datatable_Administrator extends CI_Controller {
                           END AS 'mtype',
                           A.micon,A.murutan,IF(A.mactive='1','Aktif','Tidak Aktif') AS 'mactive',
                           A.mparent,
-                          CASE WHEN A.mparent=0 THEN A.mnama ELSE B.mnama END AS 'mgroup',
-                          COALESCE(B.murutan,A.murutan) AS 'mgrouporder'
-                     FROM aamenu A LEFT JOIN aamenu B ON A.mparent=B.mid";
+                          CASE WHEN A.mparent=0 THEN 1
+                               WHEN IFNULL(P1.mparent,0)=0 THEN 2
+                               ELSE 3 END AS 'mdepth',
+                          CASE WHEN A.mparent=0 THEN A.mnama
+                               WHEN IFNULL(P1.mparent,0)=0 THEN P1.mnama
+                               ELSE P2.mnama END AS 'mgroup',
+                          CASE WHEN A.mparent=0 THEN A.murutan
+                               WHEN IFNULL(P1.mparent,0)=0 THEN P1.murutan
+                               ELSE IFNULL(P2.murutan,0) END AS 'mgrouporder',
+                          CASE WHEN A.mparent=0 THEN -1
+                               WHEN IFNULL(P1.mparent,0)=0 THEN A.murutan
+                               ELSE IFNULL(P1.murutan,0) END AS 'mlvl2order'
+                     FROM aamenu A
+                LEFT JOIN aamenu P1 ON A.mparent=P1.mid
+                LEFT JOIN aamenu P2 ON P1.mparent=P2.mid";
         $search = array('A.mnama','A.mdescription');
         $where  = null;
         $isWhere = "A.mnama LIKE '%".$this->input->post('nama')."%'";
@@ -57,7 +70,7 @@ class Datatable_Administrator extends CI_Controller {
           $isWhere .= " AND A.mtype='".$this->input->post('tipe')."'";
         }
 
-        $isOrder = "mgrouporder ASC, A.mparent ASC, A.murutan ASC";
+        $isOrder = "mgrouporder ASC, mlvl2order ASC, mdepth ASC, A.murutan ASC, A.mid ASC";
 
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere,$isOrder);
