@@ -8,7 +8,7 @@
     $CI =& get_instance();
 
     $query = "SELECT K.knama 'nama',
-                     DATE_FORMAT(K.ktgllahir,'%d/%m/%Y') 'tgllahir',
+                     CASE WHEN K.ktgllahir IS NULL OR YEAR(K.ktgllahir) < 1901 THEN '' ELSE DATE_FORMAT(K.ktgllahir,'%d/%m/%Y') END 'tgllahir',
                      K.kidpasien 'idpasien',
                      G.gnama 'cabang',
                      COUNT(DISTINCT H.sutanggal) 'kedatangan',
