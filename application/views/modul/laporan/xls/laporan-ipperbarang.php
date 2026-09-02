@@ -23,7 +23,7 @@
           INNER JOIN bitem  I ON I.iid  = D.sditem
            LEFT JOIN bkontak KR ON H.sukaryawan = KR.kid
            LEFT JOIN bkontak K  ON H.sukontak  = K.kid
-               WHERE H.sustatus <> 9 AND H.susumber = 'IP'
+               WHERE H.sustatus <> 9 AND H.susumber IN ('IP','AL')
                  AND H.sutanggal BETWEEN '".tgl_database($date1)."' AND '".tgl_database($date2)."'";
 
     if ($idgudang != "") $query .= " AND H.sucabang = '".$CI->db->escape_str($idgudang)."'";
