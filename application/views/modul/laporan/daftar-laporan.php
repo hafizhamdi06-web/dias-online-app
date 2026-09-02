@@ -27,20 +27,30 @@
     #tabcontent .ribbon-small.ribbon{
       z-index: 3;
     }
-    #listinduk .list-group-item{
-      cursor: pointer;
-      font-weight: 600;
-      min-height: 92px;
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-      border: 0 !important;
-      border-radius: .25rem !important;
+    #listindukcol .table{
+      background: #fff;
       box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+      margin-bottom: 0;
     }
-    #listinduk .list-group-item.active{
+    #listindukcol .table thead th{
+      background: #f4f6f9;
+      font-size: .8rem;
+      font-weight: 600;
+      border-bottom: 2px solid #dee2e6;
+    }
+    #listinduk tr{
+      cursor: pointer;
+    }
+    #listinduk td{
+      font-size: .85rem;
+      padding: .5rem .75rem;
+    }
+    #listinduk tr.active td{
       background-color: #007bff;
       color: #fff;
+    }
+    #listinduk tr:hover:not(.active) td{
+      background-color: #eef4ff;
     }
     #tabcontent .small-box{
       min-height: 92px;
@@ -87,7 +97,12 @@
           <div class="tab-content">
             <div class="row">
               <div id="listindukcol" class="col-md-3 col-12 d-none">
-                <div class="list-group" id="listinduk"></div>
+                <table class="table table-sm table-hover mb-0">
+                  <thead>
+                    <tr><th>Induk Menu</th></tr>
+                  </thead>
+                  <tbody id="listinduk"></tbody>
+                </table>
               </div>
               <div id="tabcontentcol" class="col-md-12 col-12">
                 <div id="tabcontent" class="row"></div>
