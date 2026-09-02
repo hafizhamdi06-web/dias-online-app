@@ -9,14 +9,15 @@
 
     $filgudang = ($idgudang != "") ? " AND H.sucabang = '".$CI->db->escape_str($idgudang)."'" : "";
 
-    // Detail: per cabang > bulan-tahun > tindakan/produk
+    // Detail: per cabang > bulan-tahun > tindakan/produk.
+    // Pasien per baris = pasien unik pada baris yang ADA HARGANYA (nilai > 0).
     $q = "SELECT G.gkode 'cabangkode', G.gnama 'cabangnama',
                  DATE_FORMAT(H.sutanggal,'%Y%m') 'ym',
                  DATE_FORMAT(H.sutanggal,'%M %Y') 'periode',
                  I.inama 'barang',
                  SUM(CASE WHEN IFNULL(D.sdkedatangan,0)=0 THEN D.sdkeluar ELSE 0 END) 'qty',
                  SUM(D.sdkeluar*(D.sdharga - D.sddiskon)) 'nilai',
-                 COUNT(DISTINCT H.sukontak) 'pasien'
+                 COUNT(DISTINCT CASE WHEN (D.sdkeluar*(D.sdharga - D.sddiskon)) > 0 THEN H.sukontak END) 'pasien'
             FROM fstokd D
       INNER JOIN fstoku H ON H.suid = D.sdidsu
       INNER JOIN bitem  I ON I.iid  = D.sditem
@@ -28,26 +29,30 @@
 
     $rows = json_decode($CI->M_transaksi->get_data_query($q))->data;
 
-    // Jumlah pasien unik per bulan / per cabang / grand (ROLLUP)
-    $qp = "SELECT G.gkode 'cabangkode', DATE_FORMAT(H.sutanggal,'%Y%m') 'ym', COUNT(DISTINCT H.sukontak) 'pasien'
-             FROM fstoku H LEFT JOIN bgudang G ON G.gid = H.sucabang
+    // Total pasien per bulan (per cabang): 1 pasien per hari dihitung 1x meski
+    // transaksi berkali-kali, dan hanya transaksi yang ADA HARGANYA.
+    $qp = "SELECT G.gkode 'cabangkode', DATE_FORMAT(H.sutanggal,'%Y%m') 'ym',
+                  COUNT(DISTINCT CONCAT(H.sukontak,'#',H.sutanggal)) 'pasien'
+             FROM fstokd D
+       INNER JOIN fstoku H ON H.suid = D.sdidsu
+        LEFT JOIN bgudang G ON G.gid = H.sucabang
             WHERE H.sustatus <> 9 AND H.susumber IN ('IP','AL')
+              AND (D.sdkeluar*(D.sdharga - D.sddiskon)) > 0
               AND H.sutanggal BETWEEN '".tgl_database($date1)."' AND '".tgl_database($date2)."'".$filgudang."
-         GROUP BY G.gkode, DATE_FORMAT(H.sutanggal,'%Y%m') WITH ROLLUP";
+         GROUP BY G.gkode, DATE_FORMAT(H.sutanggal,'%Y%m')";
 
     $prows = json_decode($CI->M_transaksi->get_data_query($qp))->data;
 
-    $pPeriode = array(); $pCabang = array(); $pGrand = 0;
+    $pPeriode = array();
     foreach ($prows as $p) {
-        if (is_null($p->cabangkode))      $pGrand = $p->pasien;
-        elseif (is_null($p->ym))          $pCabang[$p->cabangkode] = $p->pasien;
-        else                              $pPeriode[$p->cabangkode.'|'.$p->ym] = $p->pasien;
+        $pPeriode[$p->cabangkode.'|'.$p->ym] = $p->pasien;
     }
 ?>
 <div class="header-report">
     <h4 class="text-blue"><?= $company_name; ?></h4>
     <h3><?= $title; ?></h3>
     <span>Periode : <?= $date1; ?> s/d <?= $date2; ?> &nbsp;|&nbsp; Sumber : IP &amp; AL</span>
+    <br><span style="font-size:8pt;color:#666;">*Kolom Pasien per baris hanya menghitung transaksi yang ada harganya. Total pasien hanya di baris "Total &lt;Bulan&gt;" (1 pasien per hari = 1, walau transaksi berkali-kali).</span>
 </div>
 <div class="content-report">
     <table class="table">
@@ -76,13 +81,12 @@
                     echo "<td class='right px-1'><b>".eFormatNumber($ps,0)."</b></td>";
                     echo "</tr>";
                 };
-                $flushCabang = function() use (&$cQty, &$cNilai, &$cLabel, &$curCabang, &$pCabang) {
-                    $ps = isset($pCabang[$curCabang]) ? $pCabang[$curCabang] : 0;
+                $flushCabang = function() use (&$cQty, &$cNilai, &$cLabel) {
                     echo "<tr style='border-top:1px dashed #333;'>";
                     echo "<td class='px-1'><b>Total Cabang ".$cLabel."</b></td>";
                     echo "<td class='right px-1'><b>".eFormatNumber($cQty,2)."</b></td>";
                     echo "<td class='right px-1'><b>".eFormatNumber($cNilai,0)."</b></td>";
-                    echo "<td class='right px-1'><b>".eFormatNumber($ps,0)."</b></td>";
+                    echo "<td class='right px-1'></td>";
                     echo "</tr>";
                 };
 
@@ -124,7 +128,7 @@
                 <td class="px-1"><b>Grand Total</b></td>
                 <td class="right px-1"><b><?= eFormatNumber($gQty,2); ?></b></td>
                 <td class="right px-1"><b><?= eFormatNumber($gNilai,0); ?></b></td>
-                <td class="right px-1"><b><?= eFormatNumber($pGrand,0); ?></b></td>
+                <td class="right px-1"></td>
             </tr>
         </tfoot>
     </table>
