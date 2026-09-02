@@ -158,7 +158,7 @@
         <div class="card card-outline card-danger">
           <div class="card-header">
             <h3 class="card-title text-sm">Top 10 Penjualan Produk Terbanyak</h3>
-            <small class="text-muted d-block">*Berdasarkan qty terjual (transaksi POS) pada periode &amp; cabang terpilih</small>
+            <small class="text-muted d-block">*Berdasarkan nilai transaksi / total penjualan pada periode &amp; cabang terpilih</small>
           </div>
           <div class="card-body p-0">
             <div class="table-responsive">

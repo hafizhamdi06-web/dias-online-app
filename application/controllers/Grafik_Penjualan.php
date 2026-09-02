@@ -87,7 +87,7 @@ class Grafik_Penjualan extends CI_Controller {
                      AND H.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."'
                      AND H.sucabang = '".$cabang."'
                 GROUP BY D.sditem
-                ORDER BY qty DESC, total DESC
+                ORDER BY total DESC, qty DESC
                    LIMIT 10";
 
         header('Content-Type: application/json');
