@@ -132,6 +132,75 @@
           </div>
         </div>
 
+        <div class="card card-outline card-danger">
+          <div class="card-header">
+            <h3 class="card-title text-sm">Top 10 Penjualan Terbanyak</h3>
+            <small class="text-muted d-block">*Berdasarkan total transaksi POS pada periode &amp; cabang terpilih</small>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm table-striped table-hover mb-0" id="tabel-top-pasien">
+                <thead>
+                  <tr>
+                    <th class="text-sm" style="width:40px">#</th>
+                    <th class="text-sm">Nama</th>
+                    <th class="text-sm">Id Pasien</th>
+                    <th class="text-sm">No HP</th>
+                    <th class="text-sm text-right">Total Transaksi</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-outline card-danger">
+          <div class="card-header">
+            <h3 class="card-title text-sm">Top 10 Penjualan Produk Terbanyak</h3>
+            <small class="text-muted d-block">*Berdasarkan qty terjual (transaksi POS) pada periode &amp; cabang terpilih</small>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm table-striped table-hover mb-0" id="tabel-top-produk">
+                <thead>
+                  <tr>
+                    <th class="text-sm" style="width:40px">#</th>
+                    <th class="text-sm">Kode</th>
+                    <th class="text-sm">Nama Produk</th>
+                    <th class="text-sm text-right">Qty Terjual</th>
+                    <th class="text-sm text-right">Total Penjualan</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card card-outline card-danger">
+          <div class="card-header">
+            <h3 class="card-title text-sm">Top 10 Penjualan Produk Qty Terbanyak</h3>
+            <small class="text-muted d-block">*Hanya baris dengan nilai setelah diskon &gt; 0, diurutkan berdasarkan qty terjual</small>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm table-striped table-hover mb-0" id="tabel-top-produk-qty">
+                <thead>
+                  <tr>
+                    <th class="text-sm" style="width:40px">#</th>
+                    <th class="text-sm">Kode</th>
+                    <th class="text-sm">Nama Produk</th>
+                    <th class="text-sm text-right">Qty Terjual</th>
+                    <th class="text-sm text-right">Nilai (Setelah Diskon)</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -149,6 +218,7 @@
 <script src="<? echo base_url('assets/plugins/input-mask/jquery.inputmask.bundle.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/chart.js/Chart.min.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'); ?>"></script>
 <!-- JS Custom -->
 <script type="module" src="<? echo app_url('assets/dist/js/modul/laporan/grafik-penjualan.js'); ?>"></script>
 </body>

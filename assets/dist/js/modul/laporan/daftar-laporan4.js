@@ -295,9 +295,20 @@ window.openRpt = function(rpt,rptid){
                                 <input type="text" id="nomorsampai" name="nomorsampai" class="form-control form-control-sm" autocomplete="off">
                               </div>
                             </div>`;                            
-              }              
+              }
 
-              
+              if(result.data[0]['ARLINK']=='laporan-penjualan-per-barang'){
+                  $html += `<div class="row mx-2 mt-1">
+                              <label class="col-sm-3 col-form-label text-sm font-weight-normal">Jenis Merchant</label>
+                              <div class="col-sm-8">
+                                <select id="merchant" name="merchant" class="form-control form-control-sm select2" style="width: 100%">
+                                  <option value="">(Semua)</option>
+                                </select>
+                              </div>
+                            </div>`;
+              }
+
+
               $html += `<div class="row mx-2 mt-1">
                           <label class="col-sm-3 col-form-label text-sm font-weight-normal">Pilihan</label>
                           <div class="col-sm-8">
@@ -397,8 +408,9 @@ window.openRpt = function(rpt,rptid){
               Component_Select2("#divisi",`${base_url}Select_Master/view_divisi`,null,null,true);       
               Component_Select2("#tahun",`${base_url}Select_Master/view_tahun_periode2`,null,null,true);       
              // Component_Select2("#item",`${base_url}Select_Master/view_item`,null,null,true);                       
-              Component_Select2("#mode",null,null,null,true);                                           
-              parent.window.$(".datepicker").datepicker('setDate', 'dd-mm-yy');  
+              Component_Select2("#mode",null,null,null,true);
+              Component_Select2("#merchant",`${base_url}Select_Master/view_merchant_jenis`,null,null,true);
+              parent.window.$(".datepicker").datepicker('setDate', 'dd-mm-yy');
               //parent.window.$("#tgldari").datepicker('setDate', '01-mm-yy');     
               
               

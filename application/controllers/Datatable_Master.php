@@ -487,6 +487,57 @@ class Datatable_Master extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }                                    
 
+   function view_table_pasien() {
+        $query  = "SELECT A.kid AS 'id',A.kidpasien AS 'idpasien',A.kkode AS 'kode',A.knama AS 'nama',
+                          T.ktnama AS 'kategori',A.knoktp AS 'noktp',A.k1telp1 AS 'telp',W.bnama AS 'kota',
+                          CASE WHEN IFNULL(A.kaktif,0)=0 THEN 'Non-Aktif' ELSE 'Aktif' END AS 'status'
+                     FROM bkontak A
+                LEFT JOIN bkontaktipe T ON A.ktipe=T.ktid
+                LEFT JOIN bwilayah W ON A.k1kota=W.bwid";
+        $search = array('kkode','knama','kidpasien','knoktp','k1telp1');
+        $where  = null;
+
+        $isWhere = "A.kkode LIKE '%".@$_POST['kode']."%' AND A.knama LIKE '%".@$_POST['nama']."%'";
+
+        // Filter kategori: default Tunai (14) + Member (12); "Semua" mengabaikan filter
+        if($this->input->post('semua') != '1'){
+          $tipe = array();
+          if($this->input->post('tunai') == '1')  $tipe[] = 14;
+          if($this->input->post('member') == '1') $tipe[] = 12;
+          if(!empty($tipe)){
+            $isWhere .= " AND A.ktipe IN (".implode(',', $tipe).")";
+          }
+        }
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
+
+   function view_table_karyawan() {
+        $query  = "SELECT A.kid AS 'id',A.kkode AS 'kode',A.knama AS 'nama',
+                          J.kjnama AS 'jenis',G.gnama AS 'cabang',A.k1telp1 AS 'nohp',
+                          CASE WHEN IFNULL(A.kaktif,0)=0 THEN 'Non-Aktif' ELSE 'Aktif' END AS 'status'
+                     FROM bkontak A
+                LEFT JOIN bkontakjenis J ON A.kjeniskaryawan=J.kjid
+                LEFT JOIN bgudang G ON A.kcabang=G.gid";
+        $search = array('kkode','knama','k1telp1','knoktp');
+        $where  = null;
+
+        $isWhere = "A.kkode LIKE '%".@$_POST['kode']."%' AND A.knama LIKE '%".@$_POST['nama']."%'";
+
+        $kategori = $this->input->post('kategori');
+        if($kategori !== '' && $kategori !== null){
+          $isWhere .= " AND A.ktipe='".$kategori."'";
+        }
+
+        if($this->input->post('aktif') == '1'){
+          $isWhere .= " AND IFNULL(A.kaktif,0)<>0";
+        }
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
+
    function view_table_kattention($kontak="") {
         $query  = "SELECT kaid AS 'id',kanama AS 'nama',kajabatan AS 'jabatan' 
                      FROM bkontakatention";

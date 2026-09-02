@@ -433,6 +433,14 @@ class Page extends CI_Controller {
         $this->loader('divisi','modul/master/table-divisi');
     }
 
+    function pasien(){
+        $this->loader('pasien','modul/master/table-pasien');
+    }
+
+    function karyawan(){
+        $this->loader('karyawan','modul/master/table-karyawan');
+    }
+
     function jenispenyesuaian(){
         $this->loader('jenispenyesuaian','modul/master/table-jenis-penyesuaian');
     }

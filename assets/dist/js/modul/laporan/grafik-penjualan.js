@@ -4,6 +4,7 @@
 
 import { Component_Inputmask_Date } from '../component.js';
 import { Component_Select2 } from '../component.js';
+import { Component_Scrollbars } from '../component.js';
 
 toastr.options = {
   "positionClass": "toast-top-center",
@@ -17,6 +18,8 @@ $(function() {
   this.addEventListener('contextmenu', function(e){
     e.preventDefault();
   });
+
+  Component_Scrollbars('.tab-wrap','hidden','scroll');
 
   Component_Inputmask_Date('.datepicker');
 
@@ -56,6 +59,9 @@ $(function() {
   $('#btampilkan').on('click', function(){
     _muatGrafik();
     _muatRingkasan();
+    _muatTopPasien();
+    _muatTopProduk();
+    _muatTopProdukQty();
   });
 
   $('#bexportpdf').on('click', function(){
@@ -67,6 +73,9 @@ $(function() {
 
   _muatGrafik();
   _muatRingkasan();
+  _muatTopPasien();
+  _muatTopProduk();
+  _muatTopProdukQty();
 
 });
 
@@ -159,6 +168,117 @@ var _muatGrafik = () => {
       _renderChart('chart-omzet', 'Omzet', labels, omzet, '#28a745');
       _renderChart('chart-transaksi', 'Jumlah Transaksi', labels, jumlahtransaksi, '#17a2b8');
       _renderChart('chart-pasien', 'Jumlah Pasien', labels, jumlahpasien, '#ffc107');
+    }
+  });
+};
+
+var _muatTopPasien = () => {
+  $.ajax({
+    "url"    : base_url+"Grafik_Penjualan/toppasien",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : {
+      tgldari: $('#tgldari').val(),
+      tglsampai: $('#tglsampai').val(),
+      cabang: $('#cabang').val()
+    },
+    "cache"  : false,
+    "error"  : function(xhr,status,error){
+      toastr.error("Gagal mengambil data top pasien : "+xhr.status+" "+error);
+    },
+    "success" : function(result) {
+      var rows = result.data || [];
+      var $body = $('#tabel-top-pasien tbody').empty();
+
+      if (!rows.length) {
+        $body.append('<tr><td colspan="5" class="text-center text-muted text-sm">Tidak ada data</td></tr>');
+        return;
+      }
+
+      rows.forEach(function(r, i){
+        var tr = '<tr>'
+          + '<td class="text-sm text-center">'+(i+1)+'</td>'
+          + '<td class="text-sm">'+(r.nama || '-')+'</td>'
+          + '<td class="text-sm">'+(r.idpasien || '-')+'</td>'
+          + '<td class="text-sm">'+(r.nohp || '-')+'</td>'
+          + '<td class="text-sm text-right">'+_formatRibuan(r.total)+'</td>'
+          + '</tr>';
+        $body.append(tr);
+      });
+    }
+  });
+};
+
+var _muatTopProduk = () => {
+  $.ajax({
+    "url"    : base_url+"Grafik_Penjualan/topproduk",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : {
+      tgldari: $('#tgldari').val(),
+      tglsampai: $('#tglsampai').val(),
+      cabang: $('#cabang').val()
+    },
+    "cache"  : false,
+    "error"  : function(xhr,status,error){
+      toastr.error("Gagal mengambil data top produk : "+xhr.status+" "+error);
+    },
+    "success" : function(result) {
+      var rows = result.data || [];
+      var $body = $('#tabel-top-produk tbody').empty();
+
+      if (!rows.length) {
+        $body.append('<tr><td colspan="5" class="text-center text-muted text-sm">Tidak ada data</td></tr>');
+        return;
+      }
+
+      rows.forEach(function(r, i){
+        var tr = '<tr>'
+          + '<td class="text-sm text-center">'+(i+1)+'</td>'
+          + '<td class="text-sm">'+(r.kode || '-')+'</td>'
+          + '<td class="text-sm">'+(r.nama || '-')+'</td>'
+          + '<td class="text-sm text-right">'+_formatRibuan(r.qty)+'</td>'
+          + '<td class="text-sm text-right">'+_formatRibuan(r.total)+'</td>'
+          + '</tr>';
+        $body.append(tr);
+      });
+    }
+  });
+};
+
+var _muatTopProdukQty = () => {
+  $.ajax({
+    "url"    : base_url+"Grafik_Penjualan/topprodukqty",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : {
+      tgldari: $('#tgldari').val(),
+      tglsampai: $('#tglsampai').val(),
+      cabang: $('#cabang').val()
+    },
+    "cache"  : false,
+    "error"  : function(xhr,status,error){
+      toastr.error("Gagal mengambil data top produk qty : "+xhr.status+" "+error);
+    },
+    "success" : function(result) {
+      var rows = result.data || [];
+      var $body = $('#tabel-top-produk-qty tbody').empty();
+
+      if (!rows.length) {
+        $body.append('<tr><td colspan="5" class="text-center text-muted text-sm">Tidak ada data</td></tr>');
+        return;
+      }
+
+      rows.forEach(function(r, i){
+        var tr = '<tr>'
+          + '<td class="text-sm text-center">'+(i+1)+'</td>'
+          + '<td class="text-sm">'+(r.kode || '-')+'</td>'
+          + '<td class="text-sm">'+(r.nama || '-')+'</td>'
+          + '<td class="text-sm text-right">'+_formatRibuan(r.qty)+'</td>'
+          + '<td class="text-sm text-right">'+_formatRibuan(r.total)+'</td>'
+          + '</tr>';
+        $body.append(tr);
+      });
     }
   });
 };

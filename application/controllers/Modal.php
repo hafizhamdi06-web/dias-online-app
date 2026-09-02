@@ -208,6 +208,16 @@ class Modal extends CI_Controller {
         $this->loader('modul/master/form-divisi');
     }
 
+    // Modal Form Data Pasien
+    function form_pasien(){
+        $this->loader('modul/master/form-pasien');
+    }
+
+    // Modal Form Data Karyawan
+    function form_karyawan(){
+        $this->loader('modul/master/form-karyawan');
+    }
+
     // Modal Form Data Lain
     function form_lain(){
         $this->loader('modul/master/form-lain');

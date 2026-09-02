@@ -71,6 +71,17 @@
   text-overflow: ellipsis;
 }
 
+/* table-page.css menyembunyikan td:first-child (konvensi kolom ID tersembunyi
+   pada modul datatable). Tabel Top 10 ini tabel biasa, jadi batalkan aturan itu. */
+#tabel-top-pasien > tbody > tr > td:first-child,
+#tabel-top-pasien > thead > tr > th:first-child,
+#tabel-top-produk > tbody > tr > td:first-child,
+#tabel-top-produk > thead > tr > th:first-child,
+#tabel-top-produk-qty > tbody > tr > td:first-child,
+#tabel-top-produk-qty > thead > tr > th:first-child {
+  display: table-cell !important;
+}
+
 .gp-print-only {
   display: none;
 }

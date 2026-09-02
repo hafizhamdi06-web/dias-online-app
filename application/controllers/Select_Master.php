@@ -375,8 +375,78 @@ class Select_Master extends CI_Controller {
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
     }  
 
+   function view_wilayah_kota() {
+        $query  = "SELECT A.bwid AS 'id',A.bnama AS 'text',A.bkode AS 'kode'
+                     FROM bwilayah A";
+        $search = array('bnama','bkode');
+        $isOrder = 'bnama';
+        $isWhere = "A.bkode LIKE '__.__'";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_wilayah_kecamatan() {
+        $query  = "SELECT A.bwid AS 'id',A.bnama AS 'text',A.bkode AS 'kode'
+                     FROM bwilayah A";
+        $search = array('bnama','bkode');
+        $isOrder = 'bnama';
+        $isWhere = "A.bkode LIKE '__.__.__'";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_marketing_source() {
+        $query  = "SELECT A.lid AS 'id',CONCAT_WS(' - ',A.lkode,A.lnama) AS 'text',A.lkode AS 'kode'
+                     FROM blain A";
+        $search = array('lkode','lnama');
+        $isOrder = 'lkode';
+        $isWhere = "A.ltipe='Marketing Source'";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_kategori_kontak_nonpasien() {
+        $query  = "SELECT A.ktid AS 'id',A.ktnama AS 'text',null AS 'kode'
+                     FROM bkontaktipe A";
+        $search = array('ktnama');
+        $isOrder = 'ktnama';
+        $isWhere = "IFNULL(A.ktpasien,0)=0";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_jenis_karyawan() {
+        $query  = "SELECT A.kjid AS 'id',A.kjnama AS 'text',null AS 'kode'
+                     FROM bkontakjenis A";
+        $search = array('kjnama');
+        $isOrder = 'kjid';
+        $isWhere = null;
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_merchant_jenis() {
+        $query  = "SELECT A.mcnama AS 'id',A.mcnama AS 'text',A.mckode AS 'kode'
+                     FROM bmerchant A";
+        $search = array('mcnama','mckode');
+        $isOrder = 'mcnama';
+        $isWhere = "A.mcid<>0";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
+   function view_kelompok_fu() {
+        $query  = "SELECT A.lid AS 'id',CONCAT_WS(' - ',A.lkode,A.lnama) AS 'text',A.lkode AS 'kode'
+                     FROM blain A";
+        $search = array('lkode','lnama');
+        $isOrder = 'lkode';
+        $isWhere = "A.ltipe='Kelompok FU'";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+    }
+
    function view_tahun_periode() {
-        $query  = "SELECT A.pid AS 'id',A.ptahun AS 'text',null AS 'kode' 
+        $query  = "SELECT A.pid AS 'id',A.ptahun AS 'text',null AS 'kode'
                      FROM cperiode A";
         $search = array('ptahun');
         $isOrder = 'ptahun';

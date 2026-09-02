@@ -49,6 +49,75 @@ class Grafik_Penjualan extends CI_Controller {
         echo $this->M_transaksi->get_data_query($query);
     }
 
+    function toppasien(){
+        $tgldari = tgl_database($_POST['tgldari']);
+        $tglsampai = tgl_database($_POST['tglsampai']);
+        $cabang = $this->_cabangValid($_POST['cabang']);
+
+        $query = "SELECT K.knama 'nama',
+                         K.kidpasien 'idpasien',
+                         K.k1telp1 'nohp',
+                         SUM(A.sutotaltransaksi) 'total'
+                    FROM fstoku A
+               LEFT JOIN bkontak K ON A.sukontak = K.kid
+                   WHERE A.susumber='IP' AND A.sustatus<>9
+                     AND A.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."'
+                     AND A.sucabang = '".$cabang."'
+                GROUP BY A.sukontak
+                ORDER BY total DESC
+                   LIMIT 10";
+
+        header('Content-Type: application/json');
+        echo $this->M_transaksi->get_data_query($query);
+    }
+
+    function topproduk(){
+        $tgldari = tgl_database($_POST['tgldari']);
+        $tglsampai = tgl_database($_POST['tglsampai']);
+        $cabang = $this->_cabangValid($_POST['cabang']);
+
+        $query = "SELECT I.ikode 'kode',
+                         I.inama 'nama',
+                         SUM(D.sdkeluar) 'qty',
+                         SUM(D.sdkeluar * D.sdharga - D.sddiskon) 'total'
+                    FROM fstokd D
+              INNER JOIN fstoku H ON D.sdidsu = H.suid
+              INNER JOIN bitem I ON D.sditem = I.iid
+                   WHERE H.susumber='IP' AND H.sustatus<>9
+                     AND H.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."'
+                     AND H.sucabang = '".$cabang."'
+                GROUP BY D.sditem
+                ORDER BY qty DESC, total DESC
+                   LIMIT 10";
+
+        header('Content-Type: application/json');
+        echo $this->M_transaksi->get_data_query($query);
+    }
+
+    function topprodukqty(){
+        $tgldari = tgl_database($_POST['tgldari']);
+        $tglsampai = tgl_database($_POST['tglsampai']);
+        $cabang = $this->_cabangValid($_POST['cabang']);
+
+        $query = "SELECT I.ikode 'kode',
+                         I.inama 'nama',
+                         SUM(D.sdkeluar) 'qty',
+                         SUM(D.sdkeluar * D.sdharga - D.sddiskon) 'total'
+                    FROM fstokd D
+              INNER JOIN fstoku H ON D.sdidsu = H.suid
+              INNER JOIN bitem I ON D.sditem = I.iid
+                   WHERE H.susumber='IP' AND H.sustatus<>9
+                     AND (D.sdkeluar * D.sdharga - D.sddiskon) > 0
+                     AND H.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."'
+                     AND H.sucabang = '".$cabang."'
+                GROUP BY D.sditem
+                ORDER BY qty DESC, total DESC
+                   LIMIT 10";
+
+        header('Content-Type: application/json');
+        echo $this->M_transaksi->get_data_query($query);
+    }
+
     function ringkasan(){
         $cabang = $this->_cabangValid($_POST['cabang']);
 
