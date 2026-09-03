@@ -5925,14 +5925,20 @@ var _set_nomor_ip = (xtgl) => {
         "dataType" : "json", 
         "data" : "tgl="+xtgl,
         "cache"  : false,
-        "error"  : () => {
-            parent.window.toastr.error('Error : Gagal mengambil no transaksi pos !');
-            parent.window.$('.loader-wrap').addClass('d-none');                  
+        "error"  : (xhr, status, err) => {
+            parent.window.toastr.error('Error : Gagal mengambil no transaksi pos ! (' + xhr.status + ' ' + (err || status) + ')');
+            console.error('getnomorip error', xhr.status, xhr.responseText);
+            parent.window.$('.loader-wrap').addClass('d-none');
             return;
         },
         "success" : (result) => {
-             $('#nomor').val(result.data[0]['no']);
-        } 
+             if (result && result.data && result.data[0]) {
+                 $('#nomor').val(result.data[0]['no']);
+             } else {
+                 parent.window.toastr.error('Error : Respon no transaksi pos tidak valid.');
+                 console.error('getnomorip bad response', result);
+             }
+        }
   })
 }
 
