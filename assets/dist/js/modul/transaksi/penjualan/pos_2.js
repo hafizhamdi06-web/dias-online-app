@@ -5927,32 +5927,14 @@ var _bersihkanpembayaran = () => {
 
 }
 
-var _set_nomor_ip = (xtgl) => { 
-    $.ajax({ 
-        "url"    : base_url+"PJ_POS_HP/getnomorip",       
-        "type"   : "POST", 
-        "dataType" : "json", 
-        "data" : "tgl="+xtgl,
+var _set_nomor_ip = (xtgl) => {
+    $.ajax({
+        "url"    : base_url+"PJ_POS_HP/getnomorip",
+        "type"   : "POST",
+        "data"   : "tgl="+xtgl,
         "cache"  : false,
-        "error"  : (xhr, status, err) => {
-            var detail = (xhr.responseText || '').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0, 400);
-            parent.window.toastr.error('Gagal mengambil no transaksi pos! ' + xhr.status + ' ' + (err || status) + (detail ? ' — ' + detail : ''), '', {timeOut: 15000});
-            console.error('getnomorip error', xhr.status, xhr.responseText);
-            parent.window.$('.loader-wrap').addClass('d-none');
-            return;
-        },
-        "success" : (result) => {
-             if (result && result.pesan) {
-                 parent.window.toastr.error(result.pesan, '', {timeOut: 15000});
-                 console.error('getnomorip pesan', result);
-                 return;
-             }
-             if (result && result.data && result.data[0] && result.data[0]['no']) {
-                 $('#nomor').val(result.data[0]['no']);
-             } else {
-                 parent.window.toastr.error('Respon no transaksi pos tidak valid.');
-                 console.error('getnomorip bad response', result);
-             }
+        "success"  : function(result) {
+            $('#nomor').val(result);
         }
   })
 }

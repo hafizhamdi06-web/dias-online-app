@@ -788,106 +788,38 @@ function xxgetnomorip(){
           echo $this->M_transaksi->get_data_query($query);
     }        
 
-/**
-     * Pastikan koneksi database aktif. CI3 reconnect() tidak melakukan apa-apa
-     * ketika conn_id sudah FALSE (koneksi tertutup), jadi kita panggil
-     * initialize() untuk membuka koneksi baru.
-     */
-    private function _ensureDb(){
-        try {
-            if (empty($this->db->conn_id)) {
-                $this->db->initialize();
-            } else {
-                @$this->db->reconnect();
-                if (empty($this->db->conn_id)) $this->db->initialize();
-            }
-        } catch (\Throwable $e) {
-            log_message('error', '_ensureDb: ' . $e->getMessage());
-        }
-    }
+   // Konsep sama dengan form Permintaan Barang (M_PB_Permintaan_Barang::autonumber):
+   // hitung urut dari MID(notransaksi,4,N), pad 4 digit, prepend kodecabang,
+   // lalu echo sebagai string biasa (bukan JSON).
+   function getnomorip(){
+        $cabang     = @$_SESSION['cabang'];
+        $kodecabang = @$_SESSION['kodecabang'];
+        $tgl        = $this->input->post('tgl');
 
-function getnomorip(){
-        // Buffer output supaya warning/notice PHP (display_errors on) tidak
-        // ikut ke body JSON dan bikin "Unexpected token '<'".
-        while (ob_get_level() > 0) { @ob_end_clean(); }
-        ob_start();
+        $nomor  = 0;
+        $nomor1 = $this->M_transaksi->prefixtrans(element('PJ_Penjualan_Tunai', NID)); // 'IP'
+        $nomor2 = tgl_notrans($tgl);                                                   // 'yymm'
 
-        $out = null;
-        try {
-            $cabang     = isset($_SESSION['cabang']) ? $_SESSION['cabang'] : null;
-            $kodecabang = isset($_SESSION['kodecabang']) ? $_SESSION['kodecabang'] : '';
-            $tgl        = (string) $this->input->post('tgl');
+        $notrans_length = strlen($nomor1) + 4;
 
-            // Pastikan koneksi hidup. Setelah menampilkan transaksi lama lalu
-            // klik "tambah", conn_id bisa FALSE -> escape()/query() fatal
-            // ("real_escape_string() on bool"). reconnect() TIDAK mereconnect
-            // saat conn_id sudah FALSE, jadi harus initialize().
-            $this->_ensureDb();
+        $sql = "SELECT MAX(RIGHT(sunotransaksi,4)) as 'maks'
+                  FROM fstoku
+                 WHERE MID(sunotransaksi,4,".$notrans_length.")='".$nomor1.$nomor2."' and sucabang='".$cabang."'";
 
-            // Ambil prefix langsung dari aanomor (guarded), tidak lewat
-            // M_transaksi->prefixtrans yang fatal bila query builder gagal.
-            $prefixtr = 'IP';
-            $nid = defined('NID') ? NID : array();
-            $nidTunai = (is_array($nid) && isset($nid['PJ_Penjualan_Tunai'])) ? (int) $nid['PJ_Penjualan_Tunai'] : 724;
-            $resP = $this->db->query("SELECT nkode FROM aanomor WHERE nid = " . $nidTunai . " LIMIT 1");
-            if ($resP !== FALSE && is_object($resP)) {
-                $rp = $resP->row();
-                if ($rp && isset($rp->nkode) && $rp->nkode !== '') $prefixtr = $rp->nkode;
-            }
-
-            $yymm = @tgl_notrans($tgl);
-            if (!preg_match('/^\d{4}$/', (string) $yymm)) {
-                $yymm = date('y') . date('m');
-            }
-
-            // Prefix penuh: <kodecabang>-<IP><yymm>  contoh: PG-IP2609
-            $prefix = $kodecabang . '-' . $prefixtr . $yymm;
-            $plen   = strlen($prefix);
-
-            $cabangInt = is_numeric($cabang) ? (int) $cabang : 0;
-
-            // LIKE 'prefix%' bisa pakai index unik SUNOTRANSAKSI (lebih cepat & aman
-            // daripada MID(sunotransaksi,4,N) yang mengasumsikan panjang kode cabang).
-            // Prefix hanya huruf/angka/dash -> aman diinlinekan tanpa escape()
-            // (escape() sendiri fatal bila koneksi mati).
-            $safePrefix = preg_replace('/[^A-Za-z0-9\-]/', '', $prefix);
-
-            $sql = "SELECT COALESCE(MAX(CAST(SUBSTRING(sunotransaksi, " . ($plen + 1) . ", 4) AS UNSIGNED)), 0) + 1 AS urut
-                      FROM fstoku
-                     WHERE sunotransaksi LIKE '" . $safePrefix . "%'
-                       AND sucabang = " . $cabangInt;
-
-            $res = $this->db->query($sql);
-            if ($res === FALSE || !is_object($res)) {
-                // Retry sekali setelah memaksa koneksi baru.
-                $this->_ensureDb();
-                $res = $this->db->query($sql);
-            }
-            if ($res === FALSE || !is_object($res)) {
-                $dberr = $this->db->error();
-                $emsg  = is_array($dberr) ? trim(($dberr['code'] ?? '') . ' ' . ($dberr['message'] ?? '')) : '';
-                log_message('error', 'getnomorip query gagal: ' . $emsg . ' | SQL: ' . $sql);
-                // Jangan pernah kembalikan nomor tebakan (0001) -> risiko duplikat.
-                throw new \RuntimeException('gagal query nomor urut' . ($emsg !== '' ? ': ' . $emsg : '') . '.');
-            }
-
-            $r    = $res->row();
-            $urut = ($r && (int) $r->urut > 0) ? (int) $r->urut : 1;
-            $nomor = $prefix . str_pad((string) $urut, 4, '0', STR_PAD_LEFT);
-
-            $out = json_encode(array('data' => array(array('no' => $nomor))));
-        } catch (\Throwable $e) {
-            log_message('error', 'getnomorip: ' . $e->getMessage());
-            $out = json_encode(array(
-                'data'  => array(array('no' => '')),
-                'pesan' => 'getnomorip gagal: ' . $e->getMessage()
-            ));
+        $query = $this->db->query($sql);
+        foreach ($query->result() as $res) {
+            $nomor = (int) $res->maks + 1; // = number_format()+1 tanpa bug pemisah ribuan
         }
 
-        // Buang semua output liar (warning/notice/BOM) sebelum kirim JSON bersih.
-        while (ob_get_level() > 0) { @ob_end_clean(); }
-        header('Content-Type: application/json');
-        echo $out;
+        switch (strlen($nomor)) {
+            case 1: $nomor = $nomor1.$nomor2."000".$nomor; break;
+            case 2: $nomor = $nomor1.$nomor2."00".$nomor;  break;
+            case 3: $nomor = $nomor1.$nomor2."0".$nomor;   break;
+            case 4: $nomor = $nomor1.$nomor2.$nomor;       break;
+        }
+        $nomor = $kodecabang."-".$nomor;
+
+        echo $nomor;
     }
 
 
