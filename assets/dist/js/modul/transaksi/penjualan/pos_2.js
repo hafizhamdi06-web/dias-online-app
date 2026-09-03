@@ -4454,6 +4454,7 @@ var _ambildetailvocer = () => {
                         {
                            $("input[name^='dis1']").eq(_idx).removeAttr('disabled');
                            $("input[name^='dis2']").eq(_idx).removeAttr('disabled');
+                           $("input[name^='diskonunlocked']").eq(_idx).val('1');
                            $('#modalpassword').modal('hide');
                            parent.window.toastr.success("Sukses membuka Kunci diskon " + $("select[name^='spannama']").eq(_idx).text() );
                         }
@@ -4517,6 +4518,7 @@ var _addRow = () => {
         newrow += "<input name=\"hargaunlocked[]\" type=\"hidden\" value=\"0\">";
         newrow += "<input name=\"dis1[]\" type=\"text\" class=\"dis1 col-1 form-control form-control-sm kuncitext\" value=\"0\">";
         newrow += "<input name=\"dis2[]\" type=\"text\" class=\"dis2 col-1  form-control form-control-sm kuncitext\" value=\"0\">";
+        newrow += "<input name=\"diskonunlocked[]\" type=\"hidden\" value=\"0\">";
         newrow += "<input name=\"subtotal[]\" type=\"text\" class=\"subtotal col-2 form-control form-control-sm numeric kuncitext\" autocomplete=\"off\" tabindex=\"-1\" value=\"0\">"; 
         
          
@@ -4958,7 +4960,8 @@ var _saveData = () => {
                pointvoucherwebdetil:Number($("input[name^='pointvoucherwebdetil']").eq(index).val()) , 
                medidu_sudahbayar:($("input[name^='medidu_sudahbayar']").eq(index).val())                   ,
                medidd_sudahbayar:($("input[name^='medidd_sudahbayar']").eq(index).val())   ,
-               hargaunlocked:($("input[name^='hargaunlocked']").eq(index).val())
+               hargaunlocked:($("input[name^='hargaunlocked']").eq(index).val()),
+               diskonunlocked:($("input[name^='diskonunlocked']").eq(index).val())
 
              });
 
@@ -5673,7 +5676,7 @@ var _hitungJumlahDetil = (idx) => {
       vdis2 = Number($("input[name^='dis2']").eq(idx).val().split('.').join('').toString().replace(',','.')),
       vsubtotal = 0, vdiskon1=0, vdiskon2=0, vharganet1=0, vdiskon=0 ;
 
-  if($('#cabang').val()==18){
+  if($('#cabang').val()==18 && $("input[name^='diskonunlocked']").eq(idx).val()!='1'){
     vdis1 = 0;
     vdis2 = 0;
     $("input[name^='dis1']").eq(idx).val('0');

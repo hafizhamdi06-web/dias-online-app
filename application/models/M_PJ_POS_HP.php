@@ -351,10 +351,12 @@ class M_PJ_POS_HP extends CI_Model {
 
         if ($gudang == 18) {
             foreach ($d as $item) {
-                $item->dis1 = 0;
-                $item->dis2 = 0;
-                $item->diskon = 0;
-                $item->diskon2 = 0;
+                if (empty($item->diskonunlocked) || $item->diskonunlocked != 1) {
+                    $item->dis1 = 0;
+                    $item->dis2 = 0;
+                    $item->diskon = 0;
+                    $item->diskon2 = 0;
+                }
             }
         }
         foreach($d as $item){
@@ -682,10 +684,12 @@ class M_PJ_POS_HP extends CI_Model {
 
         if ($gudang == 18) {
             foreach ($d as $item) {
-                $item->dis1 = 0;
-                $item->dis2 = 0;
-                $item->diskon = 0;
-                $item->diskon2 = 0;
+                if (empty($item->diskonunlocked) || $item->diskonunlocked != 1) {
+                    $item->dis1 = 0;
+                    $item->dis2 = 0;
+                    $item->diskon = 0;
+                    $item->diskon2 = 0;
+                }
             }
         }
         foreach($d as $item){
