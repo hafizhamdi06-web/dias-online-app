@@ -187,6 +187,20 @@ class M_PJ_POS_HP extends CI_Model {
         
     }
 
+    private function _isSelfApprover($jenis)
+    {
+        $roleName = 'Approve '.$jenis;
+        $r = $this->db->query(
+            "SELECT 1 FROM aauserrole B
+               INNER JOIN aarole C ON B.AURIDROLE = C.ARID
+              WHERE B.AURIDUSER = '".$this->session->id."'
+                AND B.AURSTATUS = 1
+                AND C.ARNAMAROLE = '".$this->db->escape_str($roleName)."'
+              LIMIT 1"
+        )->row();
+        return $r ? true : false;
+    }
+
     private function _cekApprovalOverduePOS($id)
     {
         $row = $this->db->query("SELECT sutanggal, sunotransaksi FROM fstoku WHERE suid='".$id."'")->row();
@@ -194,6 +208,8 @@ class M_PJ_POS_HP extends CI_Model {
 
         $selisihHari = (strtotime(date('Y-m-d')) - strtotime($row->sutanggal)) / 86400;
         if ($selisihHari < 1) return true;
+
+        if ($this->_isSelfApprover('Edit POS Overdue')) return true;
 
         $approved = $this->db->query(
             "SELECT APID FROM aapersetujuan
@@ -210,6 +226,8 @@ class M_PJ_POS_HP extends CI_Model {
 
     private function _cekPersetujuanHargaPOS($iditem)
     {
+        if ($this->_isSelfApprover('Buka Kunci Harga POS')) return true;
+
         $approved = $this->db->query(
             "SELECT APID FROM aapersetujuan
               WHERE APIDUSERMINTA='".$this->session->id."'

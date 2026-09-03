@@ -79,6 +79,14 @@ class M_PJ_Editdepo extends CI_Model {
         $selisihHari = (strtotime(date('Y-m-d')) - strtotime($row->sutanggal)) / 86400;
         if ($selisihHari < 1) return true;
 
+        $roleName = 'Approve Edit Depo Overdue';
+        $selfRole = $this->db->query(
+            "SELECT 1 FROM aauserrole B INNER JOIN aarole C ON B.AURIDROLE=C.ARID
+              WHERE B.AURIDUSER='".$this->session->id."' AND B.AURSTATUS=1
+                AND C.ARNAMAROLE='".$this->db->escape_str($roleName)."' LIMIT 1"
+        )->row();
+        if ($selfRole) return true;
+
         $approved = $this->db->query(
             "SELECT APID FROM aapersetujuan
               WHERE APIDUSERMINTA='".$this->session->id."'
