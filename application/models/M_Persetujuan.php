@@ -54,6 +54,21 @@ class M_Persetujuan extends CI_Model {
         $referensi = $_POST['referensi'];
         $iduserminta = $this->session->id;
 
+        // Jika user yang meminta sendiri punya hak approve untuk jenis ini,
+        // langsung dianggap disetujui (tidak perlu minta ke orang lain).
+        $roleName = 'Approve '.$jenis;
+        $selfRole = $this->db->query(
+            "SELECT 1 FROM aauserrole B
+               INNER JOIN aarole C ON B.AURIDROLE = C.ARID
+              WHERE B.AURIDUSER = '".$iduserminta."'
+                AND B.AURSTATUS = 1
+                AND C.ARNAMAROLE = '".$this->db->escape_str($roleName)."'
+              LIMIT 1"
+        )->row();
+        if ($selfRole) {
+            return json_encode(array('status' => 'disetujui', 'self' => 1));
+        }
+
         $query = "SELECT A.APSTATUS 'status', A.APCATATAN 'catatan', A.APTGLEXPIRED 'expired',
                           COALESCE(B.unamalengkap, B.unama) 'approver'
                      FROM aapersetujuan A
