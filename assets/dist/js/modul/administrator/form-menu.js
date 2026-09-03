@@ -183,9 +183,9 @@ var _saveData = () => {
 };
 
 var sidebarmenu_content = () => {
-  $.ajax({ 
-    "url"    : base_url+"Dasbor/refreshsidebarmenu", 
-    "type"   : "POST", 
+  $.ajax({
+    "url"    : base_url+"Dasbor/refreshsidebarmenu",
+    "type"   : "POST",
     "dataType" : "html",
     "cache"    : false,
     "error" : (xhr) => {
@@ -193,12 +193,18 @@ var sidebarmenu_content = () => {
       return;
     },
     "success": (result) => {
-      $('aside').fadeOut(250, function() {
-        $(this).append(result).fadeIn(250);
-      });
-      return;                   
-    } 
-  })        
+      // Ambil daftar menu baru saja, lalu GANTI isi sidebar (bukan append,
+      // append membuat sidebar menumpuk berkali-kali -> form jadi lambat).
+      var $new = $('<div>').html(result).find('.nav-sidebar').first();
+      var $cur = $('.main-sidebar .nav-sidebar').first();
+      if ($new.length && $cur.length) {
+        $cur.stop(true, true).fadeOut(200, function() {
+          $(this).html($new.html()).fadeIn(200);
+        });
+      }
+      return;
+    }
+  })
 };
 
 var _getData = (id) => {
