@@ -67,8 +67,9 @@
             </div>
             <small class="text-muted d-block">
               *Hanya transaksi POS dengan pembayaran lewat merchant (sumerchantjumlah &gt; 0).
-              Simpan menulis Diskon Persen 1 (sddiskonpersen) &amp; Diskon Nilai (sddiskon) ke baris,
-              lalu menghitung ulang sumerchantjumlah transaksi = jumlah sub total seluruh barisnya.
+              Simpan menulis Harga (sdharga), Diskon Persen 1 (sddiskonpersen) &amp; Diskon Nilai (sddiskon) ke baris,
+              lalu menghitung ulang total transaksi: sutotaltransaksi &amp; sumerchantjumlah = jumlah sub total
+              seluruh baris, sutotaltada = jumlah sub total baris non-DP.
             </small>
           </div>
         </div>

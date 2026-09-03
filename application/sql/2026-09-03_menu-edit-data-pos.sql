@@ -1,8 +1,10 @@
 -- ============================================================
 -- Menu "Edit Data POS" (Menu Penjualan)
 -- Edit cepat diskon baris transaksi POS yang pembayarannya lewat merchant.
---   - Update fstokd.sddiskonpersen & fstokd.sddiskon per baris
---   - Hitung ulang fstoku.sumerchantjumlah = SUM(sdkeluar*sdharga - sddiskon) per transaksi
+--   - Update fstokd.sdharga, fstokd.sddiskonpersen & fstokd.sddiskon per baris
+--   - Hitung ulang per transaksi:
+--       fstoku.sutotaltransaksi = fstoku.sumerchantjumlah = SUM((sdharga-sddiskon)*sdkeluar)
+--       fstoku.sutotaltada = SUM((sdharga-sddiskon)*sdkeluar) baris non-DP (bitem.ikelompok2020 <> 8)
 -- Controller : PJ_Edit_Data_POS  (getdata, savedata)
 -- Model      : M_PJ_Edit_Data_POS
 -- Halaman    : page/edit_data_pos  ->  modul/transaksi/penjualan/edit-data-pos.php

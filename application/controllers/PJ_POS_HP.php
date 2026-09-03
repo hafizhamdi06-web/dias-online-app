@@ -789,40 +789,50 @@ function xxgetnomorip(){
     }        
 
 function getnomorip(){
-        $cabang     = @$_SESSION['cabang'];
-        $kodecabang = @$_SESSION['kodecabang'];
-        $tgl        = $this->input->post('tgl');
-
-        $prefixtr = $this->M_transaksi->prefixtrans(element('PJ_Penjualan_Tunai', NID)); // biasanya 'IP'
-        if ($prefixtr === '' || $prefixtr === null) $prefixtr = 'IP';
-
-        $yymm = tgl_notrans($tgl); // 'yymm'; kalau tgl kosong -> ''
-        if ($yymm === '' || strlen($yymm) < 4) {
-            $yymm = substr(date('y'), 0, 2) . date('m');
-        }
-
-        // Prefix penuh: <kodecabang>-<IP><yymm>  contoh: PG-IP2609
-        $prefix = $kodecabang . '-' . $prefixtr . $yymm;
-        $plen   = strlen($prefix);
-
-        // LIKE 'prefix%' bisa pakai index unik SUNOTRANSAKSI (lebih cepat & aman
-        // daripada MID(sunotransaksi,4,N) yang mengasumsikan panjang kode cabang).
-        $sql = "SELECT COALESCE(MAX(CAST(SUBSTRING(sunotransaksi, " . ($plen + 1) . ", 4) AS UNSIGNED)), 0) + 1 AS urut
-                  FROM fstoku
-                 WHERE sunotransaksi LIKE " . $this->db->escape($prefix . '%') . "
-                   AND sucabang = " . $this->db->escape($cabang);
-
-        $urut = 1;
-        $res  = $this->db->query($sql);
-        if ($res !== FALSE) {
-            $r = $res->row();
-            if ($r && (int) $r->urut > 0) $urut = (int) $r->urut;
-        }
-
-        $nomor = $prefix . str_pad($urut, 4, '0', STR_PAD_LEFT);
-
         header('Content-Type: application/json');
-        echo json_encode(array('data' => array(array('no' => $nomor))));
+        try {
+            $cabang     = @$_SESSION['cabang'];
+            $kodecabang = @$_SESSION['kodecabang'];
+            $tgl        = (string) $this->input->post('tgl');
+
+            $prefixtr = @$this->M_transaksi->prefixtrans(element('PJ_Penjualan_Tunai', NID)); // biasanya 'IP'
+            if ($prefixtr === '' || $prefixtr === null || $prefixtr === false) $prefixtr = 'IP';
+
+            $yymm = tgl_notrans($tgl); // 'yymm'
+            if (!preg_match('/^\d{4}$/', (string) $yymm)) {
+                $yymm = date('y') . date('m');
+            }
+
+            // Prefix penuh: <kodecabang>-<IP><yymm>  contoh: PG-IP2609
+            $prefix = $kodecabang . '-' . $prefixtr . $yymm;
+            $plen   = strlen($prefix);
+
+            $cabangInt = is_numeric($cabang) ? (int) $cabang : 0;
+
+            // LIKE 'prefix%' bisa pakai index unik SUNOTRANSAKSI (lebih cepat & aman
+            // daripada MID(sunotransaksi,4,N) yang mengasumsikan panjang kode cabang).
+            $sql = "SELECT COALESCE(MAX(CAST(SUBSTRING(sunotransaksi, " . ($plen + 1) . ", 4) AS UNSIGNED)), 0) + 1 AS urut
+                      FROM fstoku
+                     WHERE sunotransaksi LIKE " . $this->db->escape($prefix . '%') . "
+                       AND sucabang = " . $cabangInt;
+
+            $urut = 1;
+            $res  = $this->db->query($sql);
+            if ($res !== FALSE && is_object($res)) {
+                $r = $res->row();
+                if ($r && (int) $r->urut > 0) $urut = (int) $r->urut;
+            }
+
+            $nomor = $prefix . str_pad((string) $urut, 4, '0', STR_PAD_LEFT);
+
+            echo json_encode(array('data' => array(array('no' => $nomor))));
+        } catch (\Throwable $e) {
+            log_message('error', 'getnomorip: ' . $e->getMessage());
+            echo json_encode(array(
+                'data'  => array(array('no' => '')),
+                'pesan' => 'getnomorip gagal: ' . $e->getMessage()
+            ));
+        }
     }
     
     

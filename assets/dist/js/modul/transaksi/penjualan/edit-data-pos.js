@@ -51,6 +51,17 @@ $(function() {
   $('#btampilkan').on('click', _muatData);
   $('#bsimpansemua').on('click', _simpanSemua);
 
+  // harga berubah -> kalau ada Disk % 1, sesuaikan Diskon Nilai; hitung ulang sub total
+  $('#tabeledit tbody').on('input', 'input.inp-harga', function(){
+    var $tr = $(this).closest('tr');
+    var dasar = _dasar($tr);
+    var persen = _num($tr.find('input.inp-persen').val());
+    if (dasar > 0 && persen > 0) {
+      $tr.find('input.inp-nilai').val(Math.round(dasar * persen / 100));
+    }
+    _tandaiBerubah($tr);
+  });
+
   // input diskon berubah -> hitung ulang pasangan & sub total
   $('#tabeledit tbody').on('input', 'input.inp-persen', function(){
     var $tr = $(this).closest('tr');
@@ -93,7 +104,7 @@ var _num = (v) => {
 var _fmt = (n) => (Math.round((Number(n) || 0) * 100) / 100).toLocaleString('id-ID');
 var _bulat = (n, d) => { var p = Math.pow(10, d); return Math.round((Number(n) || 0) * p) / p; };
 
-var _dasar = ($tr) => _num($tr.data('qty')) * _num($tr.data('harga'));
+var _dasar = ($tr) => _num($tr.data('qty')) * _num($tr.find('input.inp-harga').val());
 
 var _hitungSubTotal = ($tr) => {
   var sub = _dasar($tr) - _num($tr.find('input.inp-nilai').val());
@@ -148,14 +159,8 @@ var _muatData = () => {
         $tr.append('<td class="text-sm">'+(r.kodeitem || '-')+'</td>');
         $tr.append('<td class="text-sm">'+(r.namaitem || '-')+'</td>');
         $tr.append('<td class="text-sm text-right">'+_fmt(r.qty)+'</td>');
-        // baris tanpa dasar (qty*harga <= 0): mis. item paket/promo yg nilainya
-        // tersimpan sbagai sddiskon negatif. % tidak berarti -> dikunci,
-        // Diskon Nilai tetap bisa diedit langsung. Sub Total tetap tampil.
-        var noDasar = !(dasar > 0);
-        var persenAttr = noDasar ? ' readonly title="Harga 0 - diskon persen tidak dipakai"' : '';
-
-        $tr.append('<td class="text-sm text-right">'+_fmt(r.harga)+'</td>');
-        $tr.append('<td class="text-right"><input type="text" class="form-control form-control-sm inp-edit inp-persen'+(noDasar?' bg-light':'')+'" value="'+_bulat(r.diskonpersen, 2)+'"'+persenAttr+'></td>');
+        $tr.append('<td class="text-right"><input type="text" class="form-control form-control-sm inp-edit inp-harga" value="'+(Math.round(Number(r.harga) || 0))+'"></td>');
+        $tr.append('<td class="text-right"><input type="text" class="form-control form-control-sm inp-edit inp-persen" value="'+_bulat(r.diskonpersen, 2)+'"></td>');
         $tr.append('<td class="text-right"><input type="text" class="form-control form-control-sm inp-edit inp-nilai" value="'+(Math.round(Number(r.diskon) || 0))+'"></td>');
         $tr.append('<td class="text-sm text-right col-subtotal">'+_fmt(dasar - (Number(r.diskon) || 0))+'</td>');
         $tr.append('<td class="text-center"><button type="button" class="btn btn-primary btn-sm btn-simpan-baris py-0"><i class="fas fa-save"></i></button></td>');
@@ -176,6 +181,7 @@ var _simpanBaris = ($tr, senyap) => {
     "dataType" : "json",
     "data"   : {
       sdid: sdid,
+      harga: _num($tr.find('input.inp-harga').val()),
       diskonpersen: _num($tr.find('input.inp-persen').val()),
       diskon: _num($tr.find('input.inp-nilai').val())
     },
@@ -195,7 +201,10 @@ var _simpanBaris = ($tr, senyap) => {
       $tr.removeClass('row-berubah').addClass('row-tersimpan');
       // segarkan tampilan sumerchantjumlah utk semua baris transaksi yg sama
       $('#tabeledit tbody tr[data-suid="'+$tr.data('suid')+'"]').attr('data-merchantjumlah', res.merchantjumlah);
-      if (!senyap) toastr.success('Tersimpan — '+res.notransaksi+' | sumerchantjumlah: '+_fmt(res.merchantjumlah));
+      if (!senyap) toastr.success('Tersimpan — '+res.notransaksi
+        +' | Total: '+_fmt(res.totaltransaksi)
+        +' | Tanpa DP: '+_fmt(res.totaltada)
+        +' | Merchant: '+_fmt(res.merchantjumlah));
     }
   });
 };
