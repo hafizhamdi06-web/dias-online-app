@@ -5093,8 +5093,9 @@ var _saveData = () => {
     },
     "error": function(xhr, status, error){
       parent.window.$(".loader-wrap").addClass("d-none");
-      parent.window.toastr.error("Error : "+xhr.status+", "+error);      
-      console.log(xhr.responseText);      
+      var detail = (xhr.responseText || '').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0, 400);
+      parent.window.toastr.error("Error simpan : "+xhr.status+" "+error+(detail ? " — "+detail : ""), "", {timeOut: 15000});
+      console.error("savedata error", xhr.status, xhr.responseText);
       return;
     },
     "success": async function(result) {
