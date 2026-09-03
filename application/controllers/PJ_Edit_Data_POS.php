@@ -32,9 +32,10 @@ class PJ_Edit_Data_POS extends CI_Controller {
 
     // Daftar baris item POS yang pembayarannya lewat merchant (sumerchantjumlah)
     function getdata(){
-        $tgldari   = tgl_database($this->input->post('tgldari'));
-        $tglsampai = tgl_database($this->input->post('tglsampai'));
-        $cabang    = $this->_cabangValid($this->input->post('cabang'));
+        $tgldari     = tgl_database($this->input->post('tgldari'));
+        $tglsampai   = tgl_database($this->input->post('tglsampai'));
+        $cabang      = $this->_cabangValid($this->input->post('cabang'));
+        $notransaksi = trim((string) $this->input->post('notransaksi'));
 
         $query = "SELECT D.sdid 'sdid',
                          H.suid 'suid',
@@ -56,8 +57,13 @@ class PJ_Edit_Data_POS extends CI_Controller {
                    WHERE H.susumber = 'IP' AND H.sustatus <> 9
                      AND H.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."'
                      AND H.sucabang = '".$cabang."'
-                     AND COALESCE(H.sumerchantjumlah,0) > 0
-                ORDER BY H.sunotransaksi ASC, D.sdurutan ASC";
+                     AND COALESCE(H.sumerchantjumlah,0) > 0";
+
+        if ($notransaksi !== '') {
+            $query .= " AND H.sunotransaksi LIKE '%".$this->db->escape_like_str($notransaksi)."%' ESCAPE '!'";
+        }
+
+        $query .= " ORDER BY H.sunotransaksi ASC, D.sdurutan ASC";
 
         header('Content-Type: application/json');
         echo $this->M_transaksi->get_data_query($query);

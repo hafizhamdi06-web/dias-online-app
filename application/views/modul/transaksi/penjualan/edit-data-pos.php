@@ -4,11 +4,26 @@
   <link rel="stylesheet" href="<? echo base_url('assets/plugins/datepicker/datepicker3.css'); ?>">
 
   <style>
-    #tabeledit td, #tabeledit th { white-space: nowrap; vertical-align: middle; }
-    #tabeledit input.inp-edit { width: 90px; text-align: right; }
+    #tabeledit { table-layout: fixed; width: auto; }
+    #tabeledit td, #tabeledit th { white-space: nowrap; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; }
+    #tabeledit input.inp-edit { width: 100%; text-align: right; }
     #tabeledit tr.row-berubah { background-color: #fff3cd; }
     #tabeledit tr.row-tersimpan { background-color: #d4edda; }
-    .edp-wrap { height: calc(100vh - 210px); overflow: auto; }
+    .edp-wrap { height: calc(100vh - 240px); overflow: auto; }
+
+    /* kolom bisa di-sort */
+    #tabeledit th.th-sort { cursor: pointer; user-select: none; }
+    #tabeledit th.th-sort .sort-ind { opacity: .3; margin-left: 2px; font-size: 10px; }
+    #tabeledit th.sort-asc .sort-ind, #tabeledit th.sort-desc .sort-ind { opacity: 1; }
+
+    /* kolom bisa diubah lebarnya */
+    #tabeledit th { position: relative; }
+    #tabeledit th .col-resizer {
+      position: absolute; top: 0; right: 0; width: 6px; height: 100%;
+      cursor: col-resize; user-select: none; z-index: 2;
+    }
+    #tabeledit th .col-resizer:hover { background: rgba(0,123,255,.35); }
+    body.col-resizing, body.col-resizing * { cursor: col-resize !important; user-select: none !important; }
   </style>
 
   <div class="content-wrapper tab-wrap mx-0">
@@ -54,6 +69,11 @@
                 <label class="text-sm font-weight-normal mb-1">Cabang</label>
                 <select id="cabang" class="form-control select2 form-control-sm" style="width:100%"></select>
               </div>
+              <div class="col-md-3 col-12 mb-2">
+                <label class="text-sm font-weight-normal mb-1">No Transaksi</label>
+                <input id="fnotransaksi" type="text" class="form-control form-control-sm"
+                       placeholder="cari sebagian / lengkap" autocomplete="off">
+              </div>
               <div class="col-md-2 col-4 mb-2">
                 <label class="text-sm font-weight-normal mb-1">&nbsp;</label>
                 <button type="button" id="btampilkan" class="btn btn-primary btn-sm btn-block">Tampilkan</button>
@@ -77,22 +97,22 @@
         <div class="card card-outline card-secondary">
           <div class="card-body p-0">
             <div class="edp-wrap">
-              <table id="tabeledit" class="table table-sm table-striped table-hover mb-0 nowrap w-100">
+              <table id="tabeledit" class="table table-sm table-striped table-hover mb-0 nowrap">
                 <thead class="bg-light">
                   <tr>
                     <th class="d-none"></th>
                     <th class="text-sm" style="width:24px"></th>
-                    <th class="text-sm">No Transaksi</th>
-                    <th class="text-sm">Tanggal</th>
-                    <th class="text-sm">Pasien</th>
-                    <th class="text-sm">Kode Item</th>
-                    <th class="text-sm">Nama Item</th>
-                    <th class="text-sm text-right">Qty</th>
-                    <th class="text-sm text-right">Harga</th>
-                    <th class="text-sm text-right">Disk % 1</th>
-                    <th class="text-sm text-right">Diskon Nilai</th>
-                    <th class="text-sm text-right">Sub Total</th>
-                    <th class="text-sm text-center" style="width:80px">Aksi</th>
+                    <th class="text-sm th-sort" data-sort="text" style="width:140px">No Transaksi <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm th-sort" data-sort="date" style="width:95px">Tanggal <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm th-sort" data-sort="text" style="width:190px">Pasien <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm th-sort" data-sort="text" style="width:110px">Kode Item <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm th-sort" data-sort="text" style="width:240px">Nama Item <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm text-right th-sort" data-sort="num" style="width:70px">Qty <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm text-right th-sort" data-sort="num" style="width:110px">Harga <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm text-right th-sort" data-sort="num" style="width:90px">Disk % 1 <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm text-right th-sort" data-sort="num" style="width:110px">Diskon Nilai <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm text-right th-sort" data-sort="num" style="width:120px">Sub Total <i class="fas fa-sort sort-ind"></i></th>
+                    <th class="text-sm text-center" style="width:70px">Aksi</th>
                   </tr>
                 </thead>
                 <tbody></tbody>

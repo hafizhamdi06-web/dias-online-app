@@ -51,6 +51,13 @@ $(function() {
   $('#btampilkan').on('click', _muatData);
   $('#bsimpansemua').on('click', _simpanSemua);
 
+  $('#fnotransaksi').on('keydown', function(e){
+    if (e.key === 'Enter' || e.keyCode === 13) { e.preventDefault(); _muatData(); }
+  });
+
+  _initSortKolom();
+  _initResizeKolom();
+
   // harga berubah -> kalau ada Disk % 1, sesuaikan Diskon Nilai; hitung ulang sub total
   $('#tabeledit tbody').on('input', 'input.inp-harga', function(){
     var $tr = $(this).closest('tr');
@@ -125,7 +132,8 @@ var _muatData = () => {
     "data"   : {
       tgldari: $('#tgldari').val(),
       tglsampai: $('#tglsampai').val(),
-      cabang: $('#cabang').val()
+      cabang: $('#cabang').val(),
+      notransaksi: $('#fnotransaksi').val()
     },
     "cache"  : false,
     "beforeSend" : function(){ $('#btampilkan').prop('disabled', true); },
@@ -135,6 +143,7 @@ var _muatData = () => {
     },
     "success" : function(result){
       $('#btampilkan').prop('disabled', false);
+      _resetIndikatorSort();
       var rows = result.data || [];
       var $body = $('#tabeledit tbody').empty();
 
@@ -206,6 +215,83 @@ var _simpanBaris = ($tr, senyap) => {
         +' | Tanpa DP: '+_fmt(res.totaltada)
         +' | Merchant: '+_fmt(res.merchantjumlah));
     }
+  });
+};
+
+/* ---------- Sort per kolom ---------- */
+
+var _resetIndikatorSort = () => {
+  $('#tabeledit thead th').removeClass('sort-asc sort-desc')
+    .find('i.sort-ind').attr('class', 'fas fa-sort sort-ind');
+};
+
+var _nilaiSel = (tr, colIdx, type) => {
+  var td = tr.children[colIdx];
+  if (!td) return type === 'text' ? '' : 0;
+  var inp = td.querySelector('input');
+  var raw = ((inp ? inp.value : td.textContent) || '').trim();
+  if (type === 'num') return _num(raw);
+  if (type === 'date') {
+    var m = raw.match(/(\d{2})-(\d{2})-(\d{4})/);
+    return m ? Number(m[3] + m[2] + m[1]) : 0;
+  }
+  return raw.toLowerCase();
+};
+
+var _initSortKolom = () => {
+  var _abaikanKlik = false;
+  $(document).on('edp:resized', function(){ _abaikanKlik = true; setTimeout(function(){ _abaikanKlik = false; }, 0); });
+
+  $('#tabeledit thead').on('click', 'th.th-sort', function(e){
+    if (_abaikanKlik || $(e.target).hasClass('col-resizer')) return;
+
+    var $th = $(this);
+    var colIdx = $th.index();
+    var type = $th.data('sort') || 'text';
+    var dir = $th.hasClass('sort-asc') ? -1 : 1;
+
+    _resetIndikatorSort();
+    $th.addClass(dir === 1 ? 'sort-asc' : 'sort-desc')
+       .find('i.sort-ind').attr('class', 'fas fa-sort-' + (dir === 1 ? 'up' : 'down') + ' sort-ind');
+
+    var $body = $('#tabeledit tbody');
+    var rows = $body.children('tr').get();
+    if (rows.length < 2) return; // termasuk baris "Tidak ada data"
+
+    rows.sort(function(a, b){
+      var va = _nilaiSel(a, colIdx, type), vb = _nilaiSel(b, colIdx, type);
+      if (va < vb) return -1 * dir;
+      if (va > vb) return  1 * dir;
+      return 0;
+    });
+    rows.forEach(function(tr){ $body.append(tr); });
+  });
+};
+
+/* ---------- Lebar kolom bisa digeser ---------- */
+
+var _initResizeKolom = () => {
+  $('#tabeledit thead th.th-sort').append('<span class="col-resizer"></span>');
+
+  var drag = null;
+  $('#tabeledit thead').on('mousedown', '.col-resizer', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    var th = this.parentNode;
+    drag = { th: th, x: e.pageX, w: th.offsetWidth, moved: false };
+    $('body').addClass('col-resizing');
+  });
+  $(document).on('mousemove.edpresize', function(e){
+    if (!drag) return;
+    var w = Math.max(40, drag.w + (e.pageX - drag.x));
+    drag.th.style.width = w + 'px';
+    drag.moved = true;
+  });
+  $(document).on('mouseup.edpresize', function(){
+    if (!drag) return;
+    $('body').removeClass('col-resizing');
+    if (drag.moved) $(document).trigger('edp:resized');
+    drag = null;
   });
 };
 
