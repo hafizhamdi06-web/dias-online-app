@@ -789,16 +789,25 @@ function xxgetnomorip(){
     }        
 
 function getnomorip(){
-        header('Content-Type: application/json');
+        // Buffer output supaya warning/notice PHP (display_errors on) tidak
+        // ikut ke body JSON dan bikin "Unexpected token '<'".
+        while (ob_get_level() > 0) { @ob_end_clean(); }
+        ob_start();
+
+        $out = null;
         try {
-            $cabang     = @$_SESSION['cabang'];
-            $kodecabang = @$_SESSION['kodecabang'];
+            $cabang     = isset($_SESSION['cabang']) ? $_SESSION['cabang'] : null;
+            $kodecabang = isset($_SESSION['kodecabang']) ? $_SESSION['kodecabang'] : '';
             $tgl        = (string) $this->input->post('tgl');
 
-            $prefixtr = @$this->M_transaksi->prefixtrans(element('PJ_Penjualan_Tunai', NID)); // biasanya 'IP'
-            if ($prefixtr === '' || $prefixtr === null || $prefixtr === false) $prefixtr = 'IP';
+            $prefixtr = 'IP';
+            $nid = defined('NID') ? NID : array();
+            if (is_array($nid) && isset($nid['PJ_Penjualan_Tunai'])) {
+                $p = @$this->M_transaksi->prefixtrans($nid['PJ_Penjualan_Tunai']);
+                if (is_string($p) && $p !== '') $prefixtr = $p;
+            }
 
-            $yymm = tgl_notrans($tgl); // 'yymm'
+            $yymm = @tgl_notrans($tgl);
             if (!preg_match('/^\d{4}$/', (string) $yymm)) {
                 $yymm = date('y') . date('m');
             }
@@ -825,17 +834,22 @@ function getnomorip(){
 
             $nomor = $prefix . str_pad((string) $urut, 4, '0', STR_PAD_LEFT);
 
-            echo json_encode(array('data' => array(array('no' => $nomor))));
+            $out = json_encode(array('data' => array(array('no' => $nomor))));
         } catch (\Throwable $e) {
             log_message('error', 'getnomorip: ' . $e->getMessage());
-            echo json_encode(array(
+            $out = json_encode(array(
                 'data'  => array(array('no' => '')),
                 'pesan' => 'getnomorip gagal: ' . $e->getMessage()
             ));
         }
+
+        // Buang semua output liar (warning/notice/BOM) sebelum kirim JSON bersih.
+        while (ob_get_level() > 0) { @ob_end_clean(); }
+        header('Content-Type: application/json');
+        echo $out;
     }
-    
-    
+
+
 function getnomorip2(){
         $cabang  = @$_SESSION['cabang'] ;
         $kodecabang  = @$_SESSION['kodecabang'] ; 
