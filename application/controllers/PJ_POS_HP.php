@@ -553,6 +553,10 @@ class PJ_POS_HP extends CI_Controller {
    		{
    		    $idmenu = 673 ;
             $query  = " select UNAMA,upassword,UID from ausermenu LEFT JOIN auser ON AUIDUSER=UID where AUIDMENU = '".$idmenu."' and AUAPPROVE = 1 and ukode = '".$username."' and upassword = '".$password."' ";
+   		} else 	if ($jenis == 'editdiskon')
+   		{
+   		    $idmenu = 673 ;
+            $query  = " select UNAMA,upassword,UID from ausermenu LEFT JOIN auser ON AUIDUSER=UID where AUIDMENU = '".$idmenu."' and AUAPPROVE = 1 and ukode = '".$username."' and upassword = '".$password."' ";
    		} else 	if ($jenis == 'appcanceltransaksi')
    		{
    		     

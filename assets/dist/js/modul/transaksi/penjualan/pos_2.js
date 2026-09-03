@@ -4360,6 +4360,30 @@ var _ambildetailvocer = () => {
 
              _cekPersetujuanHargaPOS(_idbaris, _iditem);
         });
+
+      $(this).on("click", "button[name^='beditdiskon']", function(){
+             let _idbaris = $(this).index('.beditdiskon');
+             let _iditem = $("select[name^='item']").eq(_idbaris).val();
+
+             if (!_iditem) {
+                 parent.window.toastr.error("Pilih item terlebih dahulu !");
+                 return;
+             }
+
+             if ($("input[name^='dis1']").eq(_idbaris).prop('disabled')===false) {
+                 parent.window.toastr.info("Diskon item ini sudah bisa diedit.");
+                 return;
+             }
+
+             $('#keberapa').val(_idbaris);
+             $('#username').val('').removeAttr('disabled');
+             $('#password').val('').removeAttr('disabled');
+             // set jenis di shown.bs.modal (bound terakhir -> menang atas handler lain)
+             $('#modalpassword').one('shown.bs.modal', function(){
+                 $('#jenispassword').val('editdiskon');
+             });
+             $('#modalpassword').modal('show');
+        });
  
  
         
@@ -4416,10 +4440,17 @@ var _ambildetailvocer = () => {
                          
                         if ( _jenis=='editharga')
                         {
-                           $("input[name^='harga']").eq(_idx).removeAttr('disabled');   
-                           $('#modalpassword').modal('hide'); 
-                           parent.window.toastr.success("Sukses membuka Kunci harga " + $("select[name^='spannama']").eq(_idx).text() );   
-                        
+                           $("input[name^='harga']").eq(_idx).removeAttr('disabled');
+                           $('#modalpassword').modal('hide');
+                           parent.window.toastr.success("Sukses membuka Kunci harga " + $("select[name^='spannama']").eq(_idx).text() );
+
+                        }
+                        else if ( _jenis=='editdiskon')
+                        {
+                           $("input[name^='dis1']").eq(_idx).removeAttr('disabled');
+                           $("input[name^='dis2']").eq(_idx).removeAttr('disabled');
+                           $('#modalpassword').modal('hide');
+                           parent.window.toastr.success("Sukses membuka Kunci diskon " + $("select[name^='spannama']").eq(_idx).text() );
                         }
                         else if ( _jenis=='appcanceltransaksi')
                         {
@@ -4496,9 +4527,10 @@ var _addRow = () => {
                 newrow += "<button class=\"bdiskonvocher dropdown-item\" type=\"button\" id=\"bdiskonvocher\" name=\"bdiskonvocher\" >Diskon Voucher</button>";
                 newrow += "<button class=\"binputdesimal dropdown-item\" type=\"button\" id=\"binputdesimal\" name=\"binputdesimal\" >Input Desimal</button>";
                 newrow += "<button class=\"beditharga dropdown-item\" type=\"button\" id=\"beditharga\" name=\"beditharga\" >Edit Harga</button>";
-                
-                
-                newrow += "</div>";  
+                newrow += "<button class=\"beditdiskon dropdown-item\" type=\"button\" id=\"beditdiskon\" name=\"beditdiskon\" >Edit Diskon</button>";
+
+
+                newrow += "</div>";
             newrow += "</div>"; 
         newrow += "</div>";  
         newrow += "</div>"; 
