@@ -1,8 +1,7 @@
 <?php
     include ('style.php');
 
-    $date1 = $_POST['tgldari'];
-    $date2 = $_POST['tglsampai'];
+    $tgl = isset($_POST['tgl']) ? $_POST['tgl'] : $_POST['tglsampai'];
     $idgudang = isset($_POST['gudang']) ? $_POST['gudang'] : "";
 
     $CI =& get_instance();
@@ -18,7 +17,7 @@
                 FROM v_data_dp V
            LEFT JOIN bkontak P ON P.kid = V.kontak
            LEFT JOIN bgudang G ON G.gid = V.sucabang
-               WHERE V.tanggal_ip BETWEEN '".tgl_database($date1)."' AND '".tgl_database($date2)."'";
+               WHERE V.tanggal_ip <= '".tgl_database($tgl)."'";
 
     if ($idgudang != "") $query .= " AND V.sucabang = '".$CI->db->escape_str($idgudang)."'";
 
@@ -29,7 +28,7 @@
 <div class="header-report">
     <h4 class="text-blue"><?= $company_name; ?></h4>
     <h3><?= $title; ?></h3>
-    <span>Periode : <?= $date1; ?> s/d <?= $date2; ?> &nbsp;(Tgl IP)</span>
+    <span>Per Tanggal (Tgl IP &le;) : <?= $tgl; ?></span>
 </div>
 <div class="content-report">
     <table class="table" border="1">
