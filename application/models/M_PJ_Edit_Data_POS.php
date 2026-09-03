@@ -5,6 +5,7 @@ class M_PJ_Edit_Data_POS extends CI_Model {
     function __construct()
     {
         parent::__construct();
+        $this->load->model('M_PJ_POS_HP');
     }
 
     private function _toNumber($v)
@@ -53,6 +54,10 @@ class M_PJ_Edit_Data_POS extends CI_Model {
         $subtotalBaris = ($row->sdkeluar * $harga) - $diskon;
 
         $this->db->trans_begin();
+
+        // Backup transaksi ke fstoku_cancel / fstokd_cancel / fstokdiscv_cancel
+        // sebelum baris diubah (sama seperti M_PJ_POS_HP::ubahTransaksi).
+        $this->M_PJ_POS_HP->transfer_transaksi_cancel((int) $row->sdidsu);
 
         $this->db->where('sdid', $sdid);
         $this->db->update('fstokd', array(
