@@ -864,8 +864,11 @@ function getnomorip(){
                 $res = $this->db->query($sql);
             }
             if ($res === FALSE || !is_object($res)) {
+                $dberr = $this->db->error();
+                $emsg  = is_array($dberr) ? trim(($dberr['code'] ?? '') . ' ' . ($dberr['message'] ?? '')) : '';
+                log_message('error', 'getnomorip query gagal: ' . $emsg . ' | SQL: ' . $sql);
                 // Jangan pernah kembalikan nomor tebakan (0001) -> risiko duplikat.
-                throw new \RuntimeException('gagal query nomor urut (koneksi database).');
+                throw new \RuntimeException('gagal query nomor urut' . ($emsg !== '' ? ': ' . $emsg : '') . '.');
             }
 
             $r    = $res->row();
