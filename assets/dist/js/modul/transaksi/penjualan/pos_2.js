@@ -264,10 +264,15 @@ var _AmbilDetailPasien = () => {
           $("#loader-detil").addClass('d-none');          
           return;
         },
-        "success"  : async function(result) {       
-          
+        "success"  : async function(result) {
 
-        $('#kontaktipe').val(result.data[0]['tipeid']);  
+        $("#loader-detil").addClass('d-none');
+        if (!result || !result.data || !result.data[0]) {
+            // idkontak kosong / pasien tidak ketemu -> jangan lempar error, cukup abaikan
+            return;
+        }
+
+        $('#kontaktipe').val(result.data[0]['tipeid']);
         $('#pasientipe').html(result.data[0]['namatipe']);
         //$('#lbljenispasien').html(result.data[0]['namatipe']);
         
