@@ -326,6 +326,10 @@ class Page extends CI_Controller {
     	$this->loader('pos_hp','modul/transaksi/penjualan/pos_hp');
     }
 
+    function edit_data_pos(){
+    	$this->loader('edit_data_pos','modul/transaksi/penjualan/edit-data-pos','Edit Data POS');
+    }
+
 
     function pos(){
     	$this->loader('pos','modul/transaksi/penjualan/penjualan-tunai');

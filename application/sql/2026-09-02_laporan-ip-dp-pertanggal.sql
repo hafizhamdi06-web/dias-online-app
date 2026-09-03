@@ -1,7 +1,7 @@
 -- ============================================================
 -- Laporan "Laporan IP DP Per Tanggal" (sistem aareport)
 -- Menu Laporan > Laporan Penjualan
--- Sumber: view v_data_dp, difilter "Per Tanggal": V.tanggal_ip <= tanggal
+-- Sumber: view v_data_dp, difilter "Per Tanggal": V.tanggal_transaksi <= tanggal
 -- Grup: Cabang (bgudang.gnama)
 -- Kolom: Tanggal | Kode Pasien | Nama Pelanggan | No Transaksi | No DP | Nilai
 -- View: modul/laporan/laporan-ip-dp-pertanggal.php (PDF, A4 Portrait)

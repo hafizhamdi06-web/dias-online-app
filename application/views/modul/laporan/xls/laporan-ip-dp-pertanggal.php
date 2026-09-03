@@ -6,14 +6,14 @@
 
     $CI =& get_instance();
 
-    $query = "SELECT DATE_FORMAT(MIN(V.tanggal_ip),'%d/%m/%Y') 'tgl',
+    $query = "SELECT DATE_FORMAT(MIN(V.tanggal_transaksi),'%d/%m/%Y') 'tgl',
                      V.nodp 'nodp',
                      SUM(V.nilai) 'nilai',
                      MAX(P.kkode) 'kodepasien',
                      MAX(P.knama) 'namapelanggan'
                 FROM v_data_dp V
            LEFT JOIN bkontak P ON P.kid = V.kontak
-               WHERE V.tanggal_ip <= '".tgl_database($tgl)."'";
+               WHERE V.tanggal_transaksi <= '".tgl_database($tgl)."'";
 
     if ($idgudang != "") $query .= " AND V.sucabang = '".$CI->db->escape_str($idgudang)."'";
 
@@ -26,7 +26,7 @@
 <div class="header-report">
     <h4 class="text-blue"><?= $company_name; ?></h4>
     <h3><?= $title; ?></h3>
-    <span>Per Tanggal (Tgl IP &le;) : <?= $tgl; ?></span>
+    <span>Per Tanggal (Tgl Transaksi &le;) : <?= $tgl; ?></span>
 </div>
 <div class="content-report">
     <table class="table" border="1">

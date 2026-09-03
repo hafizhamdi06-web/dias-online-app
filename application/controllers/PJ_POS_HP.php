@@ -789,44 +789,40 @@ function xxgetnomorip(){
     }        
 
 function getnomorip(){
-        $cabang  = @$_SESSION['cabang'] ;
-        $kodecabang  = @$_SESSION['kodecabang'] ;  
-        $tgl=$this->input->post('tgl');
-        $nomor = 0;
-        $nomor1 =  $this->M_transaksi->prefixtrans(element('PJ_Penjualan_Tunai',NID));
-        $nomor2 =  tgl_notrans($tgl);  
+        $cabang     = @$_SESSION['cabang'];
+        $kodecabang = @$_SESSION['kodecabang'];
+        $tgl        = $this->input->post('tgl');
 
-        $notrans_length = strlen($nomor1)+4;
+        $prefixtr = $this->M_transaksi->prefixtrans(element('PJ_Penjualan_Tunai', NID)); // biasanya 'IP'
+        if ($prefixtr === '' || $prefixtr === null) $prefixtr = 'IP';
 
-        $sql = "SELECT MAX(RIGHT(sunotransaksi,4)) as 'maks' 
-                  FROM fstoku 
-                 WHERE MID(sunotransaksi,4,".$notrans_length.")='".$nomor1.$nomor2."' and sucabang='".$cabang."'  "; 
-                 
-        $query = $this->db->query($sql);
-
-        foreach ($query->result() as $res) {
-            $nomor = $res->maks;
+        $yymm = tgl_notrans($tgl); // 'yymm'; kalau tgl kosong -> ''
+        if ($yymm === '' || strlen($yymm) < 4) {
+            $yymm = substr(date('y'), 0, 2) . date('m');
         }
-        $nomor++;
 
-        switch(strlen($nomor)){
-        case 1:
-          $nomor=$nomor1.$nomor2."000".$nomor;
-          break;
-        case 2:
-          $nomor=$nomor1.$nomor2."00".$nomor;
-          break;
-        case 3:
-          $nomor=$nomor1.$nomor2."0".$nomor;
-          break;
-        case 4:
-          $nomor=$nomor1.$nomor2.$nomor;
-          break;
+        // Prefix penuh: <kodecabang>-<IP><yymm>  contoh: PG-IP2609
+        $prefix = $kodecabang . '-' . $prefixtr . $yymm;
+        $plen   = strlen($prefix);
+
+        // LIKE 'prefix%' bisa pakai index unik SUNOTRANSAKSI (lebih cepat & aman
+        // daripada MID(sunotransaksi,4,N) yang mengasumsikan panjang kode cabang).
+        $sql = "SELECT COALESCE(MAX(CAST(SUBSTRING(sunotransaksi, " . ($plen + 1) . ", 4) AS UNSIGNED)), 0) + 1 AS urut
+                  FROM fstoku
+                 WHERE sunotransaksi LIKE " . $this->db->escape($prefix . '%') . "
+                   AND sucabang = " . $this->db->escape($cabang);
+
+        $urut = 1;
+        $res  = $this->db->query($sql);
+        if ($res !== FALSE) {
+            $r = $res->row();
+            if ($r && (int) $r->urut > 0) $urut = (int) $r->urut;
         }
-          $nomor=$kodecabang."-".$nomor ;
-          $query = "select '".$nomor."' as no from buang where uid=1 " ; 
-          header('Content-Type: application/json');
-          echo $this->M_transaksi->get_data_query($query);
+
+        $nomor = $prefix . str_pad($urut, 4, '0', STR_PAD_LEFT);
+
+        header('Content-Type: application/json');
+        echo json_encode(array('data' => array(array('no' => $nomor))));
     }
     
     
