@@ -800,11 +800,18 @@ function getnomorip(){
             $kodecabang = isset($_SESSION['kodecabang']) ? $_SESSION['kodecabang'] : '';
             $tgl        = (string) $this->input->post('tgl');
 
+            // Pastikan koneksi hidup (penyebab intermittent "server has gone away").
+            @$this->db->reconnect();
+
+            // Ambil prefix langsung dari aanomor (guarded), tidak lewat
+            // M_transaksi->prefixtrans yang fatal bila query builder gagal.
             $prefixtr = 'IP';
             $nid = defined('NID') ? NID : array();
-            if (is_array($nid) && isset($nid['PJ_Penjualan_Tunai'])) {
-                $p = @$this->M_transaksi->prefixtrans($nid['PJ_Penjualan_Tunai']);
-                if (is_string($p) && $p !== '') $prefixtr = $p;
+            $nidTunai = (is_array($nid) && isset($nid['PJ_Penjualan_Tunai'])) ? (int) $nid['PJ_Penjualan_Tunai'] : 724;
+            $resP = $this->db->query("SELECT nkode FROM aanomor WHERE nid = " . $nidTunai . " LIMIT 1");
+            if ($resP !== FALSE && is_object($resP)) {
+                $rp = $resP->row();
+                if ($rp && isset($rp->nkode) && $rp->nkode !== '') $prefixtr = $rp->nkode;
             }
 
             $yymm = @tgl_notrans($tgl);
@@ -825,13 +832,19 @@ function getnomorip(){
                      WHERE sunotransaksi LIKE " . $this->db->escape($prefix . '%') . "
                        AND sucabang = " . $cabangInt;
 
-            $urut = 1;
-            $res  = $this->db->query($sql);
-            if ($res !== FALSE && is_object($res)) {
-                $r = $res->row();
-                if ($r && (int) $r->urut > 0) $urut = (int) $r->urut;
+            $res = $this->db->query($sql);
+            if ($res === FALSE || !is_object($res)) {
+                // Retry sekali setelah reconnect.
+                @$this->db->reconnect();
+                $res = $this->db->query($sql);
+            }
+            if ($res === FALSE || !is_object($res)) {
+                // Jangan pernah kembalikan nomor tebakan (0001) -> risiko duplikat.
+                throw new \RuntimeException('gagal query nomor urut (koneksi database).');
             }
 
+            $r    = $res->row();
+            $urut = ($r && (int) $r->urut > 0) ? (int) $r->urut : 1;
             $nomor = $prefix . str_pad((string) $urut, 4, '0', STR_PAD_LEFT);
 
             $out = json_encode(array('data' => array(array('no' => $nomor))));
