@@ -788,6 +788,24 @@ function xxgetnomorip(){
           echo $this->M_transaksi->get_data_query($query);
     }        
 
+/**
+     * Pastikan koneksi database aktif. CI3 reconnect() tidak melakukan apa-apa
+     * ketika conn_id sudah FALSE (koneksi tertutup), jadi kita panggil
+     * initialize() untuk membuka koneksi baru.
+     */
+    private function _ensureDb(){
+        try {
+            if (empty($this->db->conn_id)) {
+                $this->db->initialize();
+            } else {
+                @$this->db->reconnect();
+                if (empty($this->db->conn_id)) $this->db->initialize();
+            }
+        } catch (\Throwable $e) {
+            log_message('error', '_ensureDb: ' . $e->getMessage());
+        }
+    }
+
 function getnomorip(){
         // Buffer output supaya warning/notice PHP (display_errors on) tidak
         // ikut ke body JSON dan bikin "Unexpected token '<'".
@@ -800,8 +818,11 @@ function getnomorip(){
             $kodecabang = isset($_SESSION['kodecabang']) ? $_SESSION['kodecabang'] : '';
             $tgl        = (string) $this->input->post('tgl');
 
-            // Pastikan koneksi hidup (penyebab intermittent "server has gone away").
-            @$this->db->reconnect();
+            // Pastikan koneksi hidup. Setelah menampilkan transaksi lama lalu
+            // klik "tambah", conn_id bisa FALSE -> escape()/query() fatal
+            // ("real_escape_string() on bool"). reconnect() TIDAK mereconnect
+            // saat conn_id sudah FALSE, jadi harus initialize().
+            $this->_ensureDb();
 
             // Ambil prefix langsung dari aanomor (guarded), tidak lewat
             // M_transaksi->prefixtrans yang fatal bila query builder gagal.
@@ -827,15 +848,19 @@ function getnomorip(){
 
             // LIKE 'prefix%' bisa pakai index unik SUNOTRANSAKSI (lebih cepat & aman
             // daripada MID(sunotransaksi,4,N) yang mengasumsikan panjang kode cabang).
+            // Prefix hanya huruf/angka/dash -> aman diinlinekan tanpa escape()
+            // (escape() sendiri fatal bila koneksi mati).
+            $safePrefix = preg_replace('/[^A-Za-z0-9\-]/', '', $prefix);
+
             $sql = "SELECT COALESCE(MAX(CAST(SUBSTRING(sunotransaksi, " . ($plen + 1) . ", 4) AS UNSIGNED)), 0) + 1 AS urut
                       FROM fstoku
-                     WHERE sunotransaksi LIKE " . $this->db->escape($prefix . '%') . "
+                     WHERE sunotransaksi LIKE '" . $safePrefix . "%'
                        AND sucabang = " . $cabangInt;
 
             $res = $this->db->query($sql);
             if ($res === FALSE || !is_object($res)) {
-                // Retry sekali setelah reconnect.
-                @$this->db->reconnect();
+                // Retry sekali setelah memaksa koneksi baru.
+                $this->_ensureDb();
                 $res = $this->db->query($sql);
             }
             if ($res === FALSE || !is_object($res)) {
