@@ -9,12 +9,10 @@
     $query = "SELECT DATE_FORMAT(MIN(V.tanggal_ip),'%d/%m/%Y') 'tgl',
                      V.nodp 'nodp',
                      SUM(V.nilai) 'nilai',
-                     MAX(G.gnama) 'gnama',
                      MAX(P.kkode) 'kodepasien',
                      MAX(P.knama) 'namapelanggan'
                 FROM v_data_dp V
            LEFT JOIN bkontak P ON P.kid = V.kontak
-           LEFT JOIN bgudang G ON G.gid = V.sucabang
                WHERE V.tanggal_ip <= '".tgl_database($tgl)."'";
 
     if ($idgudang != "") $query .= " AND V.sucabang = '".$CI->db->escape_str($idgudang)."'";
@@ -38,7 +36,6 @@
                 <th class="left px-1">Tanggal</th>
                 <th class="left px-1">Kode Pasien</th>
                 <th class="left px-1">Nama Pelanggan</th>
-                <th class="left px-1">Cabang</th>
                 <th class="left px-1">No DP</th>
                 <th class="right px-1">Nilai</th>
             </tr>
@@ -53,7 +50,6 @@
                     echo "<td class='left px-1'>".$row->tgl."</td>";
                     echo "<td class='left px-1'>".$row->kodepasien."</td>";
                     echo "<td class='left px-1'>".$row->namapelanggan."</td>";
-                    echo "<td class='left px-1'>".$row->gnama."</td>";
                     echo "<td class='left px-1'>".$row->nodp."</td>";
                     echo "<td class='right px-1'>".eFormatNumber($row->nilai,2)."</td>";
                     echo "</tr>";
@@ -64,7 +60,7 @@
         </tbody>
         <tfoot>
             <tr style="border-top:2px solid #000;">
-                <td class="px-1" colspan="5"><b>Grand Total &mdash; <?= $no; ?> No DP</b></td>
+                <td class="px-1" colspan="4"><b>Grand Total &mdash; <?= $no; ?> No DP</b></td>
                 <td class="px-1"></td>
                 <td class="right px-1"><b><?= eFormatNumber($gNilai,2); ?></b></td>
             </tr>
