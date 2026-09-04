@@ -51,7 +51,8 @@ class M_PJ_Edit_Data_POS extends CI_Model {
             return json_encode(array('pesan' => 'Transaksi ini bukan pembayaran merchant.'));
         }
 
-        $subtotalBaris = ($row->sdkeluar * $harga) - $diskon;
+        // Sub Total = Qty * (Harga - Diskon Nilai); sddiskon adalah diskon per unit
+        $subtotalBaris = $row->sdkeluar * ($harga - $diskon);
 
         $this->db->trans_begin();
 

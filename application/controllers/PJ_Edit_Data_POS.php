@@ -48,8 +48,9 @@ class PJ_Edit_Data_POS extends CI_Controller {
                          D.sdharga 'harga',
                          D.sddiskonpersen 'diskonpersen',
                          D.sddiskon 'diskon',
-                         (D.sdkeluar * D.sdharga - D.sddiskon) 'subtotal',
-                         H.sumerchantjumlah 'merchantjumlah'
+                         (D.sdkeluar * (D.sdharga - D.sddiskon)) 'subtotal',
+                         COALESCE(H.sutotaltransaksi,0) 'totaltransaksi',
+                         COALESCE(H.sumerchantjumlah,0) 'merchantjumlah'
                     FROM fstokd D
               INNER JOIN fstoku H ON D.sdidsu = H.suid
                LEFT JOIN bkontak K ON H.sukontak = K.kid

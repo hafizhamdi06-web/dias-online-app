@@ -58,35 +58,36 @@ $(function() {
   _initSortKolom();
   _initResizeKolom();
 
-  // harga berubah -> kalau ada Disk % 1, sesuaikan Diskon Nilai; hitung ulang sub total
+  // harga berubah -> kalau ada Disk % 1, sesuaikan Diskon Nilai (= persen * harga); hitung ulang sub total
   $('#tabeledit tbody').on('input', 'input.inp-harga', function(){
     var $tr = $(this).closest('tr');
-    var dasar = _dasar($tr);
+    var harga = _harga($tr);
     var persen = _num($tr.find('input.inp-persen').val());
-    if (dasar > 0 && persen > 0) {
-      $tr.find('input.inp-nilai').val(Math.round(dasar * persen / 100));
+    if (harga > 0 && persen > 0) {
+      $tr.find('input.inp-nilai').val(Math.round(harga * persen / 100));
     }
     _tandaiBerubah($tr);
   });
 
-  // input diskon berubah -> hitung ulang pasangan & sub total
+  // Disk % 1 berubah -> Diskon Nilai = persen * harga
   $('#tabeledit tbody').on('input', 'input.inp-persen', function(){
     var $tr = $(this).closest('tr');
-    var dasar = _dasar($tr);
-    // hanya turunkan Diskon Nilai dari % kalau ada dasar (qty*harga) > 0.
+    var harga = _harga($tr);
+    // hanya turunkan Diskon Nilai dari % kalau harga > 0.
     // baris harga 0 (paket/promo, sddiskon negatif) tidak boleh dinolkan.
-    if (dasar > 0) {
+    if (harga > 0) {
       var persen = _num($(this).val());
-      $tr.find('input.inp-nilai').val(Math.round(dasar * persen / 100));
+      $tr.find('input.inp-nilai').val(Math.round(harga * persen / 100));
     }
     _tandaiBerubah($tr);
   });
 
+  // Diskon Nilai berubah -> Disk % 1 = nilai / harga * 100
   $('#tabeledit tbody').on('input', 'input.inp-nilai', function(){
     var $tr = $(this).closest('tr');
-    var dasar = _dasar($tr);
+    var harga = _harga($tr);
     var nilai = _num($(this).val());
-    var persen = dasar > 0 ? (nilai / dasar * 100) : 0;
+    var persen = harga > 0 ? (nilai / harga * 100) : 0;
     $tr.find('input.inp-persen').val(_bulat(persen, 2));
     _tandaiBerubah($tr);
   });
@@ -111,10 +112,16 @@ var _num = (v) => {
 var _fmt = (n) => (Math.round((Number(n) || 0) * 100) / 100).toLocaleString('id-ID');
 var _bulat = (n, d) => { var p = Math.pow(10, d); return Math.round((Number(n) || 0) * p) / p; };
 
-var _dasar = ($tr) => _num($tr.data('qty')) * _num($tr.find('input.inp-harga').val());
+var _qty   = ($tr) => _num($tr.data('qty'));
+var _harga = ($tr) => _num($tr.find('input.inp-harga').val());
+
+// Rumus:
+//   Diskon Nilai = Disk % 1 / 100 * Harga        (per unit)
+//   Sub Total    = Qty * (Harga - Diskon Nilai)
+var _subtotalRow = ($tr) => _qty($tr) * (_harga($tr) - _num($tr.find('input.inp-nilai').val()));
 
 var _hitungSubTotal = ($tr) => {
-  var sub = _dasar($tr) - _num($tr.find('input.inp-nilai').val());
+  var sub = _subtotalRow($tr);
   $tr.find('td.col-subtotal').text(_fmt(sub));
   return sub;
 };
@@ -122,6 +129,7 @@ var _hitungSubTotal = ($tr) => {
 var _tandaiBerubah = ($tr) => {
   _hitungSubTotal($tr);
   $tr.removeClass('row-tersimpan').addClass('row-berubah');
+  _refreshTotal();
 };
 
 var _muatData = () => {
@@ -144,21 +152,26 @@ var _muatData = () => {
     "success" : function(result){
       $('#btampilkan').prop('disabled', false);
       _resetIndikatorSort();
+      _grupAktif = true; // data baru datang terurut per No Transaksi
       var rows = result.data || [];
       var $body = $('#tabeledit tbody').empty();
 
       if (!rows.length) {
         $body.append('<tr><td colspan="13" class="text-center text-muted text-sm py-3">Tidak ada data</td></tr>');
+        _refreshTotal();
         return;
       }
 
       rows.forEach(function(r, i){
-        var dasar = (Number(r.qty) || 0) * (Number(r.harga) || 0);
+        // Sub Total awal = Qty * (Harga - Diskon Nilai)
+        var subAwal = (Number(r.qty) || 0) * ((Number(r.harga) || 0) - (Number(r.diskon) || 0));
         var $tr = $('<tr>')
           .attr('data-sdid', r.sdid)
           .attr('data-suid', r.suid)
           .attr('data-qty', r.qty)
-          .attr('data-harga', r.harga);
+          .attr('data-harga', r.harga)
+          .attr('data-totalawal', r.totaltransaksi)
+          .attr('data-merchantjumlah', r.merchantjumlah);
 
         $tr.append('<td class="d-none">'+r.sdid+'</td>');
         $tr.append('<td class="text-center"><i class="fas fa-caret-right text-sm"></i></td>');
@@ -171,13 +184,112 @@ var _muatData = () => {
         $tr.append('<td class="text-right"><input type="text" class="form-control form-control-sm inp-edit inp-harga" value="'+(Math.round(Number(r.harga) || 0))+'"></td>');
         $tr.append('<td class="text-right"><input type="text" class="form-control form-control-sm inp-edit inp-persen" value="'+_bulat(r.diskonpersen, 2)+'"></td>');
         $tr.append('<td class="text-right"><input type="text" class="form-control form-control-sm inp-edit inp-nilai" value="'+(Math.round(Number(r.diskon) || 0))+'"></td>');
-        $tr.append('<td class="text-sm text-right col-subtotal">'+_fmt(dasar - (Number(r.diskon) || 0))+'</td>');
+        $tr.append('<td class="text-sm text-right col-subtotal">'+_fmt(subAwal)+'</td>');
         $tr.append('<td class="text-center"><button type="button" class="btn btn-primary btn-sm btn-simpan-baris py-0"><i class="fas fa-save"></i></button></td>');
 
         $body.append($tr);
       });
+
+      _refreshTotal();
     }
   });
+};
+
+// baris "Total Transaksi" ditampilkan di tiap pergantian No Transaksi
+// (hanya bermakna saat data terurut per No Transaksi -> default & sort kolom No Transaksi)
+var _grupAktif = true;
+
+var _refreshTotal = () => { _sisipTotalGrup(); _bangunRingkasan(); };
+
+var _sisipTotalGrup = () => {
+  var $body = $('#tabeledit tbody');
+  $body.children('tr.tr-total-grup').remove();
+  if (!_grupAktif) return;
+
+  var $rows = $body.children('tr[data-suid]');
+  if (!$rows.length) return;
+
+  var grup = [], cur = null;
+  $rows.each(function(){
+    var $tr = $(this);
+    var suid = String($tr.data('suid'));
+    if (!cur || cur.suid !== suid) {
+      cur = {
+        suid: suid,
+        notransaksi: $tr.children().eq(2).text().trim(),
+        awal: _num($tr.attr('data-totalawal')),
+        merchant: _num($tr.attr('data-merchantjumlah')),
+        subtotal: 0,
+        $last: $tr
+      };
+      grup.push(cur);
+    }
+    cur.subtotal += _subtotalRow($tr);
+    cur.merchant = _num($tr.attr('data-merchantjumlah'));
+    cur.$last = $tr;
+  });
+
+  grup.forEach(function(g){
+    var selisih = Math.round(g.subtotal) !== Math.round(g.merchant);
+    g.$last.after(
+      '<tr class="tr-total-grup'+(selisih ? ' tr-total-selisih' : '')+'">' +
+        '<td class="d-none"></td>' +
+        '<td colspan="10" class="text-right text-sm font-weight-bold">' +
+          'Total ' + g.notransaksi +
+          ' &nbsp;&middot;&nbsp; Transaksi Awal: ' + _fmt(g.awal) +
+          ' &nbsp;&middot;&nbsp; Merchant: ' + _fmt(g.merchant) +
+        '</td>' +
+        '<td class="text-right text-sm font-weight-bold">' + _fmt(g.subtotal) + '</td>' +
+        '<td></td>' +
+      '</tr>'
+    );
+  });
+};
+
+// Ringkasan per No Transaksi: total sub total (live), total transaksi awal, total pembayaran merchant
+var _bangunRingkasan = () => {
+  var order = [], map = {};
+
+  $('#tabeledit tbody tr[data-suid]').each(function(){
+    var $tr = $(this);
+    var suid = String($tr.data('suid'));
+    if (!map[suid]) {
+      map[suid] = {
+        notransaksi: $tr.children().eq(2).text().trim(),
+        subtotal: 0,
+        awal: _num($tr.attr('data-totalawal')),
+        merchant: _num($tr.attr('data-merchantjumlah'))
+      };
+      order.push(suid);
+    }
+    map[suid].subtotal += _subtotalRow($tr);
+    map[suid].merchant  = _num($tr.attr('data-merchantjumlah'));
+  });
+
+  var $body = $('#tabelringkasan tbody').empty();
+  var tSub = 0, tAwal = 0, tMerc = 0;
+
+  if (!order.length) {
+    $body.append('<tr><td colspan="4" class="text-center text-muted text-sm py-2">-</td></tr>');
+  } else {
+    order.forEach(function(suid){
+      var g = map[suid];
+      tSub += g.subtotal; tAwal += g.awal; tMerc += g.merchant;
+      var selisih = Math.round(g.subtotal) !== Math.round(g.merchant);
+      $body.append(
+        '<tr class="'+(selisih ? 'rk-selisih' : '')+'">' +
+          '<td class="text-sm">'+g.notransaksi+'</td>' +
+          '<td class="text-sm text-right">'+_fmt(g.subtotal)+'</td>' +
+          '<td class="text-sm text-right">'+_fmt(g.awal)+'</td>' +
+          '<td class="text-sm text-right">'+_fmt(g.merchant)+'</td>' +
+        '</tr>'
+      );
+    });
+  }
+
+  $('#rk-subtotal').text(_fmt(tSub));
+  $('#rk-awal').text(_fmt(tAwal));
+  $('#rk-merchant').text(_fmt(tMerc));
 };
 
 var _simpanBaris = ($tr, senyap) => {
@@ -209,7 +321,9 @@ var _simpanBaris = ($tr, senyap) => {
       $tr.find('td.col-subtotal').text(_fmt(res.subtotal));
       $tr.removeClass('row-berubah').addClass('row-tersimpan');
       // segarkan tampilan sumerchantjumlah utk semua baris transaksi yg sama
+      // ("Total Transaksi Awal" sengaja dibiarkan = nilai saat data dimuat)
       $('#tabeledit tbody tr[data-suid="'+$tr.data('suid')+'"]').attr('data-merchantjumlah', res.merchantjumlah);
+      _refreshTotal();
       if (!senyap) toastr.success('Tersimpan — '+res.notransaksi
         +' | Total: '+_fmt(res.totaltransaksi)
         +' | Tanpa DP: '+_fmt(res.totaltada)
@@ -255,8 +369,9 @@ var _initSortKolom = () => {
        .find('i.sort-ind').attr('class', 'fas fa-sort-' + (dir === 1 ? 'up' : 'down') + ' sort-ind');
 
     var $body = $('#tabeledit tbody');
-    var rows = $body.children('tr').get();
-    if (rows.length < 2) return; // termasuk baris "Tidak ada data"
+    $body.children('tr.tr-total-grup').remove();
+    var rows = $body.children('tr[data-suid]').get();
+    if (rows.length < 2) { _refreshTotal(); return; }
 
     rows.sort(function(a, b){
       var va = _nilaiSel(a, colIdx, type), vb = _nilaiSel(b, colIdx, type);
@@ -265,6 +380,10 @@ var _initSortKolom = () => {
       return 0;
     });
     rows.forEach(function(tr){ $body.append(tr); });
+
+    // baris Total per No Transaksi hanya bermakna saat diurutkan per No Transaksi
+    _grupAktif = (colIdx === 2);
+    _refreshTotal();
   });
 };
 

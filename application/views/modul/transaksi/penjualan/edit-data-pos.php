@@ -9,7 +9,18 @@
     #tabeledit input.inp-edit { width: 100%; text-align: right; }
     #tabeledit tr.row-berubah { background-color: #fff3cd; }
     #tabeledit tr.row-tersimpan { background-color: #d4edda; }
-    .edp-wrap { height: calc(100vh - 240px); overflow: auto; }
+    .edp-wrap { height: calc(100vh - 400px); overflow: auto; }
+    .edp-ringkas { max-height: 150px; overflow: auto; }
+    #tabelringkasan td, #tabelringkasan th { white-space: nowrap; }
+    #tabelringkasan tr.rk-selisih td { color: #dc3545; font-weight: 600; }
+
+    /* baris total per No Transaksi di dalam tabel edit */
+    #tabeledit tbody tr.tr-total-grup td {
+      background-color: #e2e6ea !important;
+      border-top: 2px solid #adb5bd;
+      border-bottom: 2px solid #adb5bd;
+    }
+    #tabeledit tbody tr.tr-total-grup.tr-total-selisih td { color: #dc3545; }
 
     /* kolom bisa di-sort */
     #tabeledit th.th-sort { cursor: pointer; user-select: none; }
@@ -87,10 +98,41 @@
             </div>
             <small class="text-muted d-block">
               *Hanya transaksi POS dengan pembayaran lewat merchant (sumerchantjumlah &gt; 0).
+              Rumus: <b>Diskon Nilai = Disk % 1 &times; Harga</b> (per unit) &nbsp;&middot;&nbsp;
+              <b>Sub Total = Qty &times; (Harga &minus; Diskon Nilai)</b>.
               Simpan menulis Harga (sdharga), Diskon Persen 1 (sddiskonpersen) &amp; Diskon Nilai (sddiskon) ke baris,
               lalu menghitung ulang total transaksi: sutotaltransaksi &amp; sumerchantjumlah = jumlah sub total
               seluruh baris, sutotaltada = jumlah sub total baris non-DP.
             </small>
+          </div>
+        </div>
+
+        <div class="card card-outline card-info mb-2">
+          <div class="card-header py-1">
+            <h6 class="mb-0 text-sm">Ringkasan per No Transaksi</h6>
+          </div>
+          <div class="card-body p-0">
+            <div class="edp-ringkas">
+              <table id="tabelringkasan" class="table table-sm table-striped mb-0 nowrap">
+                <thead class="bg-light">
+                  <tr>
+                    <th class="text-sm">No Transaksi</th>
+                    <th class="text-sm text-right">Total Sub Total</th>
+                    <th class="text-sm text-right">Total Transaksi Awal</th>
+                    <th class="text-sm text-right">Total Pembayaran Merchant</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot class="bg-light">
+                  <tr class="font-weight-bold">
+                    <td class="text-sm">TOTAL</td>
+                    <td class="text-sm text-right" id="rk-subtotal">0</td>
+                    <td class="text-sm text-right" id="rk-awal">0</td>
+                    <td class="text-sm text-right" id="rk-merchant">0</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           </div>
         </div>
 
