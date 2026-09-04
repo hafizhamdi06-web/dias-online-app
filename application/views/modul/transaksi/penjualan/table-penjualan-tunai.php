@@ -45,18 +45,29 @@
         <div id="fDataTable" class="fDataTable d-none">
           <div class="row mt-2 mx-1">
               <div class="col-sm-4">
+                <label class="col-form-label text-sm font-weight-normal">Cabang :</label>
+              </div>
+              <div class="col-sm-8">
+                <select id="cabang" class="form-control select2 form-control-sm" style="width:100%"></select>
+              </div>
+          </div>
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-4">
                 <label class="col-form-label text-sm font-weight-normal">Kontak :</label>
               </div>
               <div class="col-sm-8">
                 <div class="input-group" data-target-input="nearest">
-                  <input type="hidden" name="idkontak" id="idkontak">                
+                  <input type="hidden" name="idkontak" id="idkontak">
                   <input type="text" id="kontak" name="kontak" class="form-control form-control-sm" autocomplete="off">
                   <div id="bfilterkontak" class="input-group-append" role="button">
                       <div class="input-group-text"><i class="fa fa-ellipsis-h"></i></div>
                   </div>
-                </div>                
+                </div>
               </div>
           </div>
+
+          <input type="hidden" id="cabangdefault" value="<? echo @$_SESSION['cabang']; ?>">
+          <input type="hidden" id="namacabangdefault" value="<? echo @$_SESSION['namagudang']; ?>">
           <div class="row mt-2 mx-1">
               <div class="col-sm-4">
                 <label class="col-form-label text-sm font-weight-normal">Dari Tanggal :</label>

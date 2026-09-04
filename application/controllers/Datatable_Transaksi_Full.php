@@ -12,6 +12,24 @@ class Datatable_Transaksi_Full extends CI_Controller {
       $this->load->model('M_transaksi');
    }
 
+   // Cabang yang di-POST hanya sah bila termasuk pilihan cabang user
+   // (auser.UCABANGPILIH) atau user punya akses semua cabang; kalau tidak,
+   // fallback ke cabang aktif sesi.
+   private function _cabangUser($cabang) {
+      $cabang = !empty($cabang) ? $cabang : @$_SESSION['cabang'];
+      if (!empty($this->session->allcabang) && $this->session->allcabang == 1) {
+         return $cabang;
+      }
+      $row = $this->db->query("SELECT UCABANGPILIH FROM auser WHERE UID='".$this->session->id."'")->row();
+      $allowed = ($row && $row->UCABANGPILIH !== null)
+         ? array_filter(array_map('trim', explode(',', $row->UCABANGPILIH)))
+         : array();
+      if (!empty($allowed) && !in_array((string) $cabang, $allowed, true)) {
+         return @$_SESSION['cabang'];
+      }
+      return $cabang;
+   }
+
    function view_kas_masuk() {
         $transcode = element('Fina_Kas_Masuk',NID);
         $transcode = $this->M_transaksi->prefixtrans($transcode);
@@ -564,7 +582,7 @@ class Datatable_Transaksi_Full extends CI_Controller {
 
    function view_penjualan_tunai() {
 
-        $cabang  = @$_SESSION['cabang'] ;
+        $cabang  = $this->_cabangUser(@$_POST['cabang']) ;
         $transcode = element('PJ_Penjualan_Tunai',NID);
         $transcode = $this->M_transaksi->prefixtrans($transcode);
         $query  = "SELECT A.suid 'id',A.sunotransaksi 'nomor',DATE_FORMAT(A.sutanggal,'%d-%m-%Y') 'tanggal',

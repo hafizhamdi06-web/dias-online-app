@@ -39,10 +39,17 @@ $(function() {
 	  $("#tglsampai").focus();
 	});	
 
+	Component_Select2('#cabang', base_url+"Select_Master/view_gudang_pilihan");
+	var _cabangDefault = $("<option selected='selected'></option>")
+		.val($('#cabangdefault').val())
+		.text($('#namacabangdefault').val());
+	$('#cabang').append(_cabangDefault).trigger('change');
+
 	var clearFilter = () => {
 		$('#tgldari').datepicker('setDate','dd-mm-yy');
 		$('#tglsampai').datepicker('setDate','dd-mm-yy');
-		$('#idkontak,#kontak,#bank,#carabayar').val(''); 
+		$('#idkontak,#kontak,#bank,#carabayar').val('');
+		$('#cabang').val($('#cabangdefault').val()).trigger('change');
 	}
 
 	clearFilter();
@@ -69,10 +76,11 @@ $(function() {
 	        "data": function(data){
 	          data.kontak = $('#kontak').val();
 	          data.dari = $('#tgldari').val();
-	          data.sampai = $('#tglsampai').val();   
-	          data.carabayar = $('#carabayar').val();  
-	          data.bank = $('#bank').val();         
-	        }	                       	                       	                       
+	          data.sampai = $('#tglsampai').val();
+	          data.carabayar = $('#carabayar').val();
+	          data.bank = $('#bank').val();
+	          data.cabang = $('#cabang').val();
+	        }                       	                       	                       
 		},
 		"deferRender": true,
 		"bInfo":true,    
