@@ -48,7 +48,7 @@
                 <label class="col-form-label text-sm font-weight-normal">Cabang :</label>
               </div>
               <div class="col-sm-8">
-                <select id="cabang" class="form-control form-control-sm" style="width:100%"></select>
+                <select id="cabang" name="cabang" class="form-control select2 form-control-sm" style="width:100%" data-trigger="manual" data-placement="auto"></select>
               </div>
           </div>
           <div class="row mt-2 mx-1">
@@ -167,6 +167,7 @@
 <script src="<? echo base_url('assets/plugins/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/dist/js/adminlte.js'); ?>"></script>
 <script src="<? echo base_url('assets/dist/js/akunting.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/select2/select2.full.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-responsive/js/dataTables.responsive.js'); ?>"></script>

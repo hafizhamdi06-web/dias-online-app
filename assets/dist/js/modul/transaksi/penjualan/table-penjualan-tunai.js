@@ -22,7 +22,10 @@ $(function() {
 
 	Component_Inputmask_Date('.datepicker');
 	Component_Scrollbars('.tab-wrap','scroll','scroll');
-    
+
+	// Tombol "Filter Data" tampil sejak awal (tidak menunggu draw pertama)
+	$(".table-utils").removeClass("d-none");
+
 	if(!parent.window.$(".loader-wrap").hasClass("d-none")){
 		parent.window.$(".loader-wrap").addClass("d-none");
 	}
@@ -39,28 +42,41 @@ $(function() {
 	  $("#tglsampai").focus();
 	});	
 
-	// halaman ini tidak memuat select2 -> pakai <select> native
-	$('#cabang').html("<option value='"+$('#cabangdefault').val()+"' selected>"+($('#namacabangdefault').val()||'Cabang')+"</option>");
-	$.ajax({
-		"url": base_url+"Select_Master/view_gudang_pilihan",
-		"type": "post",
-		"dataType": "json",
-		"data": { search: '' },
-		"cache": false,
-		"success": function(list){
-			var def = $('#cabangdefault').val();
-			var opts = (list||[]).map(function(g){
-				return "<option value='"+g.id+"'"+(String(g.id)===String(def)?" selected":"")+">"+g.text+"</option>";
-			}).join('');
-			if (opts) $('#cabang').html(opts);
-		}
+	// Filter Cabang -> select2 (samakan dengan Verifikasi Permintaan Barang)
+	$('#cabang').select2({
+	    "allowClear": true,
+	    "theme":"bootstrap4",
+	    "placeholder": "Semua",
+	    "ajax": {
+	      "url": base_url+"Select_Master/view_gudang",
+	      "type": "post",
+	      "dataType": "json",
+	      "delay": 800,
+	      "data": (params) => {
+	          return {
+	            search: params.term
+	          }
+	      },
+	      "processResults": (data, page) => {
+	          return {
+	            results: data
+	          }
+	      },
+	    }
 	});
+
+	// default = cabang milik user yang login
+	var _cabangUser = $('#cabangdefault').val();
+	var _cabangUserNama = $('#namacabangdefault').val() || 'Cabang';
+	if(_cabangUser){
+		$('#cabang').append(new Option(_cabangUserNama, _cabangUser, true, true)).trigger('change');
+	}
 
 	var clearFilter = () => {
 		$('#tgldari').datepicker('setDate','dd-mm-yy');
 		$('#tglsampai').datepicker('setDate','dd-mm-yy');
 		$('#idkontak,#kontak,#bank,#carabayar').val('');
-		$('#cabang').val($('#cabangdefault').val()).trigger('change');
+		$('#cabang').val(_cabangUser ? _cabangUser : '').trigger('change');
 	}
 
 	clearFilter();
@@ -119,19 +135,19 @@ $(function() {
 	      var total = tabel.data().count();
 
 	      if(total>0){
-	        $(".tab-wrap").removeClass("noresultfound-x");                                   
+	        $(".tab-wrap").removeClass("noresultfound-x");
 	      }else{
-	        $(".tab-wrap").addClass("noresultfound-x"); 
+	        $(".tab-wrap").addClass("noresultfound-x");
 	      }
-	      
+
 		  if(!parent.window.$(".loader-wrap").hasClass("d-none")){
 		    parent.window.$(".loader-wrap").addClass("d-none");
 		  }
 
-		  if($(".table-utils").hasClass("d-none")){	  
+		  if($(".table-utils").hasClass("d-none")){
 			  $(".table-utils").removeClass("d-none");
-		  }	  
-		}                    
+		  }
+		}
 	});
 
 	new $.fn.dataTable.ColResize(tabel, {
