@@ -29,6 +29,12 @@
     <div id="pm-riwayat-filter" class="pm-riwayat-filter d-none">
       <div class="pm-riwayat-filter-row">
         <div class="pm-riwayat-filter-field">
+          <label>Cabang</label>
+          <select id="pm-riwayat-cabang" class="pm-riwayat-tgl"></select>
+        </div>
+      </div>
+      <div class="pm-riwayat-filter-row">
+        <div class="pm-riwayat-filter-field">
           <label>Dari Tanggal</label>
           <input type="date" id="pm-riwayat-tgldari" class="pm-riwayat-tgl">
         </div>

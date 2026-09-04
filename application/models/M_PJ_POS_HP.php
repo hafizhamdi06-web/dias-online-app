@@ -22,12 +22,35 @@ class M_PJ_POS_HP extends CI_Model {
         return json_encode(array('data' => $sql->result_array()));
     }
 
-    // Riwayat transaksi POS pada rentang tanggal (untuk "Riwayat Sebelum Hari Ini"
-    // di POS Mobile). Default: tgl 1 bulan berjalan s/d hari ini.
+    // Cabang yang dipilih hanya dianggap sah bila termasuk pilihan cabang user
+    // (auser.UCABANGPILIH) atau user punya akses semua cabang. Kalau tidak,
+    // fallback ke cabang aktif di sesi.
+    private function _cabangRiwayatValid($cabang){
+        $cabang = (int) $cabang;
+        if ($cabang <= 0) $cabang = (int) @$_SESSION['cabang'];
+
+        if (!empty($this->session->allcabang) && $this->session->allcabang == 1) {
+            return $cabang;
+        }
+
+        $row = $this->db->query("SELECT UCABANGPILIH FROM auser WHERE UID='".$this->session->id."'")->row();
+        $allowed = ($row && $row->UCABANGPILIH !== null)
+            ? array_filter(array_map('trim', explode(',', $row->UCABANGPILIH)))
+            : array();
+
+        if (!empty($allowed) && !in_array((string) $cabang, $allowed, true)) {
+            return (int) @$_SESSION['cabang'];
+        }
+        return $cabang;
+    }
+
+    // Riwayat transaksi POS pada rentang tanggal + cabang (untuk "Riwayat Sebelum
+    // Hari Ini" di POS Mobile). Default: cabang aktif user, tgl 1 bulan berjalan
+    // s/d hari ini.
     function getRiwayatRange(){
-        $idkaryawan = @$_SESSION['idkaryawan'];
         $tgldari    = (string) $this->input->post('tgldari');
         $tglsampai  = (string) $this->input->post('tglsampai');
+        $cabang     = $this->_cabangRiwayatValid($this->input->post('cabang'));
 
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tgldari))   $tgldari   = date('Y-m-01');
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tglsampai)) $tglsampai = date('Y-m-d');
@@ -40,7 +63,7 @@ class M_PJ_POS_HP extends CI_Model {
                     FROM fstoku A
                LEFT JOIN bkontak B ON A.sukontak = B.kid
                    WHERE A.susumber = 'IP' AND A.sustatus <> 9
-                     AND A.sukaryawan = '".$this->db->escape_str($idkaryawan)."'
+                     AND A.sucabang = ".$cabang."
                      AND DATE(A.sutanggal) BETWEEN '".$this->db->escape_str($tgldari)."' AND '".$this->db->escape_str($tglsampai)."'
                 ORDER BY A.sutanggal DESC, A.suid DESC";
         $sql = $this->db->query($query);

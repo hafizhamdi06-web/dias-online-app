@@ -194,6 +194,8 @@ $(function() {
 
   $('#pm-riwayat-tampilkan').on('click', _muatRiwayatRange);
 
+  _muatCabangRiwayat();
+
   $('#briwayat-tutup').on('click', function(){
     $('#pm-riwayat-panel').addClass('d-none');
     $('.pm-content').removeClass('d-none');
@@ -801,6 +803,23 @@ var _muatRiwayatHariIni = () => {
   });
 };
 
+var _muatCabangRiwayat = () => {
+  $.ajax({
+    "url"    : base_url+"Select_Master/view_gudang_pilihan",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : { search: '' },
+    "cache"  : false,
+    "success" : function(list) {
+      var def = $('#cabang').val();
+      var opts = (list || []).map(function(g){
+        return '<option value="'+g.id+'"'+(String(g.id) === String(def) ? ' selected' : '')+'>'+g.text+'</option>';
+      }).join('');
+      $('#pm-riwayat-cabang').html(opts);
+    }
+  });
+};
+
 var _muatRiwayatRange = () => {
   $.ajax({
     "url"    : base_url+"PJ_POS_HP/riwayatrange",
@@ -808,7 +827,8 @@ var _muatRiwayatRange = () => {
     "dataType" : "json",
     "data"   : {
       tgldari  : $('#pm-riwayat-tgldari').val(),
-      tglsampai: $('#pm-riwayat-tglsampai').val()
+      tglsampai: $('#pm-riwayat-tglsampai').val(),
+      cabang   : $('#pm-riwayat-cabang').val()
     },
     "cache"  : false,
     "beforeSend" : function(){
