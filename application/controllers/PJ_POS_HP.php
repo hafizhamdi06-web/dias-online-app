@@ -89,6 +89,11 @@ class PJ_POS_HP extends CI_Controller {
         echo $this->M_PJ_POS_HP->getRiwayatHariIni();
    }
 
+   function riwayatrange(){
+        header('Content-Type: application/json');
+        echo $this->M_PJ_POS_HP->getRiwayatRange();
+   }
+
    function getdata(){
    		if(empty($_POST['id'])) {
    			echo _pesanError("Id transaksi tidak ditemukan !");

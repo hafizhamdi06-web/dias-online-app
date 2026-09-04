@@ -7,7 +7,10 @@
 
   <div class="pm-header">
     <h5 class="pm-title">POS Mobile</h5>
-    <button type="button" id="briwayat" class="pm-btn-riwayat"><i class="fas fa-history"></i> Riwayat Hari Ini</button>
+    <div class="pm-header-actions">
+      <button type="button" id="briwayat" class="pm-btn-riwayat"><i class="fas fa-history"></i> Hari Ini</button>
+      <button type="button" id="briwayat-sebelum" class="pm-btn-riwayat"><i class="fas fa-calendar-alt"></i> Sebelumnya</button>
+    </div>
   </div>
 
   <div class="pm-subheader">
@@ -20,6 +23,22 @@
 
   <div id="pm-riwayat-panel" class="pm-riwayat-panel d-none">
     <button type="button" id="briwayat-tutup" class="pm-btn-riwayat-tutup"><i class="fas fa-arrow-left"></i> Kembali</button>
+
+    <h6 id="pm-riwayat-judul" class="pm-riwayat-judul">Riwayat Hari Ini</h6>
+
+    <div id="pm-riwayat-filter" class="pm-riwayat-filter d-none">
+      <div class="pm-riwayat-filter-row">
+        <div class="pm-riwayat-filter-field">
+          <label>Dari Tanggal</label>
+          <input type="date" id="pm-riwayat-tgldari" class="pm-riwayat-tgl">
+        </div>
+        <div class="pm-riwayat-filter-field">
+          <label>Sampai Tanggal</label>
+          <input type="date" id="pm-riwayat-tglsampai" class="pm-riwayat-tgl">
+        </div>
+      </div>
+      <button type="button" id="pm-riwayat-tampilkan" class="pm-riwayat-tampilkan"><i class="fas fa-search"></i> Tampilkan</button>
+    </div>
 
     <div id="pm-riwayat-list" class="pm-itemlist"></div>
 

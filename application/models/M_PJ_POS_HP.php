@@ -22,6 +22,31 @@ class M_PJ_POS_HP extends CI_Model {
         return json_encode(array('data' => $sql->result_array()));
     }
 
+    // Riwayat transaksi POS pada rentang tanggal (untuk "Riwayat Sebelum Hari Ini"
+    // di POS Mobile). Default: tgl 1 bulan berjalan s/d hari ini.
+    function getRiwayatRange(){
+        $idkaryawan = @$_SESSION['idkaryawan'];
+        $tgldari    = (string) $this->input->post('tgldari');
+        $tglsampai  = (string) $this->input->post('tglsampai');
+
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tgldari))   $tgldari   = date('Y-m-01');
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $tglsampai)) $tglsampai = date('Y-m-d');
+        if ($tgldari > $tglsampai) { $tmp = $tgldari; $tgldari = $tglsampai; $tglsampai = $tmp; }
+
+        $query = "SELECT A.suid 'id', A.sunotransaksi 'nomor',
+                         DATE_FORMAT(A.sutanggal,'%d-%m-%Y') 'tanggal',
+                         DATE_FORMAT(A.sucreated,'%H:%i') 'jam',
+                         COALESCE(B.knama,'-') 'pasien', IFNULL(A.sutotaltransaksi,0) 'total'
+                    FROM fstoku A
+               LEFT JOIN bkontak B ON A.sukontak = B.kid
+                   WHERE A.susumber = 'IP' AND A.sustatus <> 9
+                     AND A.sukaryawan = '".$this->db->escape_str($idkaryawan)."'
+                     AND DATE(A.sutanggal) BETWEEN '".$this->db->escape_str($tgldari)."' AND '".$this->db->escape_str($tglsampai)."'
+                ORDER BY A.sutanggal DESC, A.suid DESC";
+        $sql = $this->db->query($query);
+        return json_encode(array('data' => ($sql && is_object($sql)) ? $sql->result_array() : array()));
+    }
+
 
     function transfer_transaksi_cancel($idu){
         

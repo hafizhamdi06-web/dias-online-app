@@ -11,6 +11,20 @@ var items = [];
 var itemSeq = 0;
 var pasienDiscount = 0;
 var editId = '';
+var _riwayatMode = 'hariini';
+
+var _isoTgl = (d) => {
+  var yyyy = d.getFullYear();
+  var mm = String(d.getMonth() + 1).padStart(2, '0');
+  var dd = String(d.getDate()).padStart(2, '0');
+  return yyyy + '-' + mm + '-' + dd;
+};
+
+var _bukaPanelRiwayat = () => {
+  $('.pm-content').addClass('d-none');
+  $('.pm-footer').addClass('d-none');
+  $('#pm-riwayat-panel').removeClass('d-none');
+};
 
 $(function() {
 
@@ -153,11 +167,31 @@ $(function() {
   $('#bsimpan').on('click', _simpanTransaksi);
 
   $('#briwayat').on('click', function(){
-    $('.pm-content').addClass('d-none');
-    $('.pm-footer').addClass('d-none');
-    $('#pm-riwayat-panel').removeClass('d-none');
+    _riwayatMode = 'hariini';
+    $('#pm-riwayat-judul').text('Riwayat Hari Ini');
+    $('#pm-riwayat-filter').addClass('d-none');
+    $('#pm-riwayat-empty p').text('Belum ada transaksi hari ini.');
+    _bukaPanelRiwayat();
     _muatRiwayatHariIni();
   });
+
+  $('#briwayat-sebelum').on('click', function(){
+    _riwayatMode = 'range';
+    $('#pm-riwayat-judul').text('Riwayat Sebelum Hari Ini');
+    $('#pm-riwayat-filter').removeClass('d-none');
+    $('#pm-riwayat-empty p').text('Tidak ada transaksi pada rentang tanggal ini.');
+    var now = new Date();
+    if (!$('#pm-riwayat-tgldari').val()) {
+      $('#pm-riwayat-tgldari').val(_isoTgl(new Date(now.getFullYear(), now.getMonth(), 1)));
+    }
+    if (!$('#pm-riwayat-tglsampai').val()) {
+      $('#pm-riwayat-tglsampai').val(_isoTgl(now));
+    }
+    _bukaPanelRiwayat();
+    _muatRiwayatRange();
+  });
+
+  $('#pm-riwayat-tampilkan').on('click', _muatRiwayatRange);
 
   $('#briwayat-tutup').on('click', function(){
     $('#pm-riwayat-panel').addClass('d-none');
@@ -652,6 +686,30 @@ var _muatRiwayatHariIni = () => {
   });
 };
 
+var _muatRiwayatRange = () => {
+  $.ajax({
+    "url"    : base_url+"PJ_POS_HP/riwayatrange",
+    "type"   : "POST",
+    "dataType" : "json",
+    "data"   : {
+      tgldari  : $('#pm-riwayat-tgldari').val(),
+      tglsampai: $('#pm-riwayat-tglsampai').val()
+    },
+    "cache"  : false,
+    "beforeSend" : function(){
+      $("#loader").removeClass('d-none');
+    },
+    "error"  : function(xhr,status,error){
+      $("#loader").addClass('d-none');
+      toastr.error("Gagal mengambil riwayat transaksi : "+xhr.status+" "+error);
+    },
+    "success" : function(result) {
+      $("#loader").addClass('d-none');
+      _renderRiwayatList(result.data || []);
+    }
+  });
+};
+
 var _renderRiwayatList = (rows) => {
   $("#pm-riwayat-list").html('');
 
@@ -666,7 +724,7 @@ var _renderRiwayatList = (rows) => {
       '<div class="pm-riwayat-card" data-id="'+row.id+'">' +
         '<div class="pm-riwayat-card-top">' +
           '<span class="pm-riwayat-nomor">'+row.nomor+'</span>' +
-          '<span class="pm-riwayat-jam">'+row.jam+'</span>' +
+          '<span class="pm-riwayat-jam">'+(row.tanggal ? row.tanggal+' &bull; ' : '')+(row.jam || '')+'</span>' +
         '</div>' +
         '<div class="pm-riwayat-pasien">'+row.pasien+'</div>' +
         '<span class="pm-riwayat-total">'+_formatRupiah(row.total)+'</span>' +
