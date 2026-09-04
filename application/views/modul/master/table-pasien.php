@@ -49,6 +49,7 @@
           <th class="text-sm">Kode</th>
           <th class="text-sm">Nama</th>
           <th class="text-sm">Kategori</th>
+          <th class="text-sm">Cabang</th>
           <th class="text-sm">No. KTP</th>
           <th class="text-sm">Telepon</th>
           <th class="text-sm">Kota</th>
@@ -73,6 +74,14 @@
                 </div>
               </div>
           </div>
+          <div class="row mt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">Cabang :</label>
+                <div class="input-group" data-target-input="nearest">
+                  <select id="cabang" name="cabang" class="form-control form-control-sm select2"></select>
+                </div>
+              </div>
+          </div>
           <div class="row mt-2 mx-1">
               <div class="col-sm-12">
                 <label class="col-form-label text-sm font-weight-normal">Kategori :</label>
@@ -87,6 +96,10 @@
                 <div class="form-check">
                   <input type="checkbox" class="form-check-input" id="fsemua">
                   <label class="form-check-label text-sm" for="fsemua">Semua Kategori</label>
+                </div>
+                <div class="form-check mt-2">
+                  <input type="checkbox" class="form-check-input" id="faktif" checked>
+                  <label class="form-check-label text-sm" for="faktif">Aktif saja</label>
                 </div>
               </div>
           </div>
@@ -119,6 +132,8 @@
   <aside id="control-sidebar-r" class="control-sidebar bg-transparent border-0">
   </aside>
   </form>
+  <input type="hidden" id="cabangdefault" value="<? echo @$_SESSION['cabang']; ?>">
+  <input type="hidden" id="namacabangdefault" value="<? echo @$_SESSION['namagudang']; ?>">
   <!-- /.control-sidebar -->
 
 <!-- JS Vendor -->

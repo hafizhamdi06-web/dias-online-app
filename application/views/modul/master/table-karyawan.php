@@ -81,6 +81,14 @@
                 </div>
               </div>
           </div>
+          <div class="row mt-0 mx-1">
+              <div class="col-sm-12">
+                <label class="col-form-label text-sm font-weight-normal">Cabang :</label>
+                <div class="input-group" data-target-input="nearest">
+                  <select id="cabang" name="cabang" class="form-control form-control-sm select2"></select>
+                </div>
+              </div>
+          </div>
           <div class="row mt-2 mx-1">
               <div class="col-sm-12">
                 <div class="form-check">
@@ -118,6 +126,8 @@
   <aside id="control-sidebar-r" class="control-sidebar bg-transparent border-0">
   </aside>
   </form>
+  <input type="hidden" id="cabangdefault" value="<? echo @$_SESSION['cabang']; ?>">
+  <input type="hidden" id="namacabangdefault" value="<? echo @$_SESSION['namagudang']; ?>">
   <!-- /.control-sidebar -->
 
 <!-- JS Vendor -->

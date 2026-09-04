@@ -127,9 +127,11 @@ class Datatable_Master extends CI_Controller {
 
    function view_table_kontak($katId="") {
         $query  = "SELECT A.kid AS 'id',A.kkode AS 'kode',A.knama AS 'nama',B.ktnama AS 'tipe',
-                          A.k1alamat 'alamat',A.k1kota AS 'kota',A.k1telp1 AS 'telp'
+                          A.k1alamat 'alamat',A.k1kota AS 'kota',A.k1telp1 AS 'telp',
+                          IFNULL(G.gnama,'') AS 'cabang'
                      FROM bkontak A
-               INNER JOIN bkontaktipe B ON A.ktipe=B.ktid";
+               INNER JOIN bkontaktipe B ON A.ktipe=B.ktid
+                LEFT JOIN bgudang G ON G.gid=A.KCABANG";
         $search = array('kkode','knama','kidpasien','k1telp1');
         $where  = null;
 
@@ -141,14 +143,21 @@ class Datatable_Master extends CI_Controller {
 
         if(!empty($this->input->post('kategori')) && $this->input->post('kategori') != null) {
           $isWhere .= " AND A.ktipe='".$this->input->post('kategori')."' ";
-        }       
-         
+        }
+
+        if(!empty($this->input->post('cabang')) && $this->input->post('cabang') != null) {
+          $isWhere .= " AND A.KCABANG='".(int)$this->input->post('cabang')."' ";
+        }
+
+        if($this->input->post('aktif') === '1' || $this->input->post('aktif') === 1) {
+          $isWhere .= " AND A.KAKTIF<>0 ";
+        }
 
         header('Content-Type: application/json');
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
 
-   
+
 
    function view_table_item_pos($katId="") {
        
@@ -507,10 +516,12 @@ class Datatable_Master extends CI_Controller {
 
    function view_table_pasien() {
         $query  = "SELECT A.kid AS 'id',A.kidpasien AS 'idpasien',A.kkode AS 'kode',A.knama AS 'nama',
-                          T.ktnama AS 'kategori',A.knoktp AS 'noktp',A.k1telp1 AS 'telp',W.bnama AS 'kota',
+                          T.ktnama AS 'kategori',IFNULL(G.gnama,'') AS 'cabang',
+                          A.knoktp AS 'noktp',A.k1telp1 AS 'telp',W.bnama AS 'kota',
                           CASE WHEN IFNULL(A.kaktif,0)=0 THEN 'Non-Aktif' ELSE 'Aktif' END AS 'status'
                      FROM bkontak A
                 LEFT JOIN bkontaktipe T ON A.ktipe=T.ktid
+                LEFT JOIN bgudang G ON A.kcabang=G.gid
                 LEFT JOIN bwilayah W ON A.k1kota=W.bwid";
         $search = array('kkode','knama','kidpasien','knoktp','k1telp1');
         $where  = null;
@@ -525,6 +536,14 @@ class Datatable_Master extends CI_Controller {
           if(!empty($tipe)){
             $isWhere .= " AND A.ktipe IN (".implode(',', $tipe).")";
           }
+        }
+
+        if(!empty($this->input->post('cabang')) && $this->input->post('cabang') != null) {
+          $isWhere .= " AND A.kcabang='".(int)$this->input->post('cabang')."'";
+        }
+
+        if($this->input->post('aktif') == '1') {
+          $isWhere .= " AND IFNULL(A.kaktif,0)<>0";
         }
 
         header('Content-Type: application/json');
@@ -546,6 +565,10 @@ class Datatable_Master extends CI_Controller {
         $kategori = $this->input->post('kategori');
         if($kategori !== '' && $kategori !== null){
           $isWhere .= " AND A.ktipe='".$kategori."'";
+        }
+
+        if(!empty($this->input->post('cabang')) && $this->input->post('cabang') != null) {
+          $isWhere .= " AND A.kcabang='".(int)$this->input->post('cabang')."'";
         }
 
         if($this->input->post('aktif') == '1'){

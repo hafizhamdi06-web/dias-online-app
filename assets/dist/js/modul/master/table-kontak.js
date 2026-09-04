@@ -9,6 +9,14 @@ $(function () {
 
   Component_Scrollbars('.tab-wrap','scroll','scroll');
   Component_Select2('#kategori',`${base_url}Select_Master/view_kategori_kontak`);
+  Component_Select2('#cabang',`${base_url}Select_Master/view_gudang`);
+
+  // Filter cabang default = cabang milik user yang login
+  const _cabangUser = $('#cabangdefault').val();
+  const _cabangUserNama = $('#namacabangdefault').val() || 'Cabang';
+  if(_cabangUser){
+    $('#cabang').append(new Option(_cabangUserNama, _cabangUser, true, true)).trigger('change');
+  }
 
   this.addEventListener('contextmenu', (e) => {
     e.preventDefault();
@@ -35,9 +43,11 @@ $(function () {
         "type":"post",
         "data": function(data){
           data.kategori = $('#kategori').val();
+          data.cabang = $('#cabang').val();
+          data.aktif = $('#aktifsaja').is(':checked') ? '1' : '0';
           data.kode = $('#kode').val();
           data.nama = $('#nama').val();
-        }                           
+        }
     },
     "deferRender": true,
     "bInfo":true,
@@ -56,8 +66,9 @@ $(function () {
           { "data": "kode" },
           { "data": "nama" },
           { "data": "tipe" },
+          { "data": "cabang" },
           { "data": "kota" },
-          { "data": "telp" },                    
+          { "data": "telp" },
     ],
     "drawCallback": function() {
       var total = tabel.data().count();
@@ -255,4 +266,8 @@ function _reloaddatatable(){
 
 function clearFilter(){
   $('#kode,#nama').val('');
+  $('#aktifsaja').prop('checked', true);
+  // kembalikan filter cabang ke cabang user (default)
+  const cabangUser = $('#cabangdefault').val();
+  $('#cabang').val(cabangUser ? cabangUser : null).trigger('change');
 }

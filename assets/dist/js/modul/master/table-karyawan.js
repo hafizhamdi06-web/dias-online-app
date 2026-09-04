@@ -10,6 +10,18 @@ $(function () {
   Component_Scrollbars('.tab-wrap','scroll','scroll');
 
   Component_Select2('#fkategori', base_url+'Select_Master/view_kategori_kontak_nonpasien');
+  Component_Select2('#cabang', base_url+'Select_Master/view_gudang');
+
+  // Filter cabang default = cabang milik user yang login
+  const _cabangUser = $('#cabangdefault').val();
+  const _cabangUserNama = $('#namacabangdefault').val() || 'Cabang';
+  if(_cabangUser){
+    $('#cabang').append(new Option(_cabangUserNama, _cabangUser, true, true)).trigger('change');
+  }
+
+  $(this).on('select2:open', function() {
+    this.querySelector('.select2-search__field').focus();
+  });
 
   this.addEventListener('contextmenu', function(e){
     e.preventDefault();
@@ -34,6 +46,7 @@ $(function () {
           data.kode = $('#kode').val();
           data.nama = $('#nama').val();
           data.kategori = $('#fkategori').val() || '';
+          data.cabang = $('#cabang').val();
           data.aktif = $('#faktif').is(':checked') ? 1 : 0;
         }
     },
@@ -249,4 +262,7 @@ function clearFilter(){
   $('#kode,#nama').val('');
   $('#fkategori').val('4').trigger('change');
   $('#faktif').prop('checked', true);
+  // kembalikan filter cabang ke cabang user (default)
+  const cabangUser = $('#cabangdefault').val();
+  $('#cabang').val(cabangUser ? cabangUser : null).trigger('change');
 }

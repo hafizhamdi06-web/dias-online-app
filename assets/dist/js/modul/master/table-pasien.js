@@ -1,4 +1,5 @@
 import { Component_Scrollbars } from '../component.js';
+import { Component_Select2 } from '../component.js';
 
 var tabel = null;
 
@@ -7,6 +8,18 @@ $(function () {
   $.fn.dataTable.ext.errMode = 'none';
 
   Component_Scrollbars('.tab-wrap','scroll','scroll');
+  Component_Select2('#cabang',`${base_url}Select_Master/view_gudang`);
+
+  // Filter cabang default = cabang milik user yang login
+  const _cabangUser = $('#cabangdefault').val();
+  const _cabangUserNama = $('#namacabangdefault').val() || 'Cabang';
+  if(_cabangUser){
+    $('#cabang').append(new Option(_cabangUserNama, _cabangUser, true, true)).trigger('change');
+  }
+
+  $(this).on('select2:open', function() {
+    this.querySelector('.select2-search__field').focus();
+  });
 
   this.addEventListener('contextmenu', function(e){
     e.preventDefault();
@@ -30,9 +43,11 @@ $(function () {
         "data": function(data){
           data.kode = $('#kode').val();
           data.nama = $('#nama').val();
+          data.cabang = $('#cabang').val();
           data.tunai = $('#ftunai').is(':checked') ? 1 : 0;
           data.member = $('#fmember').is(':checked') ? 1 : 0;
           data.semua = $('#fsemua').is(':checked') ? 1 : 0;
+          data.aktif = $('#faktif').is(':checked') ? 1 : 0;
         }
     },
     "deferRender": true,
@@ -53,6 +68,7 @@ $(function () {
           { "data": "kode" },
           { "data": "nama" },
           { "data": "kategori" },
+          { "data": "cabang" },
           { "data": "noktp" },
           { "data": "telp" },
           { "data": "kota" },
@@ -253,4 +269,8 @@ function clearFilter(){
   $('#kode,#nama').val('');
   $('#ftunai,#fmember').prop('checked', true).prop('disabled', false);
   $('#fsemua').prop('checked', false);
+  $('#faktif').prop('checked', true);
+  // kembalikan filter cabang ke cabang user (default)
+  const cabangUser = $('#cabangdefault').val();
+  $('#cabang').val(cabangUser ? cabangUser : null).trigger('change');
 }
