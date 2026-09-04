@@ -39,11 +39,22 @@ $(function() {
 	  $("#tglsampai").focus();
 	});	
 
-	Component_Select2('#cabang', base_url+"Select_Master/view_gudang_pilihan");
-	var _cabangDefault = $("<option selected='selected'></option>")
-		.val($('#cabangdefault').val())
-		.text($('#namacabangdefault').val());
-	$('#cabang').append(_cabangDefault).trigger('change');
+	// halaman ini tidak memuat select2 -> pakai <select> native
+	$('#cabang').html("<option value='"+$('#cabangdefault').val()+"' selected>"+($('#namacabangdefault').val()||'Cabang')+"</option>");
+	$.ajax({
+		"url": base_url+"Select_Master/view_gudang_pilihan",
+		"type": "post",
+		"dataType": "json",
+		"data": { search: '' },
+		"cache": false,
+		"success": function(list){
+			var def = $('#cabangdefault').val();
+			var opts = (list||[]).map(function(g){
+				return "<option value='"+g.id+"'"+(String(g.id)===String(def)?" selected":"")+">"+g.text+"</option>";
+			}).join('');
+			if (opts) $('#cabang').html(opts);
+		}
+	});
 
 	var clearFilter = () => {
 		$('#tgldari').datepicker('setDate','dd-mm-yy');

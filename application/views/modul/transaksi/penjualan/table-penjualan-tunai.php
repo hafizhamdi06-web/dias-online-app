@@ -48,7 +48,7 @@
                 <label class="col-form-label text-sm font-weight-normal">Cabang :</label>
               </div>
               <div class="col-sm-8">
-                <select id="cabang" class="form-control select2 form-control-sm" style="width:100%"></select>
+                <select id="cabang" class="form-control form-control-sm" style="width:100%"></select>
               </div>
           </div>
           <div class="row mt-2 mx-1">
