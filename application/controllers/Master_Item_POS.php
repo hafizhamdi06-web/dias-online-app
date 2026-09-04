@@ -119,4 +119,27 @@ class Master_Item_POS extends CI_Controller {
         echo $this->M_Master_Item_POS->hapusData();
     }
 
+    // Update Harga Marketplace (bitem2.I2HARGAJUALMP)
+    function gethargamp(){
+        $id = (int) $this->input->post('id');
+        if ($id <= 0) {
+            echo _pesanError("Data tidak ditemukan !");
+            exit;
+        }
+
+        $query = "SELECT A.iid 'id', A.ikode 'kode', A.inama 'nama',
+                         IFNULL(A.ihargajual1,0) 'hargajual1',
+                         IFNULL(B.I2HARGAJUALMP,0) 'hargamp'
+                    FROM bitem A
+               LEFT JOIN bitem2 B ON B.I2IDITEM=A.iid
+                   WHERE A.iid='".$id."'";
+
+        header('Content-Type: application/json');
+        echo $this->M_transaksi->get_data_query($query);
+    }
+
+    function updhargamp(){
+        echo $this->M_Master_Item_POS->updateHargaMp();
+    }
+
 }

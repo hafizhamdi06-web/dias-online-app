@@ -227,4 +227,37 @@ class M_Master_Item_POS extends CI_Model {
         }
     }
 
+    // Update Harga Marketplace: hanya kolom I2HARGAJUALMP di tabel bitem2
+    function updateHargaMp()
+    {
+        $id    = (int) $this->input->post('id');
+        $harga = $this->input->post('hargamp');
+        $harga = ($harga === '' || $harga === null) ? 0 : str_replace(',', '', $harga);
+
+        if ($id <= 0) {
+            return "Item tidak valid";
+        }
+        if (!is_numeric($harga)) {
+            return "Nilai harga tidak valid";
+        }
+
+        $this->db->trans_start();
+
+        $cek = $this->db->get_where('bitem2', array('I2IDITEM' => $id))->row();
+        if ($cek) {
+            $this->db->where('I2IDITEM', $id);
+            $this->db->update('bitem2', array('I2HARGAJUALMP' => $harga));
+        } else {
+            $this->db->insert('bitem2', array('I2IDITEM' => $id, 'I2HARGAJUALMP' => $harga));
+        }
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            return "rollback";
+        } else {
+            return "sukses";
+        }
+    }
+
 }

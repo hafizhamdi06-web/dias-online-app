@@ -107,6 +107,24 @@ class Datatable_Master extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
 
+   function view_table_update_harga_mp_list() {
+        $query  = "SELECT A.iid AS 'id',A.ikode AS 'kode',A.inama AS 'nama',
+                          ROUND(IFNULL(A.ihargajual1,0),2) AS 'hargajual1',
+                          ROUND(IFNULL(C.I2HARGAJUALMP,0),2) AS 'hargamp'
+                     FROM bitem A
+                LEFT JOIN bitem2 C ON C.I2IDITEM=A.iid";
+        $search = array('A.ikode','A.inama');
+        $where  = null;
+        $isWhere = "A.ikode LIKE '%".@$_POST['kode']."%' AND A.inama LIKE'%".@$_POST['nama']."%'";
+
+        if($this->input->post('status') !== null && $this->input->post('status') !== '') {
+          $isWhere .= " AND A.istatus=".(int)$this->input->post('status');
+        }
+
+        header('Content-Type: application/json');
+        echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
+    }
+
    function view_table_kontak($katId="") {
         $query  = "SELECT A.kid AS 'id',A.kkode AS 'kode',A.knama AS 'nama',B.ktnama AS 'tipe',
                           A.k1alamat 'alamat',A.k1kota AS 'kota',A.k1telp1 AS 'telp'
