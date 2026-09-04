@@ -16,16 +16,24 @@ class Datatable_Transaksi_Full extends CI_Controller {
    // (auser.UCABANGPILIH) atau user punya akses semua cabang; kalau tidak,
    // fallback ke cabang aktif sesi.
    private function _cabangUser($cabang) {
-      $cabang = !empty($cabang) ? $cabang : @$_SESSION['cabang'];
+      $default = @$_SESSION['cabang'];
+      $cabang  = !empty($cabang) ? $cabang : $default;
+
       if (!empty($this->session->allcabang) && $this->session->allcabang == 1) {
          return $cabang;
       }
-      $row = $this->db->query("SELECT UCABANGPILIH FROM auser WHERE UID='".$this->session->id."'")->row();
-      $allowed = ($row && $row->UCABANGPILIH !== null)
+
+      $res = $this->db->query("SELECT UCABANGPILIH FROM auser WHERE UID = ".$this->db->escape($this->session->id));
+      if ($res === FALSE || !is_object($res)) {
+         return $default;
+      }
+      $row = $res->row();
+      $allowed = ($row && $row->UCABANGPILIH !== null && $row->UCABANGPILIH !== '')
          ? array_filter(array_map('trim', explode(',', $row->UCABANGPILIH)))
          : array();
+
       if (!empty($allowed) && !in_array((string) $cabang, $allowed, true)) {
-         return @$_SESSION['cabang'];
+         return $default;
       }
       return $cabang;
    }

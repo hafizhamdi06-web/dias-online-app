@@ -37,11 +37,13 @@ class M_transaksi extends CI_Model {
         $pref='';
         $this->db->select('nkode');
         $sql = $this->db->get_where("aanomor","nid='".$id."'");
-        foreach ($sql->result() as $res) {
-            $pref = $res->nkode;
-        }        
+        if ($sql && is_object($sql)) {
+            foreach ($sql->result() as $res) {
+                $pref = $res->nkode;
+            }
+        }
         return $pref;
-    }   
+    }
 
     function get_table_field()
     {
