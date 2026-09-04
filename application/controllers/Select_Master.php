@@ -282,7 +282,7 @@ class Select_Master extends CI_Controller {
         $isOrder = 'gid';
         $isWhere = null;
         header('Content-Type: application/json');
-        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder,0);
     }
 
    function view_gudang_pilihan() {
@@ -299,7 +299,7 @@ class Select_Master extends CI_Controller {
         $isOrder = 'gid';
         $isWhere = !empty($ucabangpilih) ? "A.gid IN (".$ucabangpilih.")" : null;
         header('Content-Type: application/json');
-        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder);
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder,0);
     }
 
    function view_user() {
