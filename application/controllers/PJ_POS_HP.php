@@ -266,18 +266,21 @@ class PJ_POS_HP extends CI_Controller {
     	if(empty($_POST['kontak'])) {
    			echo _pesanError("Pasien tidak ditemukan !");
   			exit;
-   		}    
-           
-   		$query = " select C.iid 'iditem', C.ikode 'kditem', C.inama 'namaitem', C.ikelompok2020 'item_tipe2020', F.jwajibdokter 'wajibdokter' , 
-                       D.sid 'idsatuan', D.skode 'satuan',  
+   		}
+
+       // Cabang 18 = Marketplace: pakai harga jual marketplace (bitem2.I2HARGAJUALMP), bukan ihargajual1
+       $hargaCol = ($cabang == 18) ? 'G.I2HARGAJUALMP' : 'C.ihargajual1';
+
+   		$query = " select C.iid 'iditem', C.ikode 'kditem', C.inama 'namaitem', C.ikelompok2020 'item_tipe2020', F.jwajibdokter 'wajibdokter' ,
+                       D.sid 'idsatuan', D.skode 'satuan',
                        IFNULL(B.pdqty,0) 'qtydetil', B.PDQTYTINDAKAN 'qtydetiltindakan',
-                       IFNULL(C.ihargajual1,0) 'hargadetil', 
-                       (C.ihargajual1*B.pddiskonpersen1/100) + ((C.ihargajual1 - (C.ihargajual1*B.pddiskonpersen1/100))*B.pddiskonpersen2/100)  'diskondetil', 
-                       IFNULL(B.pddiskonpersen1,0) 'dis1detil', 
-                       IFNULL(B.pddiskonpersen2,0) 'dis2detil', 
+                       IFNULL(".$hargaCol.",0) 'hargadetil',
+                       (".$hargaCol."*B.pddiskonpersen1/100) + ((".$hargaCol." - (".$hargaCol."*B.pddiskonpersen1/100))*B.pddiskonpersen2/100)  'diskondetil',
+                       IFNULL(B.pddiskonpersen1,0) 'dis1detil',
+                       IFNULL(B.pddiskonpersen2,0) 'dis2detil',
                        ROUND(
-                       ( C.ihargajual1 - (C.ihargajual1*B.pddiskonpersen1/100) - ((C.ihargajual1 - (C.ihargajual1*B.pddiskonpersen1/100))*B.pddiskonpersen2/100)) * B.pdqty  
-                       ,0)'subtotaldetil' 
+                       ( ".$hargaCol." - (".$hargaCol."*B.pddiskonpersen1/100) - ((".$hargaCol." - (".$hargaCol."*B.pddiskonpersen1/100))*B.pddiskonpersen2/100)) * B.pdqty
+                       ,0)'subtotaldetil'
                        , A.puid 'idpaket', A.pukode 'kdpaket', A.punama 'namapaket'  , B.pdid 'idpaketdetil'
                        , case when A.pujumlah>1 then coalesce((
                          select sdkedatangan from fstokd 
@@ -299,12 +302,13 @@ class PJ_POS_HP extends CI_Controller {
                        )) else '' end 'tanggalakhir', DATE_FORMAT(current_date,'%d-%m-%Y')  'tanggalsekarang' , A.puumur 'umurmax'
                        
                       FROM epaketu A
-                      inner join epaketd B on A.puid=B.pdidu 
-                      inner join bitem C on C.iid=B.pditem 
-                      inner JOIN bsatuan D ON D.sid=C.isatuan   
-                      left JOIN bitemkelompok E ON E.ikid=C.ikelompokbaru   
+                      inner join epaketd B on A.puid=B.pdidu
+                      inner join bitem C on C.iid=B.pditem
+                      inner JOIN bsatuan D ON D.sid=C.isatuan
+                      left JOIN bitemkelompok E ON E.ikid=C.ikelompokbaru
                       LEFT JOIN bitemjenis F on C.ijenisitem=F.JID
-                       where A.puid = '".$_POST['idpaket']."' 
+                      LEFT JOIN bitem2 G ON G.I2IDITEM=C.iid
+                       where A.puid = '".$_POST['idpaket']."'
    		                 ";
        
         header('Content-Type: application/json');
@@ -320,8 +324,14 @@ class PJ_POS_HP extends CI_Controller {
    			echo _pesanError("Id Promo tidak ditemukan !");
   			exit;
    		} 
-       $cabang  = @$_SESSION['cabang'] ;   
-           
+       $cabang  = @$_SESSION['cabang'] ;
+
+       // Cabang 18 = Marketplace: pakai harga jual marketplace (bitem2.I2HARGAJUALMP), bukan ihargajual1
+       $hargaDetil1 = ($cabang == 18) ? 'IFNULL(E1.I2HARGAJUALMP,0)' : 'IFNULL(C.ihargajual1,0)';
+       $hargaDetil2 = ($cabang == 18) ? 'IFNULL(E2.I2HARGAJUALMP,0)' : 'IFNULL(CB.ihargajual1,0)';
+       $hargaDetil3 = ($cabang == 18) ? 'IFNULL(E3.I2HARGAJUALMP,0)' : 'IFNULL(CC.ihargajual1,0)';
+       $hargaDetil4 = ($cabang == 18) ? 'IFNULL(E4.I2HARGAJUALMP,0)' : 'IFNULL(CD.ihargajual1,0)';
+
    		$query = " select MPUJENISPROMO 'jenispromo',
    		               C.iid 'iditem', C.ikode 'kditem', C.inama 'namaitem', C.ikelompok2020 'item_tipe2020', F.jwajibdokter 'wajibdokter' , 
                        D.sid 'idsatuan', D.skode 'satuan',   
@@ -333,14 +343,14 @@ class PJ_POS_HP extends CI_Controller {
                        DD.sid 'idsatuan4', DD.skode 'satuan4',  
                        
                        
-                       IFNULL(B.MPDMINIMALQTY,0) 'qtydetil',  
-                       IFNULL(B.MPDTOTALINVOICE1,0) 'qtydetil1',  IFNULL(B.MPDDISKON,0) 'dis1detil', IFNULL(B.MPDDISKON2,0) 'dis2detil',   IFNULL(C.ihargajual1,0) 'hargadetil',  
-                       
-                       IFNULL(B.MPDTOTALINVOICE2,0) 'qtydetil2',  IFNULL(B.MPDDISKONITEM2,0) 'dis1detil2', IFNULL(B.MPDDISKONITEM22,0) 'dis2detil2',    IFNULL(CB.ihargajual1,0) 'hargadetil2', 
-                       
-                       IFNULL(B.MPDMINIMALQTY3,0) 'qtydetil3',  IFNULL(B.MPDDISKON1KE3,0) 'dis1detil3', IFNULL(B.MPDDISKON2KE3,0) 'dis2detil3',    IFNULL(CC.ihargajual1,0) 'hargadetil3', 
-                       
-                       IFNULL(B.MPDMINIMALQTY4,0) 'qtydetil4',  IFNULL(B.MPDDISKON1KE4,0) 'dis1detil4', IFNULL(B.MPDDISKON2KE4,0) 'dis2detil4',    IFNULL(CD.ihargajual1,0) 'hargadetil4', 
+                       IFNULL(B.MPDMINIMALQTY,0) 'qtydetil',
+                       IFNULL(B.MPDTOTALINVOICE1,0) 'qtydetil1',  IFNULL(B.MPDDISKON,0) 'dis1detil', IFNULL(B.MPDDISKON2,0) 'dis2detil',   ".$hargaDetil1." 'hargadetil',
+
+                       IFNULL(B.MPDTOTALINVOICE2,0) 'qtydetil2',  IFNULL(B.MPDDISKONITEM2,0) 'dis1detil2', IFNULL(B.MPDDISKONITEM22,0) 'dis2detil2',    ".$hargaDetil2." 'hargadetil2',
+
+                       IFNULL(B.MPDMINIMALQTY3,0) 'qtydetil3',  IFNULL(B.MPDDISKON1KE3,0) 'dis1detil3', IFNULL(B.MPDDISKON2KE3,0) 'dis2detil3',    ".$hargaDetil3." 'hargadetil3',
+
+                       IFNULL(B.MPDMINIMALQTY4,0) 'qtydetil4',  IFNULL(B.MPDDISKON1KE4,0) 'dis1detil4', IFNULL(B.MPDDISKON2KE4,0) 'dis2detil4',    ".$hargaDetil4." 'hargadetil4',
                        
                        B.mpdid 'idpromo', A.mpukode 'kdpromo', A.mpunama 'namapromo', B.mpdpilihan1 'pilihan1' , B.mpdpilihan2 'pilihan2' , B.mpdpilihan3 'pilihan3' , B.mpdpilihan4 'pilihan4' ,
                        
@@ -364,15 +374,15 @@ class PJ_POS_HP extends CI_Controller {
                       left JOIN bsatuan DB ON DB.sid=CB.isatuan  
                       left JOIN bsatuan DC ON DC.sid=CC.isatuan   
                       left JOIN bsatuan DD ON DD.sid=CD.isatuan   
-                      LEFT JOIN bitemjenis F on C.ijenisitem=F.JID 
-                      LEFT JOIN bitemjenis FB on CB.ijenisitem=FB.JID 
-                      LEFT JOIN bitemjenis FC on CC.ijenisitem=FC.JID 
-                      LEFT JOIN bitemjenis FD on CD.ijenisitem=FD.JID 
-                      
-                      
-                       
-                      
-                       where B.mpdid = '".$_POST['idpromo']."' 
+                      LEFT JOIN bitemjenis F on C.ijenisitem=F.JID
+                      LEFT JOIN bitemjenis FB on CB.ijenisitem=FB.JID
+                      LEFT JOIN bitemjenis FC on CC.ijenisitem=FC.JID
+                      LEFT JOIN bitemjenis FD on CD.ijenisitem=FD.JID
+                      LEFT JOIN bitem2 E1 ON E1.I2IDITEM=C.iid
+                      LEFT JOIN bitem2 E2 ON E2.I2IDITEM=CB.iid
+                      LEFT JOIN bitem2 E3 ON E3.I2IDITEM=CC.iid
+                      LEFT JOIN bitem2 E4 ON E4.I2IDITEM=CD.iid
+                       where B.mpdid = '".$_POST['idpromo']."'
    		                 ";
        
         header('Content-Type: application/json');
