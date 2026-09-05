@@ -621,10 +621,10 @@ var _AmbilDetailPasien = () => {
               
               $("input[name^='qty']").eq(rows).val(qty);         
               $("input[name^='harga']").eq(rows).val(harga);        
-              $("input[name^='dis1']").eq(rows).val(dis1);        
+              $("input[name^='dis1']").eq(rows).val(dis1);
               $("input[name^='dis2']").eq(rows).val(dis2);
-              $("input[name^='diskon']").eq(rows).val(diskon);                       
-              $("input[name^='subtotal']").eq(rows).val(subtotal);   
+              $("input[name^='diskon']").eq(rows).val(diskon);
+              $("input[name^='subtotal']").eq(rows).val(subtotal);
                 
               $("input[name^='item_tipe2020']").eq(rows).val(result.data[datake]['item_tipe2020']); 
               $("input[name^='wajibdokter']").eq(rows).val(result.data[datake]['wajibdokter']); 
@@ -1392,8 +1392,10 @@ $("#bweb").click(function() {
           
               $("input[name^='qty']").eq(rows).val(qty);         
               $("input[name^='harga']").eq(rows).val(harga);        
-              $("input[name^='dis1']").eq(rows).val(dis1);        
+              $("input[name^='dis1']").eq(rows).val(dis1);
               $("input[name^='dis2']").eq(rows).val(dis2);
+              // diskon dari promo tetap berlaku walau cabang 18 (marketplace) mengunci diskon manual
+              $("input[name^='unlockeddiskon']").eq(rows).val('1');
              // $("input[name^='diskon']").eq(rows).val(diskon);                       
              // $("input[name^='subtotal']").eq(rows).val(subtotal);   
                 
@@ -1483,9 +1485,11 @@ $("#bweb").click(function() {
                           
                               $("input[name^='qty']").eq(rows).val(qty);         
                               $("input[name^='harga']").eq(rows).val(harga);        
-                              $("input[name^='dis1']").eq(rows).val(dis1);        
+                              $("input[name^='dis1']").eq(rows).val(dis1);
                               $("input[name^='dis2']").eq(rows).val(dis2);
-                             // $("input[name^='diskon']").eq(rows).val(diskon);                       
+                              // diskon dari promo tetap berlaku walau cabang 18 (marketplace) mengunci diskon manual
+                              $("input[name^='unlockeddiskon']").eq(rows).val('1');
+                             // $("input[name^='diskon']").eq(rows).val(diskon);
                              // $("input[name^='subtotal']").eq(rows).val(subtotal);   
                                 
                               $("input[name^='item_tipe2020']").eq(rows).val(result.data[datake]['item_tipe20202']); 
@@ -1569,9 +1573,11 @@ $("#bweb").click(function() {
                           
                               $("input[name^='qty']").eq(rows).val(qty);         
                               $("input[name^='harga']").eq(rows).val(harga);        
-                              $("input[name^='dis1']").eq(rows).val(dis1);        
+                              $("input[name^='dis1']").eq(rows).val(dis1);
                               $("input[name^='dis2']").eq(rows).val(dis2);
-                             // $("input[name^='diskon']").eq(rows).val(diskon);                       
+                              // diskon dari promo tetap berlaku walau cabang 18 (marketplace) mengunci diskon manual
+                              $("input[name^='unlockeddiskon']").eq(rows).val('1');
+                             // $("input[name^='diskon']").eq(rows).val(diskon);
                              // $("input[name^='subtotal']").eq(rows).val(subtotal);   
                                 
                               $("input[name^='item_tipe2020']").eq(rows).val(result.data[datake]['item_tipe20203']); 
@@ -1655,9 +1661,11 @@ $("#bweb").click(function() {
                           
                               $("input[name^='qty']").eq(rows).val(qty);         
                               $("input[name^='harga']").eq(rows).val(harga);        
-                              $("input[name^='dis1']").eq(rows).val(dis1);        
+                              $("input[name^='dis1']").eq(rows).val(dis1);
                               $("input[name^='dis2']").eq(rows).val(dis2);
-                             // $("input[name^='diskon']").eq(rows).val(diskon);                       
+                              // diskon dari promo tetap berlaku walau cabang 18 (marketplace) mengunci diskon manual
+                              $("input[name^='unlockeddiskon']").eq(rows).val('1');
+                             // $("input[name^='diskon']").eq(rows).val(diskon);
                              // $("input[name^='subtotal']").eq(rows).val(subtotal);   
                                 
                               $("input[name^='item_tipe2020']").eq(rows).val(result.data[datake]['item_tipe20204']); 
