@@ -199,7 +199,7 @@ var _muatData = () => {
 // (hanya bermakna saat data terurut per No Transaksi -> default & sort kolom No Transaksi)
 var _grupAktif = true;
 
-var _refreshTotal = () => { _sisipTotalGrup(); _bangunRingkasan(); };
+var _refreshTotal = () => { _sisipTotalGrup(); };
 
 var _sisipTotalGrup = () => {
   var $body = $('#tabeledit tbody');
@@ -244,52 +244,6 @@ var _sisipTotalGrup = () => {
       '</tr>'
     );
   });
-};
-
-// Ringkasan per No Transaksi: total sub total (live), total transaksi awal, total pembayaran merchant
-var _bangunRingkasan = () => {
-  var order = [], map = {};
-
-  $('#tabeledit tbody tr[data-suid]').each(function(){
-    var $tr = $(this);
-    var suid = String($tr.data('suid'));
-    if (!map[suid]) {
-      map[suid] = {
-        notransaksi: $tr.children().eq(2).text().trim(),
-        subtotal: 0,
-        awal: _num($tr.attr('data-totalawal')),
-        merchant: _num($tr.attr('data-merchantjumlah'))
-      };
-      order.push(suid);
-    }
-    map[suid].subtotal += _subtotalRow($tr);
-    map[suid].merchant  = _num($tr.attr('data-merchantjumlah'));
-  });
-
-  var $body = $('#tabelringkasan tbody').empty();
-  var tSub = 0, tAwal = 0, tMerc = 0;
-
-  if (!order.length) {
-    $body.append('<tr><td colspan="4" class="text-center text-muted text-sm py-2">-</td></tr>');
-  } else {
-    order.forEach(function(suid){
-      var g = map[suid];
-      tSub += g.subtotal; tAwal += g.awal; tMerc += g.merchant;
-      var selisih = Math.round(g.subtotal) !== Math.round(g.merchant);
-      $body.append(
-        '<tr class="'+(selisih ? 'rk-selisih' : '')+'">' +
-          '<td class="text-sm">'+g.notransaksi+'</td>' +
-          '<td class="text-sm text-right">'+_fmt(g.subtotal)+'</td>' +
-          '<td class="text-sm text-right">'+_fmt(g.awal)+'</td>' +
-          '<td class="text-sm text-right">'+_fmt(g.merchant)+'</td>' +
-        '</tr>'
-      );
-    });
-  }
-
-  $('#rk-subtotal').text(_fmt(tSub));
-  $('#rk-awal').text(_fmt(tAwal));
-  $('#rk-merchant').text(_fmt(tMerc));
 };
 
 var _simpanBaris = ($tr, senyap) => {
