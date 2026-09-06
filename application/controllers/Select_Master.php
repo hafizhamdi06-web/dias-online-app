@@ -606,11 +606,11 @@ class Select_Master extends CI_Controller {
     }                            
 
    function view_pasien() {
-       
+
        $cabang  = @$_SESSION['cabang'] ;
-        $query  = "SELECT A.kid AS 'id',concat(A.knama,' (',A.kidpasien,') ') AS 'text', A.knama AS 'kode' 
+        $query  = "SELECT A.kid AS 'id',concat(A.knama,' (',A.kidpasien,') ') AS 'text', A.knama AS 'kode'
                      FROM bkontak A";
-        $search = array('knama');
+        $search = array('knama','kkode','kidpasien','k1telp1');
         $isOrder = ' case ktipe when 14 then 1 when 12 then 2 else 3 end ';
         $isWhere = "   A.kaktif<>0   ";
         header('Content-Type: application/json');
