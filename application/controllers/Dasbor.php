@@ -61,11 +61,33 @@ class Dasbor extends CI_Controller {
 	}
 
 	function getchildmenu(){
-      $query = "SELECT A.* FROM aamenu A INNER JOIN aausermenu B ON A.MID=B.AUIDMENU AND B.AUIDUSER=".$this->session->id." 
+      $query = "SELECT A.* FROM aamenu A INNER JOIN aausermenu B ON A.MID=B.AUIDMENU AND B.AUIDUSER=".$this->session->id."
       			 WHERE A.mparent=".$this->input->post('id')." ORDER BY A.murutan ASC";
-     
+
       header('Content-Type: application/json');
-      echo $this->M_transaksi->get_data_query($query);		
+      echo $this->M_transaksi->get_data_query($query);
+	}
+
+	// Profil sesi user yang sedang login (dipakai aplikasi Android native)
+	function whoami(){
+		header('Content-Type: application/json');
+
+		if(!$this->session->has_userdata('nama')){
+			echo json_encode(array('status' => 'unauthenticated'));
+			return;
+		}
+
+		echo json_encode(array(
+			'status'      => 'ok',
+			'id'          => (int) $this->session->id,
+			'nama'        => $this->session->nama,
+			'kode'        => $this->session->kode,
+			'cabang'      => (int) $this->session->cabang,
+			'namacabang'  => $this->session->namagudang,
+			'allcabang'   => (int) $this->session->allcabang,
+			'idkaryawan'  => $this->session->idkaryawan,
+			'namakaryawan'=> $this->session->namakaryawan,
+		));
 	}
 
 }
