@@ -87,6 +87,7 @@ class M_PJ_Edit_Data_POS extends CI_Model {
         $this->db->update('fstoku', array(
             'sumerchantjumlah' => $merchantjumlah,
             'sutotaltransaksi' => $totaltransaksi,
+            'sutotalbayar'     => $totaltransaksi,
             'sutotaltada'      => $totaltada,
         ));
 
