@@ -287,4 +287,67 @@ class M_Master_Item_POS extends CI_Model {
         }
     }
 
+    // Update SKU Marketplace: kolom I2SKUSHOPEE & I2SKUTOKOPEDIA di tabel bitem2
+    function updateSkuMp()
+    {
+        $id       = (int) $this->input->post('id');
+        $shopee   = mb_substr(trim((string) $this->input->post('skushopee')), 0, 50);
+        $tokopedia= mb_substr(trim((string) $this->input->post('skutokopedia')), 0, 50);
+
+        if ($id <= 0) {
+            return "Item tidak valid";
+        }
+
+        $item = $this->db->query(
+            "SELECT A.ikode, A.inama,
+                    IFNULL(B.I2SKUSHOPEE,'') AS skushopeelama,
+                    IFNULL(B.I2SKUTOKOPEDIA,'') AS skutokopedialama
+               FROM bitem A
+          LEFT JOIN bitem2 B ON B.I2IDITEM = A.iid
+              WHERE A.iid = ".$id." LIMIT 1"
+        )->row();
+
+        if (!$item) {
+            return "Item tidak ditemukan";
+        }
+
+        $data = array(
+            'I2SKUSHOPEE'    => $shopee,
+            'I2SKUTOKOPEDIA' => $tokopedia,
+        );
+
+        $this->db->trans_start();
+
+        $cek = $this->db->get_where('bitem2', array('I2IDITEM' => $id))->row();
+        if ($cek) {
+            $this->db->where('I2IDITEM', $id);
+            $this->db->update('bitem2', $data);
+        } else {
+            $data['I2IDITEM'] = $id;
+            $this->db->insert('bitem2', $data);
+        }
+
+        // USERLOG: catat perubahan SKU (hanya bila berubah)
+        if ($item->skushopeelama !== $shopee || $item->skutokopedialama !== $tokopedia) {
+            $keterangan = 'Update SKU MP: '.$item->ikode.' '.$item->inama
+                        .' | Shopee: '.$item->skushopeelama.' -> '.$shopee
+                        .' | Tokopedia: '.$item->skutokopedialama.' -> '.$tokopedia;
+            $this->db->insert('aauserlog', array(
+                'ULUSER'     => $this->session->id,
+                'ULUSERNAME' => $this->session->nama,
+                'ULCOMPUTER' => $this->input->ip_address(),
+                'ULACTIVITY' => substr($keterangan, 0, 255),
+                'ULLEVEL'    => 2,
+            ));
+        }
+
+        $this->db->trans_complete();
+
+        if ($this->db->trans_status() === FALSE) {
+            return "rollback";
+        } else {
+            return "sukses";
+        }
+    }
+
 }

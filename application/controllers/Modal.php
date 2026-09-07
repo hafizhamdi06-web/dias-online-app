@@ -163,6 +163,11 @@ class Modal extends CI_Controller {
         $this->loader('modul/master/form-update-harga-mp');
     }
 
+    // Modal Form Update SKU Marketplace
+    function form_update_sku_mp(){
+        $this->loader('modul/master/form-update-sku-mp');
+    }
+
     // Modal Form Kontak
     function form_kontak(){
         $this->loader('modul/master/form-kontak');

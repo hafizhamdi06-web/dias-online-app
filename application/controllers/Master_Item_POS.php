@@ -142,4 +142,27 @@ class Master_Item_POS extends CI_Controller {
         echo $this->M_Master_Item_POS->updateHargaMp();
     }
 
+    // Update SKU Marketplace (bitem2.I2SKUSHOPEE & I2SKUTOKOPEDIA)
+    function getskump(){
+        $id = (int) $this->input->post('id');
+        if ($id <= 0) {
+            echo _pesanError("Data tidak ditemukan !");
+            exit;
+        }
+
+        $query = "SELECT A.iid 'id', A.ikode 'kode', A.inama 'nama',
+                         IFNULL(B.I2SKUSHOPEE,'') 'skushopee',
+                         IFNULL(B.I2SKUTOKOPEDIA,'') 'skutokopedia'
+                    FROM bitem A
+               LEFT JOIN bitem2 B ON B.I2IDITEM=A.iid
+                   WHERE A.iid='".$id."'";
+
+        header('Content-Type: application/json');
+        echo $this->M_transaksi->get_data_query($query);
+    }
+
+    function updskump(){
+        echo $this->M_Master_Item_POS->updateSkuMp();
+    }
+
 }

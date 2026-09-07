@@ -196,6 +196,10 @@ class Page extends CI_Controller {
         $this->loader('updharga_mp','modul/master/table-update-harga-mp','Update Harga Marketplace');
     }
 
+    function updsku_mp(){
+        $this->loader('updsku_mp','modul/master/table-update-sku-mp','Update SKU Marketplace');
+    }
+
     function umb(){
         $this->loader('umb','modul/transaksi/pembelian/uangmuka-pembelian');
     }
