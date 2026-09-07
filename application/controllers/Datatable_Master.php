@@ -34,6 +34,57 @@ class Datatable_Master extends CI_Controller {
         echo $this->M_datatables->get_tables_query($query,$search,$where,$isWhere);
     }
 
+   // Daftar akun untuk tampilan per kelompok induk (client-side + rowGroup)
+   function view_coa_grup() {
+        $kode = $this->db->escape_str((string) $this->input->post('kode'));
+        $nama = $this->db->escape_str((string) $this->input->post('nama'));
+        $tipe = $this->input->post('tipe');
+        $fkas = $this->input->post('filterkas');
+
+        $where = "A.cnocoa LIKE '%".$kode."%' AND A.cnama LIKE '%".$nama."%'";
+        if($tipe !== null && $tipe !== '') {
+          $where .= " AND A.ctipe=".(int) $tipe;
+        }
+        if($fkas === 'kasmasuk') {
+          $where .= " AND A.ckasmasuk=1";
+        } elseif($fkas === 'kaskeluar') {
+          $where .= " AND A.ckaskeluar=1";
+        }
+        if($this->input->post('aktif') == '1') {
+          $where .= " AND A.cactive<>0";
+        }
+
+        $query = "SELECT A.cid AS 'id',A.cnocoa AS 'nomor',A.cnama AS 'nama',
+                         B.usimbol AS 'uang',C.cgnama AS 'tipe',C.cgid AS 'grupid',
+                         A.clevel AS 'clevel'
+                    FROM bcoa A
+               LEFT JOIN buang B ON A.cuang=B.uid
+              INNER JOIN bcoagrup C ON A.ctipe=C.cgid
+                   WHERE ".$where."
+                ORDER BY C.cgid ASC, A.cnocoa ASC";
+
+        $rows = $this->db->query($query)->result_array();
+        foreach ($rows as &$r) {
+            $lvl = (int) $r['clevel'];
+            $r['level'] = ($lvl > 0) ? $lvl : $this->_coaLevelDariNomor($r['nomor']);
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode(array('data' => $rows));
+    }
+
+   // Kedalaman akun dari struktur nomor "1-01-01-00-00" bila kolom clevel tidak valid
+   private function _coaLevelDariNomor($nocoa) {
+        $depth = 0;
+        foreach (explode('-', (string) $nocoa) as $p) {
+            $p = trim($p);
+            if ($p === '') continue;
+            if (!ctype_digit($p) || (int) $p === 0) break;
+            $depth++;
+        }
+        return max(1, $depth);
+    }
+
    function view_table_item() {
         $info = _ainfo(1);
         $digitqty = $info['idecimalqty'];

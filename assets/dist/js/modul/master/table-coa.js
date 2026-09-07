@@ -27,45 +27,55 @@ $(function () {
 
   tabel=$('#coa-table').DataTable({
     "processing": true,
-    "serverSide": true,
+    "serverSide": false,
+    "paging": false,
     "lengthChange": false,
     "searching": false,
-    "ordering": true,
-    "pagingType":"simple",    
-    "order": [[ 2, 'asc' ]],
-    "select":true,      
-    "dom": '<"top"pi>t<"clear"r>',
+    "ordering": false,
+    "select":true,
+    "dom": '<"top"i>t<"clear"r>',
     "ajax": {
-        "url":base_url+"Datatable_Master/view_table_coa",
+        "url":base_url+"Datatable_Master/view_coa_grup",
         "type":"post",
         "data": (data) => {
           data.tipe = $('#tipe').val();
           data.kode = $('#kode').val();
           data.nama = $('#nama').val();
           data.filterkas = $('#filterkas').val();
+          data.aktif = $('#faktif').is(':checked') ? 1 : 0;
         }
     },
     "deferRender": true,
-    "bInfo":true,    
-    "aLengthMenu": datapage,
-    "language": 
-    {          
+    "bInfo":true,
+    "rowGroup": {
+      "dataSrc": "tipe"
+    },
+    "language":
+    {
       "processing": "<i class='fas fa-circle-notch fa-spin text-primary'></i>",
-    },    
+    },
     "columns": [
           { "data": "id" },
           {
           orderable:      false,
           data:           null,
           defaultContent: "<i class='fas fa-caret-right text-sm'></i>"
-          },    
+          },
           { "data": "nomor" },
-          { "data": "nama" },
-          { "data": "uang" },
-          { "data": "tipe" }          
+          {
+            "data": "nama",
+            "render": (data, type, row) => {
+              if (type !== 'display') return data;
+              var lvl = Number(row.level) || 1;
+              return (lvl > 1)
+                ? "<span style='margin-left:" + ((lvl - 1) * 22) + "px;'>" + data + "</span>"
+                : data;
+            }
+          },
+          { "data": "uang" }
     ],
-    "drawCallback": () => {
-      var total = tabel.data().count();
+    "drawCallback": function(settings) {
+      var total = new $.fn.dataTable.Api(settings).rows().count();
 
       if(total>0){
         $(".tab-wrap").removeClass("noresultfound-x");                                   
@@ -265,4 +275,5 @@ function _reloaddatatable(){
 function clearFilter(){
   $('#kode,#nama').val('');
   $('#filterkas').val('').trigger('change');
+  $('#faktif').prop('checked', true);
 }

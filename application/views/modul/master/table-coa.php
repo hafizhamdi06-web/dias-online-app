@@ -1,6 +1,7 @@
 <body id="<? echo $id; ?>" class="layout-fixed overflow-hidden" data-panel-auto-height-mode="height">
-  <!-- Custom CSS -->  
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="<?= app_url('assets/dist/css/modul/table-page.css');?>">
+  <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables-rowgroup/css/rowGroup.bootstrap4.min.css');?>">
 
   <div class="loader-wrap d-none">
     <div class="loader">
@@ -43,7 +44,6 @@
           <th class="text-sm">Nomor</th>
           <th class="text-sm">Nama Akun</th>
           <th class="text-sm">Mata Uang</th>
-          <th class="text-sm">Tipe</th>          
           </tr>
           </thead>
         </table>
@@ -80,6 +80,14 @@
                   <option value="kasmasuk">Kas Masuk</option>
                   <option value="kaskeluar">Kas Keluar</option>
                 </select>
+              </div>
+          </div>
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-12">
+                <div class="icheck-primary d-inline">
+                  <input type="checkbox" id="faktif" name="faktif" checked>
+                  <label for="faktif" class="font-weight-normal">Aktif saja</label>
+                </div>
               </div>
           </div>
           <div class="btn-group pt-4 pl-3">
@@ -123,6 +131,8 @@
 <script src="<? echo base_url('assets/plugins/datatables-responsive/js/responsive.bootstrap4.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-select/js/dataTables.select.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-select/js/select.bootstrap4.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-rowgroup/js/dataTables.rowGroup.min.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-rowgroup/js/rowGroup.bootstrap4.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/input-mask/jquery.inputmask.bundle.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>
