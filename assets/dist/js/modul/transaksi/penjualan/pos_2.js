@@ -3849,7 +3849,8 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
 
 var _inputFormat = () => {
   Component_Inputmask_Numeric('.numeric');
-  Component_Inputmask_Numeric_Flexible('.qty,#tqty', $("#decimalqty").val());    
+  Component_Inputmask_Numeric_Flexible('.qty,#tqty', $("#decimalqty").val());
+  Component_Inputmask_Numeric_Flexible('#tsubtotal', '0'); // Total Transaksi tanpa desimal
   Component_Select2('.satuan',`${base_url}Select_Master/view_satuan`,'form_satuan','Satuan');  
   Component_Select2_Item('.item',`${base_url}Select_Master/view_item`);  
   Component_Select2_Item('.item2',`${base_url}Select_Master/view_item`);  
@@ -5791,13 +5792,17 @@ var _hitungsubtotal = () => {
     
   });  
 
+  // Total transaksi dibulatkan tanpa desimal (rupiah utuh)
+  tsubtotal = Math.round(tsubtotal);
+  vtotaltanpadp = Math.round(vtotaltanpadp);
+
   tqty = tqty.toString().replace('.',',');
-  tsubtotal = tsubtotal.toString().replace('.',',');   
-  vtotaltanpadp = vtotaltanpadp.toString().replace('.',',');          
+  tsubtotal = tsubtotal.toString().replace('.',',');
+  vtotaltanpadp = vtotaltanpadp.toString().replace('.',',');
 
   if(tqty==0) tqty='0,00';
-  if(tsubtotal==0) tsubtotal='0,00';
-  if(vtotaltanpadp==0) vtotaltanpadp='0,00';
+  if(tsubtotal==0) tsubtotal='0';
+  if(vtotaltanpadp==0) vtotaltanpadp='0';
 
   $('#tqty').val(tqty).attr('placeholder',tqty);
   $('#tsubtotal').val(tsubtotal).attr('placeholder',tsubtotal);    

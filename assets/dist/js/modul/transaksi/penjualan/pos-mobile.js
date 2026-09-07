@@ -154,7 +154,7 @@ $(function() {
 
   $(".pm-btn-sisa").on('click', function(){
     var metode = $(this).data('metode');
-    var total = items.reduce((sum, i) => sum + _subtotalItem(i), 0);
+    var total = _totalTransaksi();
     var totalMetodeLain = _metodeList.reduce(function(sum, m){
       if (m === metode) return sum;
       return sum + (_isMetodeActive(m) ? _getMetodeNilai(m) : 0);
@@ -391,6 +391,9 @@ var _subtotalItem = (item) => {
   return (item.harga - diskon) * item.qty;
 };
 
+// Total transaksi selalu dibulatkan tanpa desimal (rupiah utuh)
+var _totalTransaksi = () => Math.round(items.reduce((sum, i) => sum + _subtotalItem(i), 0));
+
 var _renderItemList = () => {
   $("#pm-itemlist").html('');
 
@@ -449,21 +452,21 @@ var _renderItemList = () => {
 };
 
 var _hitungTotal = () => {
-  var total = items.reduce((sum, i) => sum + _subtotalItem(i), 0);
-  $("#pm-total").text(_formatRupiah(total));
+  var total = _totalTransaksi();
+  $("#pm-total").text(_formatRibuan(total));
 
   var totalDibayar = _metodeList.reduce(function(sum, m){
     return sum + (_isMetodeActive(m) ? _getMetodeNilai(m) : 0);
   }, 0);
-  $("#pm-totaldibayar").text(_formatRupiah(totalDibayar));
+  $("#pm-totaldibayar").text(_formatRibuan(totalDibayar));
 
   var selisih = totalDibayar - total;
   if (selisih > 0) {
-    $("#pm-kembali").text(_formatRupiah(selisih));
+    $("#pm-kembali").text(_formatRibuan(selisih));
     $("#pm-row-kembali").removeClass('d-none');
     $("#pm-row-kurang").addClass('d-none');
   } else if (selisih < 0) {
-    $("#pm-kurang").text(_formatRupiah(Math.abs(selisih)));
+    $("#pm-kurang").text(_formatRibuan(Math.abs(selisih)));
     $("#pm-row-kurang").removeClass('d-none');
     $("#pm-row-kembali").addClass('d-none');
   } else {
@@ -486,7 +489,7 @@ var _simpanTransaksi = () => {
     return;
   }
 
-  var total = items.reduce((sum, i) => sum + _subtotalItem(i), 0);
+  var total = _totalTransaksi();
 
   var totalDibayar = 0;
   for (var mi=0; mi<_metodeList.length; mi++) {
@@ -521,7 +524,7 @@ var _simpanTransaksi = () => {
 };
 
 var _kirimSimpan = () => {
-  var total = items.reduce((sum, i) => sum + _subtotalItem(i), 0);
+  var total = _totalTransaksi();
   var totalDibayar = _metodeList.reduce(function(sum, m){
     return sum + (_isMetodeActive(m) ? _getMetodeNilai(m) : 0);
   }, 0);

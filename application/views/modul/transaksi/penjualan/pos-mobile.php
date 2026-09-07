@@ -185,9 +185,9 @@
       </div>
 
       <div class="pm-bayar-summary">
-        <div class="pm-footer-row"><span>Total Dibayar</span><span id="pm-totaldibayar">0,00</span></div>
-        <div class="pm-footer-row d-none" id="pm-row-kembali"><span>Kembali</span><span id="pm-kembali" class="pm-selisih-ok">0,00</span></div>
-        <div class="pm-footer-row d-none" id="pm-row-kurang"><span>Kurang Bayar</span><span id="pm-kurang" class="pm-selisih-bad">0,00</span></div>
+        <div class="pm-footer-row"><span>Total Dibayar</span><span id="pm-totaldibayar">0</span></div>
+        <div class="pm-footer-row d-none" id="pm-row-kembali"><span>Kembali</span><span id="pm-kembali" class="pm-selisih-ok">0</span></div>
+        <div class="pm-footer-row d-none" id="pm-row-kurang"><span>Kurang Bayar</span><span id="pm-kurang" class="pm-selisih-bad">0</span></div>
       </div>
     </div>
 
@@ -196,7 +196,7 @@
   <div class="pm-footer">
     <div class="pm-footer-row">
       <span>Total</span>
-      <span id="pm-total">0,00</span>
+      <span id="pm-total">0</span>
     </div>
     <button type="button" id="bsimpan" class="pm-btn-simpan">Simpan Transaksi</button>
   </div>
