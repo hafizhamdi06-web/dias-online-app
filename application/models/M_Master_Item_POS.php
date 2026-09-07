@@ -240,6 +240,19 @@ class M_Master_Item_POS extends CI_Model {
         if (!is_numeric($harga)) {
             return "Nilai harga tidak valid";
         }
+        $harga = (float) $harga;
+
+        $item = $this->db->query(
+            "SELECT A.ikode, A.inama, IFNULL(B.I2HARGAJUALMP,0) AS hargalama
+               FROM bitem A
+          LEFT JOIN bitem2 B ON B.I2IDITEM = A.iid
+              WHERE A.iid = ".$id." LIMIT 1"
+        )->row();
+
+        if (!$item) {
+            return "Item tidak ditemukan";
+        }
+        $hargaLama = (float) $item->hargalama;
 
         $this->db->trans_start();
 
@@ -249,6 +262,20 @@ class M_Master_Item_POS extends CI_Model {
             $this->db->update('bitem2', array('I2HARGAJUALMP' => $harga));
         } else {
             $this->db->insert('bitem2', array('I2IDITEM' => $id, 'I2HARGAJUALMP' => $harga));
+        }
+
+        // USERLOG: catat produk yang diubah + harga lama & baru (hanya bila berubah)
+        if ($hargaLama != $harga) {
+            $keterangan = 'Update Harga MP: '.$item->ikode.' '.$item->inama
+                        .' | Lama: '.number_format($hargaLama, 0, ',', '.')
+                        .' -> Baru: '.number_format($harga, 0, ',', '.');
+            $this->db->insert('aauserlog', array(
+                'ULUSER'     => $this->session->id,
+                'ULUSERNAME' => $this->session->nama,
+                'ULCOMPUTER' => $this->input->ip_address(),
+                'ULACTIVITY' => substr($keterangan, 0, 255),
+                'ULLEVEL'    => 2,
+            ));
         }
 
         $this->db->trans_complete();
