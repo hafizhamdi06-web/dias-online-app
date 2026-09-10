@@ -5119,12 +5119,20 @@ var _saveData = () => {
       return;
     },
     "success": async function(result) {
-      try {
-        result = JSON.parse(result);
-      } catch (e) {
-        var mentah = (result || '').toString().replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0, 400);
-        parent.window.toastr.error("Respons server tidak valid saat menyimpan"+(mentah ? " — "+mentah : "")+". Cek PHP error log.", "", {timeOut: 20000});
-        console.error("savedata: JSON.parse gagal, respons mentah:", result);
+      // Server kirim header application/json -> jQuery bisa sudah auto-parse jadi object.
+      if (typeof result === 'string') {
+        try {
+          result = JSON.parse(result);
+        } catch (e) {
+          var mentah = result.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0, 400);
+          parent.window.toastr.error("Respons server tidak valid saat menyimpan"+(mentah ? " — "+mentah : "")+". Cek PHP error log.", "", {timeOut: 20000});
+          console.error("savedata: JSON.parse gagal, respons mentah:", result);
+          return;
+        }
+      }
+      if (!result || typeof result !== 'object') {
+        parent.window.toastr.error("Respons server kosong/tidak valid saat menyimpan. Cek PHP error log.", "", {timeOut: 20000});
+        console.error("savedata: respons tidak dikenali:", result);
         return;
       }
       if(result.pesan=='error'){
