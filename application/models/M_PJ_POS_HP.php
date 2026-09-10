@@ -1048,26 +1048,15 @@ class M_PJ_POS_HP extends CI_Model {
                  
         $query = $this->db->query($sql);
         foreach ($query->result() as $res) {
-            $nomor = number_format($res->maks)+1;
+            // JANGAN pakai number_format(): saat maks >= 1000 hasilnya "1,000"
+            // lalu "1,000"+1 di PHP = 1+1 = 2 -> nomor mundur & bentrok (duplicate).
+            $nomor = (int) $res->maks + 1;
         }
 
-        switch(strlen($nomor)){
-        case 1:
-          $nomor=$nomor1.$nomor2."000".$nomor;
-          break;
-        case 2:
-          $nomor=$nomor1.$nomor2."00".$nomor;
-          break;
-        case 3:
-          $nomor=$nomor1.$nomor2."0".$nomor;
-          break;
-        case 4:
-          $nomor=$nomor1.$nomor2.$nomor;
-          break;
-        }
-        $nomor=$kodecabang."-".$nomor ;
+        $urut = str_pad((string) $nomor, 4, '0', STR_PAD_LEFT); // 0001..9999, >9999 apa adanya
+        $nomor = $kodecabang."-".$nomor1.$nomor2.$urut;
         return $nomor;
-    }            
+    }
 
     
 

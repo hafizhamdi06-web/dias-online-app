@@ -847,16 +847,11 @@ function xxgetnomorip(){
 
         $query = $this->db->query($sql);
         foreach ($query->result() as $res) {
-            $nomor = (int) $res->maks + 1; // = number_format()+1 tanpa bug pemisah ribuan
+            $nomor = (int) $res->maks + 1; // JANGAN number_format(): "1,000"+1 = 2 (bug)
         }
 
-        switch (strlen($nomor)) {
-            case 1: $nomor = $nomor1.$nomor2."000".$nomor; break;
-            case 2: $nomor = $nomor1.$nomor2."00".$nomor;  break;
-            case 3: $nomor = $nomor1.$nomor2."0".$nomor;   break;
-            case 4: $nomor = $nomor1.$nomor2.$nomor;       break;
-        }
-        $nomor = $kodecabang."-".$nomor;
+        $urut  = str_pad((string) $nomor, 4, '0', STR_PAD_LEFT);
+        $nomor = $kodecabang."-".$nomor1.$nomor2.$urut;
 
         echo $nomor;
     }
