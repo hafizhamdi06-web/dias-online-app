@@ -188,6 +188,14 @@ class Page extends CI_Controller {
         $this->loader('import_shopee_income','modul/laporan/import-shopee-income');
     }
 
+    function import_trans_shopee(){
+        $this->loader('import_trans_shopee','modul/transaksi/penjualan/import-trans-shopee','Import Transaksi Shopee');
+    }
+
+    function import_trans_tokped(){
+        $this->loader('import_trans_tokped','modul/transaksi/penjualan/import-trans-tokped','Import Transaksi Tokopedia');
+    }
+
     function item_pos(){
         $this->loader('item_pos','modul/master/table-item-pos');
     }
