@@ -13,15 +13,39 @@ class PJ_POS_HP extends CI_Controller {
    }
 
    function savedata(){
-      if($_POST['id']==''){
-        echo $this->M_PJ_POS_HP->tambahTransaksi();
+      // Buffer output supaya warning/notice PHP (display_errors on) tidak ikut
+      // ke body JSON -> JSON.parse gagal di client -> loader nyangkut tanpa pesan.
+      while (ob_get_level() > 0) { @ob_end_clean(); }
+      ob_start();
+
+      $out = null;
+      try {
+         if($_POST['id']=='' || ($_POST['id']!='' && $_POST['appcanceltransaksi']=='1')){
+            $out = $this->M_PJ_POS_HP->tambahTransaksi();
+         } else {
+            $out = $this->M_PJ_POS_HP->ubahTransaksi();
+         }
+      } catch (\Throwable $e) {
+         $stray = ob_get_contents();
+         log_message('error', 'savedata gagal: '.$e->getMessage().' @ '.$e->getFile().':'.$e->getLine()
+                     .($stray !== '' ? ' | output liar: '.$stray : ''));
+         $out = json_encode(array('pesan' => 'error', 'error' => $e->getMessage()));
       }
-      elseif($_POST['id']!='' &&  $_POST['appcanceltransaksi']=='1'){
-        echo $this->M_PJ_POS_HP->tambahTransaksi();
+
+      $stray = ob_get_contents();
+      if ($stray !== '' && $stray !== false) {
+         log_message('error', 'savedata: output liar sebelum JSON (dibuang): '.$stray);
       }
-      else{
-        echo $this->M_PJ_POS_HP->ubahTransaksi();      
+
+      // Buang semua output liar (warning/notice/BOM) sebelum kirim JSON bersih.
+      while (ob_get_level() > 0) { @ob_end_clean(); }
+
+      if ($out === null || $out === '' || $out === false) {
+         $out = json_encode(array('pesan' => 'error', 'error' => 'Response kosong dari server saat menyimpan transaksi.'));
       }
+
+      header('Content-Type: application/json');
+      echo $out;
    }
 
    function deletedata(){

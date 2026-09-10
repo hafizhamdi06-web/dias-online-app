@@ -5108,16 +5108,30 @@ var _saveData = () => {
     "beforeSend" : function(){
       parent.window.$(".loader-wrap").removeClass("d-none");
     },
-    "error": function(xhr, status, error){
+    "complete": function(){
+      // Loader selalu disembunyikan, apapun hasilnya (sukses/gagal/parse error).
       parent.window.$(".loader-wrap").addClass("d-none");
+    },
+    "error": function(xhr, status, error){
       var detail = (xhr.responseText || '').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0, 400);
       parent.window.toastr.error("Error simpan : "+xhr.status+" "+error+(detail ? " — "+detail : ""), "", {timeOut: 15000});
       console.error("savedata error", xhr.status, xhr.responseText);
       return;
     },
     "success": async function(result) {
-      result = JSON.parse(result);
-      parent.window.$(".loader-wrap").addClass("d-none");                                            
+      try {
+        result = JSON.parse(result);
+      } catch (e) {
+        var mentah = (result || '').toString().replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim().slice(0, 400);
+        parent.window.toastr.error("Respons server tidak valid saat menyimpan"+(mentah ? " — "+mentah : "")+". Cek PHP error log.", "", {timeOut: 20000});
+        console.error("savedata: JSON.parse gagal, respons mentah:", result);
+        return;
+      }
+      if(result.pesan=='error'){
+        parent.window.toastr.error("Gagal menyimpan : "+(result.error || 'terjadi kesalahan di server'), "", {timeOut: 20000});
+        return;
+      }
+
       if(result.pesan=='sukses'){
            //if(result.statusemail=='0') 
           // {parent.window.toastr.error("Gagal Email Karena "+ result.eroremail );  }
