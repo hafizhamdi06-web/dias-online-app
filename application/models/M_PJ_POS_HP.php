@@ -7,6 +7,38 @@ class M_PJ_POS_HP extends CI_Model {
         parent::__construct();
     }
 
+    /**
+     * Catat konteks lengkap saat transaksi simpan POS di-ROLLBACK.
+     * Ditulis langsung ke file (tidak tergantung log_threshold), + ke CI log.
+     * Return pesan error DB (kalau sempat tertangkap).
+     */
+    private function _logRollbackPOS($fn, $id)
+    {
+        $err = $this->db->error(); // kadang sudah kosong kalau ada query sukses setelah yg gagal
+
+        $lines   = array();
+        $lines[] = str_repeat('=', 70);
+        $lines[] = date('Y-m-d H:i:s').'  '.$fn.'  ROLLBACK  (id/nomor: '.$id.')';
+        $lines[] = 'user      : '.@$this->session->id.' / '.@$this->session->nama;
+        $lines[] = 'db->error : '.json_encode($err);
+        $lines[] = 'last_query: '.$this->db->last_query();
+        $lines[] = 'semua query pada request ini:';
+        if (isset($this->db->queries) && is_array($this->db->queries)) {
+            $q = $this->db->queries;
+            $q = array_slice($q, -60); // batasi
+            foreach ($q as $i => $sql) {
+                $lines[] = sprintf('  [%02d] %s', $i, preg_replace('/\s+/', ' ', $sql));
+            }
+        }
+        $lines[] = '';
+
+        $txt = implode("\n", $lines);
+        @file_put_contents(APPPATH.'logs/pos-save-rollback.log', $txt, FILE_APPEND | LOCK_EX);
+        log_message('error', $fn.' ROLLBACK | db->error: '.json_encode($err).' | last_query: '.$this->db->last_query());
+
+        return (is_array($err) && !empty($err['message'])) ? $err['message'] : '';
+    }
+
 
     function getRiwayatHariIni(){
         $idkaryawan = @$_SESSION['idkaryawan'];
@@ -553,7 +585,8 @@ class M_PJ_POS_HP extends CI_Model {
 
         if($this->db->trans_status() === FALSE){
             $pesanDb = (is_array($dberr_pra) && !empty($dberr_pra['message'])) ? $dberr_pra['message'] : '';
-            log_message('error', 'POS ubahTransaksi ROLLBACK (id '.$id.') | DB error: '.json_encode($dberr_pra));
+            $pesanDb2 = $this->_logRollbackPOS('ubahTransaksi', $id);
+            if ($pesanDb === '') $pesanDb = $pesanDb2;
             $callback = array(
                 'pesan'=>'rollback',
                 'nomor'=>$id,
@@ -904,7 +937,8 @@ class M_PJ_POS_HP extends CI_Model {
 
         if($this->db->trans_status() === FALSE){
             $pesanDb = (is_array($dberr_pra) && !empty($dberr_pra['message'])) ? $dberr_pra['message'] : '';
-            log_message('error', 'POS tambahTransaksi ROLLBACK | DB error: '.json_encode($dberr_pra));
+            $pesanDb2 = $this->_logRollbackPOS('tambahTransaksi', $id);
+            if ($pesanDb === '') $pesanDb = $pesanDb2;
             $callback = array(
                 'pesan'=>'rollback',
                 'nomor'=>'',
