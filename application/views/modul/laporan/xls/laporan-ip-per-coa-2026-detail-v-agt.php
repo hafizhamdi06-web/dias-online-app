@@ -22,9 +22,9 @@ $query =
 	              sum(ifnull(alkeshpp,0)*1.05) as alkeshpp,
 				  sum(
 				  case when icoa2021=1 then subtotal/1.11 else
-				  sdkeluar*(cogs*1.05) end
+				  (cogs*1.05) end
 				  ) as nilaiproduk,
-				  sum(sdkeluar*cogs) as totalcogs,
+				  sum(cogs) as totalcogs,
 				  sum(ifnull(alkeshpp,0)) as totalcogsalkes
 
 				    from (
@@ -40,12 +40,12 @@ $query =
 						(sumerchantjumlah-(sumerchantjumlah*coalesce(mcbiaya,0)/100)))
 						END   ) as subtotal,
 
-	                   I2COGS_266 as cogs,
+	                   sdbeli as cogs,
 
 	                  (
 
 						 select
-									SUM(  (ac.I2COGS_266) * aa.SDKELUAR )
+									SUM(  sdbeli )
 												from
 												fstokd aa inner join bitem ab on ab.iid=aa.sditem left join bitem2 ac on ac.i2iditem=ab.iid
 												WHERE aa.SDIDUALKES=a.sdid
