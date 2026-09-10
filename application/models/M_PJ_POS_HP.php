@@ -546,14 +546,20 @@ class M_PJ_POS_HP extends CI_Model {
         );
         $this->db->insert('aauserlog',$userlog);
 
+        // Tangkap error DB sebelum trans_complete() (ROLLBACK menimpa status error).
+        $dberr_pra = $this->db->error();
+
         $this->db->trans_complete();
 
         if($this->db->trans_status() === FALSE){
-            $callback = array(    
+            $pesanDb = (is_array($dberr_pra) && !empty($dberr_pra['message'])) ? $dberr_pra['message'] : '';
+            log_message('error', 'POS ubahTransaksi ROLLBACK (id '.$id.') | DB error: '.json_encode($dberr_pra));
+            $callback = array(
                 'pesan'=>'rollback',
-                'nomor'=>$id
+                'nomor'=>$id,
+                'dberror'=>$pesanDb
             );
-            return json_encode($callback);            
+            return json_encode($callback);
         } else {
             
            
@@ -888,19 +894,24 @@ class M_PJ_POS_HP extends CI_Model {
             'ulactivity' => $uactivity.' '.$nomor,
             'ullevel'=> 1                                                                                    
         );
-        $this->db->insert('aauserlog',$userlog);   
- 
+        $this->db->insert('aauserlog',$userlog);
 
-        $this->db->trans_complete(); 
-        
+        // Tangkap error DB sebelum trans_complete() (ROLLBACK menimpa status error).
+        $dberr_pra = $this->db->error();
+
+        $this->db->trans_complete();
+
 
         if($this->db->trans_status() === FALSE){
-            $callback = array(    
+            $pesanDb = (is_array($dberr_pra) && !empty($dberr_pra['message'])) ? $dberr_pra['message'] : '';
+            log_message('error', 'POS tambahTransaksi ROLLBACK | DB error: '.json_encode($dberr_pra));
+            $callback = array(
                 'pesan'=>'rollback',
-                'nomor'=>''
+                'nomor'=>'',
+                'dberror'=>$pesanDb
             );
-            return json_encode($callback);            
-        } else { 
+            return json_encode($callback);
+        } else {
         
             $callback = array(    
                 'pesan'=>'sukses',

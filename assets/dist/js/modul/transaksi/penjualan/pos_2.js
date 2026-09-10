@@ -5217,6 +5217,13 @@ var _saveData = () => {
         _tampilkanAjukanPersetujuanPOS();
       } else if(result.pesan=='butuh_persetujuan_harga'){
         parent.window.toastr.error("Persetujuan buka kunci harga sudah kadaluarsa/tidak valid, silakan klik \"Edit Harga\" pada baris terkait untuk mengajukan ulang.");
+      } else if(result.pesan=='rollback'){
+        parent.window.toastr.error("Transaksi GAGAL disimpan — dibatalkan (rollback) di database."
+          + (result.dberror ? " Error: "+result.dberror : " Cek PHP error log server."), "", {timeOut: 30000});
+        console.error("savedata rollback:", result);
+      } else {
+        parent.window.toastr.error("Simpan tidak menghasilkan status yang dikenali. Respons: "+JSON.stringify(result).slice(0,400), "", {timeOut: 30000});
+        console.error("savedata: pesan tidak dikenali:", result);
       }
     }
   })
