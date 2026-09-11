@@ -398,6 +398,13 @@
     box-shadow: none !important;
     background: transparent !important;
   }
+  .total-overlay-selisih {
+    text-align: right;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
 
   /* Footer toolbar: breathing room between rows, no ragged wrapping */
   #footer .form-group.row {

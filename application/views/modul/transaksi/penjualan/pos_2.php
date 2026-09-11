@@ -61,6 +61,8 @@
 
                                               <div class="total-overlay-static">
                                                   <input id="tsubtotal" type="text" class="total numeric kuncitext" value="0">
+                                                  <div id="overlay-kembali" class="total-overlay-selisih text-success d-none">Kembalian <b id="overlay-kembali-nilai">0</b></div>
+                                                  <div id="overlay-kurang" class="total-overlay-selisih text-danger d-none">Kurang Bayar <b id="overlay-kurang-nilai">0</b></div>
                                               </div>
                                             </div>
 
@@ -1150,13 +1152,31 @@
                                                     </div> 
                                                 </div>  
                                         </div>   
-                                    </div>  
+                                    </div>
                                 </form>
                             </div>
-                
+
+                            <!-- Ringkasan Total / Kembalian / Kurang Bayar -->
+                            <div class="bg-light border-top px-3 py-2 d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="text-sm">
+                                    <div class="d-flex justify-content-between"><span class="text-muted mr-3">Total Transaksi</span><b id="ringkasan-tsubtotal">0</b></div>
+                                    <div class="d-flex justify-content-between"><span class="text-muted mr-3">Total Dibayar</span><b id="ringkasan-totalbayar">0</b></div>
+                                </div>
+                                <div class="text-right">
+                                    <div id="ringkasan-kembali-wrap" class="d-none">
+                                        <div class="text-sm text-muted">Kembalian</div>
+                                        <div id="ringkasan-kembali" class="text-success font-weight-bold" style="font-size:1.15rem;">0</div>
+                                    </div>
+                                    <div id="ringkasan-kurang-wrap" class="d-none">
+                                        <div class="text-sm text-muted">Kurang Bayar</div>
+                                        <div id="ringkasan-kurang" class="text-danger font-weight-bold" style="font-size:1.15rem;">0</div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Modal Footer -->
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-primary btn-block" id="bokbayar">OK</button>  
+                                <button type="button" class="btn btn-primary btn-block" id="bokbayar">OK</button>
                             </div>
                         </div>
                     </div>

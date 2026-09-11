@@ -2374,11 +2374,12 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
 
   
    $("#bbayar").click(function() {
-       if($(this).attr('role')) { 
-            $('#modalbayar').on('shown.bs.modal', function(){  
-                $("#caridp").click();  
-            });   
+       if($(this).attr('role')) {
+            $('#modalbayar').on('shown.bs.modal', function(){
+                $("#caridp").click();
+            });
             $('#modalbayar').modal('show');
+            _hitungTotal();
        }
   });
 
@@ -2893,40 +2894,40 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
       
   });  
 
-  $('#kasjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#kasjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#debitjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#debitjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#kreditjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#kreditjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#transferjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#transferjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#dpjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#dpjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#merchantjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#merchantjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#voucherjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#voucherjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#piutangjumlah').on('change',function(){
-       _hitungTotal(); 
-  });  
+  $('#piutangjumlah').on('input change',function(){
+       _hitungTotal();
+  });
 
-  $('#surgerydppembayaran').on('change',function(){
-       _hitungTotal(); 
+  $('#surgerydppembayaran').on('input change',function(){
+       _hitungTotal();
   });   
 
   $('#idpaket').on('change',function(){  
@@ -3896,6 +3897,7 @@ var _clearForm = () => {
   $('#cabang').val($('#cabanguser').val());
 
   _resizeNamaPasien();
+  _tampilkanRingkasanBayar(0, 0);
 
 }
 
@@ -5429,7 +5431,10 @@ var _getDataTransaksi = (id) => {
         $('#salesman').val(result.data[0]['namakaryawan']); 
         $('#catatan').val(result.data[0]['catatan']);  
         
-        $('#tsubtotal').val(result.data[0]['tsubtotal'].replace(".", ","));   
+        // #tsubtotal pakai inputmask digits:0 (rupiah utuh) -> set angka bulat polos,
+        // BUKAN "." diganti "," (nilai server "188700.00" + koma desimal salah
+        // ditafsir sbg pemisah ribuan oleh mask digits:0 -> tampil 100x lipat).
+        $('#tsubtotal').val(Math.round(parseFloat(result.data[0]['tsubtotal']) || 0).toString());
         $('#totalbayar').val(result.data[0]['totalbayar'].replace(".", ","));                
         $('#totalsisa').val(result.data[0]['totalsisa'].replace(".", ","));   
         
@@ -5580,7 +5585,11 @@ var _getDataTransaksi = (id) => {
           $(":input").not(":button, :submit, :reset, :radio, .total").attr('disabled','disabled');
           $(":input").not(":button, :submit, :reset, :radio, .total").css("background-color", "#ffffff");
         }
-        parent.window.$('.loader-wrap').addClass('d-none');                                       
+
+        // Tampilkan kembalian/kurang bayar transaksi yang baru dimuat (view/edit).
+        _hitungTotal();
+
+        parent.window.$('.loader-wrap').addClass('d-none');
         //return;
       }
   } 
@@ -5666,6 +5675,40 @@ var _getDataTransaksi = (id) => {
 
 });
 
+// Format angka tanpa desimal, pemisah ribuan ala Indonesia (dipakai utk ringkasan bayar, bukan input).
+var _formatRibuan = (n) => {
+    return Math.round(Number(n) || 0).toLocaleString('id-ID');
+};
+
+var _tampilkanRingkasanBayar = (tsubtotal, totalbayar) => {
+    $('#ringkasan-tsubtotal').text(_formatRibuan(tsubtotal));
+    $('#ringkasan-totalbayar').text(_formatRibuan(totalbayar));
+
+    let selisih = Math.round(totalbayar - tsubtotal);
+    if (selisih > 0) {
+        $('#ringkasan-kembali').text(_formatRibuan(selisih));
+        $('#ringkasan-kembali-wrap').removeClass('d-none');
+        $('#ringkasan-kurang-wrap').addClass('d-none');
+
+        $('#overlay-kembali-nilai').text(_formatRibuan(selisih));
+        $('#overlay-kembali').removeClass('d-none');
+        $('#overlay-kurang').addClass('d-none');
+    } else if (selisih < 0) {
+        $('#ringkasan-kurang').text(_formatRibuan(Math.abs(selisih)));
+        $('#ringkasan-kurang-wrap').removeClass('d-none');
+        $('#ringkasan-kembali-wrap').addClass('d-none');
+
+        $('#overlay-kurang-nilai').text(_formatRibuan(Math.abs(selisih)));
+        $('#overlay-kurang').removeClass('d-none');
+        $('#overlay-kembali').addClass('d-none');
+    } else {
+        $('#ringkasan-kembali-wrap').addClass('d-none');
+        $('#ringkasan-kurang-wrap').addClass('d-none');
+        $('#overlay-kembali').addClass('d-none');
+        $('#overlay-kurang').addClass('d-none');
+    }
+};
+
 var _hitungTotal = () => {
     let kas =  Number($('#kasjumlah').val().split('.').join('').toString().replace(',','.'));
     let debit =  Number($('#debitjumlah').val().split('.').join('').toString().replace(',','.'));
@@ -5676,28 +5719,30 @@ var _hitungTotal = () => {
     let voucher =  Number($('#voucherjumlah').val().split('.').join('').toString().replace(',','.'));
     let piutang =  Number($('#piutangjumlah').val().split('.').join('').toString().replace(',','.'));
     let surgerydppembayaran =  Number($('#surgerydppembayaran').val().split('.').join('').toString().replace(',','.'));
-     
-    
-    
+
+
+
     let totalbayar = 0 ;
-    
-    totalbayar= kas+debit+kredit+transfer+dp+merchant+voucher+piutang+surgerydppembayaran ; 
-    
+
+    totalbayar= kas+debit+kredit+transfer+dp+merchant+voucher+piutang+surgerydppembayaran ;
+
     let tsubtotal  = Number($('#tsubtotal').val().split('.').join('').toString().replace(',','.'));
     //let totalbayar =  Number($('#totalbayar').val().split('.').join('').toString().replace(',','.'));
     let totalsisa = 0 ;
-    
-    totalsisa = totalbayar - tsubtotal ; 
-    
-    totalsisa = totalsisa.toString().replace('.',',');  
+
+    totalsisa = totalbayar - tsubtotal ;
+
+    _tampilkanRingkasanBayar(tsubtotal, totalbayar);
+
+    totalsisa = totalsisa.toString().replace('.',',');
     if(totalsisa==0) totalsisa='0,00';
-    $('#totalsisa').val(totalsisa).attr('placeholder',totalsisa);  
-    
-     totalbayar = totalbayar.toString().replace('.',',');  
+    $('#totalsisa').val(totalsisa).attr('placeholder',totalsisa);
+
+     totalbayar = totalbayar.toString().replace('.',',');
     if(totalbayar==0) totalbayar='0,00';
     $('#totalbayar').val(totalbayar).attr('placeholder',totalbayar);
-    
-     
+
+
 
 }
 
