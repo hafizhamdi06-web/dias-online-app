@@ -93,6 +93,14 @@
                 </button>
               </div>
             </div>
+            <div class="row">
+              <div class="col-12 mb-2">
+                <div class="icheck-primary d-inline">
+                  <input type="checkbox" id="fhanyaselisih" name="fhanyaselisih">
+                  <label for="fhanyaselisih" class="font-weight-normal">Tidak Sama sutotaltransaksi dengan sumerchantjumlah</label>
+                </div>
+              </div>
+            </div>
             <small class="text-muted d-block">
               *Hanya transaksi POS dengan pembayaran lewat merchant (sumerchantjumlah &gt; 0).
               Rumus: <b>Diskon Nilai = Disk % 1 &times; Harga</b> (per unit) &nbsp;&middot;&nbsp;

@@ -141,7 +141,8 @@ var _muatData = () => {
       tgldari: $('#tgldari').val(),
       tglsampai: $('#tglsampai').val(),
       cabang: $('#cabang').val(),
-      notransaksi: $('#fnotransaksi').val()
+      notransaksi: $('#fnotransaksi').val(),
+      hanyaselisih: $('#fhanyaselisih').is(':checked') ? '1' : '0'
     },
     "cache"  : false,
     "beforeSend" : function(){ $('#btampilkan').prop('disabled', true); },
