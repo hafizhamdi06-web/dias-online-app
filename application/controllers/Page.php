@@ -196,6 +196,14 @@ class Page extends CI_Controller {
         $this->loader('import_trans_tokped','modul/transaksi/penjualan/import-trans-tokped','Import Transaksi Tokopedia');
     }
 
+    function shopee_api_produk(){
+        $this->loader('shopee_api_produk','modul/transaksi/penjualan/shopee-api-produk','Cek Produk Shopee (API)');
+    }
+
+    function shopee_api_penjualan(){
+        $this->loader('shopee_api_penjualan','modul/transaksi/penjualan/shopee-api-penjualan','Tarik Penjualan Shopee (API)');
+    }
+
     function item_pos(){
         $this->loader('item_pos','modul/master/table-item-pos');
     }
@@ -500,6 +508,10 @@ class Page extends CI_Controller {
 
     function settings(){
         $this->loader('settings','modul/administrator/settings');
+    }
+
+    function shopee_api_setting(){
+        $this->loader('shopee_api_setting','modul/administrator/shopee-api-setting','Seting API Marketplace Shopee');
     }
 	/* End Administrator */
 
