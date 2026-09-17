@@ -195,8 +195,9 @@ window.openRpt = function(rpt,rptid){
                               <input type="hidden" id="saldo" name="saldo" value="1">
                               <input type="hidden" id="satuanbesar" name="satuanbesar" value="0">                              
                               <input type="hidden" id="minimum" name="minimum" value="1">
-                              <input type="hidden" id="hidedetil" name="hidedetil" value="0">     
-                              <input type="hidden" id="tanpanh" name="tanpanh" value="1">                             
+                              <input type="hidden" id="hidedetil" name="hidedetil" value="0">
+                              <input type="hidden" id="tanpanh" name="tanpanh" value="1">
+                              <input type="hidden" id="sisasaja" name="sisasaja" value="0">
                               <div class="modal-body">`;
               if(result.data[0]['ARDATE1F']==1){
                   $html += `<div class="row mx-2 mt-1">
@@ -435,6 +436,15 @@ window.openRpt = function(rpt,rptid){
                             </div>`;
               }                                          
               
+              if(result.data[0]['ARLINK']=='laporan-ip-paket'){
+                  $html += `<div class="row mx-2 mt-2">
+                              <div class="form-check col-sm-12">
+                                <input type="checkbox" class="form-check-input" id="chksisa" onClick="chksisa_click()">
+                                <label class="form-check-label text-sm" for="chksisa">Tampilkan yang masih ada sisa saja</label>
+                              </div>
+                            </div>`;
+              }
+
               if(result.data[0]['ARMINIMUMF']==1){
                   $html += `<div class="row mx-2 mt-2">
                               <div class="form-check col-sm-12">
@@ -614,9 +624,17 @@ parent.window.chksatuan_click = () => {
 
 parent.window.chkHide_click = () => {
   if(parent.window.$("#chkHide").prop("checked")==true){
-    parent.window.$("#hidedetil").val('1');    
+    parent.window.$("#hidedetil").val('1');
   }else{
-    parent.window.$("#hidedetil").val('0');    
+    parent.window.$("#hidedetil").val('0');
+  }
+}
+
+parent.window.chksisa_click = () => {
+  if(parent.window.$("#chksisa").prop("checked")==true){
+    parent.window.$("#sisasaja").val('1');
+  }else{
+    parent.window.$("#sisasaja").val('0');
   }
 }
 
