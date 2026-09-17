@@ -126,7 +126,11 @@ $(function() {
   $('#noicnya').keydown(function(e){
     if(e.keyCode==13) { e.preventDefault(); $('#boknoic').click(); }
   });
-  
+
+  $('#nopaketnya').keydown(function(e){
+    if(e.keyCode==13) { e.preventDefault(); $('#boknopaket').click(); }
+  });
+
 
   $("#bTable").click(function() {
     parent.window.$('.loader-wrap').removeClass('d-none');
@@ -170,32 +174,12 @@ $(function() {
   }); 
 
   $("#carikontak").click(function() {
-    if($(this).attr('role')) { 
-        if($("#idkontak").val()!='') 
-        {
-             parent.window.Swal.fire({
-              title: `Jika anda ingin mengganti pasien, maka transaksi akan dikosongkan!`,
-              showDenyButton: false,
-              showCancelButton: true,
-              confirmButtonText: `Iya`,
-              }).then((printing) => {
-                  if (printing.isConfirmed) {  
-                        $('#tdetil tbody').html('');  
-                        _hitungsubtotal();
-                        _hitungTotal();
-                         _bersihkandp(); 
-                         _CariKontak();
-        
-        
-                  } 
-                  else  return;
-              })
-        } 
-        else
-        { 
-         _bersihkandp(); 
-         _CariKontak();
-        }
+    if($(this).attr('role')) {
+        // Buka pencarian langsung, tanpa peringatan/pengosongan di sini -- baris item
+        // baru dikosongkan (di handler change #idkontak) kalau pasien yg DIPILIH benar2
+        // berbeda dari yg sekarang. Batal cari / pilih pasien yg sama = data tetap utuh.
+        _bersihkandp();
+        _CariKontak();
             
          
     }    
@@ -2889,10 +2873,12 @@ var _cekPaket = (_NoPaket, _IdPaket) => {
   });  
 
   $('#idkontak').on('change',function(){
-    
+
+       // Ganti pasien TIDAK mengosongkan baris item yang sudah diisi -- kasir bebas
+       // mencari/mengganti pasien kapan saja tanpa kehilangan input yang sedang dikerjakan.
        _AmbilDetailPasien();
-      
-  });  
+
+  });
 
   $('#kasjumlah').on('input change',function(){
        _hitungTotal();
@@ -5372,30 +5358,30 @@ var _getDataTransaksi = (id) => {
 
   if(id=='' || id==null) return;
 
-  $.ajax({ 
-    "url"    : base_url+"PJ_POS_HP/getdata",       
-    "type"   : "POST", 
-    "dataType" : "json", 
+  $.ajax({
+    "url"    : base_url+"PJ_POS_HP/getdata",
+    "type"   : "POST",
+    "dataType" : "json",
     "data" : "id="+id,
     "cache"  : false,
     "beforeSend" : function(){
-      parent.window.$('.loader-wrap').removeClass('d-none');        
-    },        
+      parent.window.$('.loader-wrap').removeClass('d-none');
+    },
     "error"  : function(){
       alert('Error : Gagal mengambil data transaksi pos !');
-      parent.window.$('.loader-wrap').addClass('d-none');                  
+      parent.window.$('.loader-wrap').addClass('d-none');
       return;
     },
     "success" : function(result) {
 
       if (typeof result.pesan !== 'undefined') {
         alert(result.pesan);
-        parent.window.$('.loader-wrap').addClass('d-none');                  
+        parent.window.$('.loader-wrap').addClass('d-none');
         return;
-      } else { 
-          
-        
-        
+      } else {
+
+
+
         $('#tdetil tbody').html('');
         for (let i = 0; i < result.data.length; i++) {
           _addRow();
