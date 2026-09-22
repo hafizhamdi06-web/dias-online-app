@@ -285,6 +285,18 @@ class Select_Master extends CI_Controller {
         echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder,0);
     }
 
+   // Cabang milik satu PT saja (utk filter bertingkat PT -> Cabang, mis. di Perhitungan HPP)
+   function view_gudang_per_pt() {
+        $pt = $this->input->post('pt');
+        $query  = "SELECT A.gid AS 'id',A.gnama AS 'text',null AS 'kode',A.galamat1 AS 'nomor'
+                     FROM bgudang A";
+        $search = array('gnama');
+        $isOrder = 'gid';
+        $isWhere = !empty($pt) ? "A.gpt='".$this->db->escape_str($pt)."'" : "1=0";
+        header('Content-Type: application/json');
+        echo $this->M_select2->get_select_query($query,$search,$isWhere,$isOrder,0);
+    }
+
    function view_gudang_pilihan() {
         $ucabangpilih = '';
         $sql = "SELECT UCABANGPILIH FROM auser WHERE UID='".$this->session->id."'";

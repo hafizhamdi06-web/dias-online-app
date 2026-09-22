@@ -3,32 +3,35 @@
 
     $date1 = $_POST['tgldari'];
     $date2 = $_POST['tglsampai'];
-    $idgudang = isset($_POST['gudang'])   ? $_POST['gudang']   : "";
-    $iditem   = isset($_POST['item'])     ? $_POST['item']     : "";
-    $idkontak = isset($_POST['idkontak']) ? $_POST['idkontak'] : "";
+    $idgudang  = isset($_POST['gudang'])    ? $_POST['gudang']    : "";
+    $idkontak  = isset($_POST['idkontak'])  ? $_POST['idkontak']  : "";
+    $itemArray = isset($_POST['itemarray']) ? $_POST['itemarray'] : array();
 
     $CI =& get_instance();
 
     $query = "SELECT I.ikode 'ikode', I.inama 'inama',
                      DATE_FORMAT(H.sutanggal,'%d/%m/%Y') 'tgl',
                      H.sunotransaksi 'notrans',
-                     KR.knama 'kasir',
                      H.sukontak 'idpelanggan',
                      K.knama 'pelanggan',
+                     K.k1telp1 'hp',
                      D.sdkeluar 'qty',
                      (D.sdharga - D.sddiskon) 'harga',
                      D.sdkeluar*(D.sdharga - D.sddiskon) 'subtotal'
                 FROM fstokd D
           INNER JOIN fstoku H ON H.suid = D.sdidsu
           INNER JOIN bitem  I ON I.iid  = D.sditem
-           LEFT JOIN bkontak KR ON H.sukaryawan = KR.kid
            LEFT JOIN bkontak K  ON H.sukontak  = K.kid
                WHERE H.sustatus <> 9 AND H.susumber IN ('IP','AL')
                  AND H.sutanggal BETWEEN '".tgl_database($date1)."' AND '".tgl_database($date2)."'";
 
     if ($idgudang != "") $query .= " AND H.sucabang = '".$CI->db->escape_str($idgudang)."'";
-    if ($iditem   != "") $query .= " AND D.sditem   = '".$CI->db->escape_str($iditem)."'";
     if ($idkontak != "") $query .= " AND H.sukontak = '".$CI->db->escape_str($idkontak)."'";
+    if (!empty($itemArray)) {
+        $itemEscaped = array();
+        foreach ($itemArray as $it) { $itemEscaped[] = "'".$CI->db->escape_str($it)."'"; }
+        $query .= " AND D.sditem IN (".implode(',', $itemEscaped).")";
+    }
 
     $query .= " ORDER BY I.ikode, H.sutanggal, H.sunotransaksi";
 
@@ -70,8 +73,8 @@
                         echo "<tr class='bg-dark'>";
                         echo "<th class='left px-1'>Tanggal</th>";
                         echo "<th class='left px-1'>No Transaksi</th>";
-                        echo "<th class='left px-1'>Kasir</th>";
                         echo "<th class='left px-1'>Pelanggan</th>";
+                        echo "<th class='left px-1'>No HP Pelanggan</th>";
                         echo "<th class='right px-1'>Qty</th>";
                         echo "<th class='right px-1'>Harga</th>";
                         echo "<th class='right px-1'>Sub Total</th>";
@@ -81,8 +84,8 @@
                     echo "<tr>";
                     echo "<td class='left px-1'>".$row->tgl."</td>";
                     echo "<td class='left px-1'>".$row->notrans."</td>";
-                    echo "<td class='left px-1'>".$row->kasir."</td>";
                     echo "<td class='left px-1'>".$row->pelanggan."</td>";
+                    echo "<td class='left px-1'>".$row->hp."</td>";
                     echo "<td class='right px-1'>".eFormatNumber($row->qty,2)."</td>";
                     echo "<td class='right px-1'>".eFormatNumber($row->harga,2)."</td>";
                     echo "<td class='right px-1'>".eFormatNumber($row->subtotal,2)."</td>";

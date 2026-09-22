@@ -304,10 +304,19 @@ window.openRpt = function(rpt,rptid){
                               <label class="col-sm-3 col-form-label text-sm font-weight-normal">Item</label>
                               <div class="col-sm-8">
                                 <select id="item" name="item" class="form-control form-control-sm select2" style="width: 100%">
-                                </select>     
+                                </select>
                               </div>
                             </div>`;
-              }                            
+              }
+              if(result.data[0]['ARITEMARRAYF']==1){
+                  $html += `<div class="row mx-2 mt-1">
+                              <label class="col-sm-3 col-form-label text-sm font-weight-normal">Item</label>
+                              <div class="col-sm-8">
+                                <select id="itemarray" name="itemarray[]" multiple class="form-control form-control-sm select2" style="width: 100%">
+                                </select>
+                              </div>
+                            </div>`;
+              }
               if(result.data[0]['ARGUDANGF']==1){
                   $html += `<div class="row mx-2 mt-1">
                               <label class="col-sm-3 col-form-label text-sm font-weight-normal">Cabang</label>
@@ -490,8 +499,26 @@ window.openRpt = function(rpt,rptid){
               //parent.window.$("#tgldari").datepicker('setDate', '01-mm-yy');     
               
               
-             // Component_Select2("#item",`${base_url}Select_Master/,null,null,true`,null,null,true);   
-              Component_Select2("#item",`${base_url}Select_Master/view_item`,null,null,true);               
+             // Component_Select2("#item",`${base_url}Select_Master/,null,null,true`,null,null,true);
+              Component_Select2("#item",`${base_url}Select_Master/view_item`,null,null,true);
+
+              // Item multi-select (array) -- Component_Select2 tdk mendukung "multiple", jadi
+              // init select2-nya langsung disini (bkn lewat component.js yg dipakai byk halaman lain).
+              if (result.data[0]['ARITEMARRAYF']==1) {
+                parent.window.$("#itemarray").select2({
+                   "allowClear": true,
+                   "theme": "bootstrap4",
+                   "dropdownParent": window.parent.$('#modal'),
+                   "ajax": {
+                      "url": `${base_url}Select_Master/view_item`,
+                      "type": "post",
+                      "dataType": "json",
+                      "delay": 800,
+                      "data": (params) => { return { search: params.term }; },
+                      "processResults": (data, page) => { return { results: data }; },
+                   }
+                });
+              }
 
               var currentTime = new Date();              
               var thn = $("<option selected='selected'></option>").val(currentTime.getFullYear()).text(currentTime.getFullYear());              

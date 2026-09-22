@@ -513,6 +513,16 @@ class Page extends CI_Controller {
     function shopee_api_setting(){
         $this->loader('shopee_api_setting','modul/administrator/shopee-api-setting','Seting API Marketplace Shopee');
     }
+
+    function hpp_perhitungan(){
+        $this->loader('hpp_perhitungan','modul/transaksi/fina/hpp-perhitungan','Perhitungan HPP');
+    }
+    function hpp_rii(){
+        $this->loader('hpp_rii','modul/transaksi/fina/hpp-rii','Proses HPP PT. RII');
+    }
+    function dias_ai(){
+        $this->loader('dias_ai','modul/dias-ai/chat','DIAS AI');
+    }
 	/* End Administrator */
 
     /* Bantuan */
