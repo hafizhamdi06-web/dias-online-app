@@ -85,7 +85,7 @@
                     echo "<td class='left px-1'>".$row->tgl."</td>";
                     echo "<td class='left px-1'>".$row->notrans."</td>";
                     echo "<td class='left px-1'>".$row->pelanggan."</td>";
-                    echo "<td class='left px-1'>".$row->hp."</td>";
+                    echo "<td class='left px-1' style=\"mso-number-format:'\@';\">".$row->hp."</td>";
                     echo "<td class='right px-1'>".eFormatNumber($row->qty,2)."</td>";
                     echo "<td class='right px-1'>".eFormatNumber($row->harga,2)."</td>";
                     echo "<td class='right px-1'>".eFormatNumber($row->subtotal,2)."</td>";
