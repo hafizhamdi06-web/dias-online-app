@@ -295,7 +295,7 @@ class Page extends CI_Controller {
     }
 
     function opjData(){
-        $this->loader('opj','modul/transaksi/penjualan/table-order-penjualan');
+        $this->loader('opjData','modul/transaksi/penjualan/table-order-penjualan');
     }
 
     function sj(){
@@ -364,7 +364,7 @@ class Page extends CI_Controller {
     }
 
     function posData(){
-        $this->loader('pos','modul/transaksi/penjualan/table-penjualan-tunai');
+        $this->loader('posData','modul/transaksi/penjualan/table-penjualan-tunai');
     }
 
     function alkesData(){
