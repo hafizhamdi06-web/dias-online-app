@@ -81,16 +81,16 @@ $(function() {
 
 var _defaultRentangTanggal = () => {
   var hariIni = new Date();
-  var awalTahun = new Date(hariIni.getFullYear(), 0, 1);
-  $('#tgldari').datepicker('setDate', awalTahun);
+  var awalBulan = new Date(hariIni.getFullYear(), hariIni.getMonth(), 1);
+  $('#tgldari').datepicker('setDate', awalBulan);
   $('#tglsampai').datepicker('setDate', hariIni);
 };
 
-var _namaBulan = (bulan) => {
-  var parts = String(bulan).split('-');
+var _namaHari = (tanggal) => {
+  var parts = String(tanggal).split('-');
   var namaBulanArr = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
   var idx = Number(parts[1]) - 1;
-  return (namaBulanArr[idx] || parts[1]) + ' ' + parts[0];
+  return Number(parts[2]) + ' ' + (namaBulanArr[idx] || parts[1]);
 };
 
 var _formatRibuan = (n) => {
@@ -160,7 +160,7 @@ var _muatGrafik = () => {
       $('#btampilkan').prop('disabled', false);
 
       var rows = result.data || [];
-      var labels = rows.map(function(r){ return _namaBulan(r.bulan); });
+      var labels = rows.map(function(r){ return _namaHari(r.tanggal); });
       var omzet = rows.map(function(r){ return Number(r.omzet) || 0; });
       var jumlahtransaksi = rows.map(function(r){ return Number(r.jumlahtransaksi) || 0; });
       var jumlahpasien = rows.map(function(r){ return Number(r.jumlahpasien) || 0; });

@@ -106,7 +106,7 @@
 
         <div class="card card-outline card-success">
           <div class="card-header">
-            <h3 class="card-title text-sm">Omzet per Bulan</h3>
+            <h3 class="card-title text-sm">Omzet per Hari</h3>
           </div>
           <div class="card-body">
             <canvas id="chart-omzet" height="90"></canvas>
@@ -115,7 +115,7 @@
 
         <div class="card card-outline card-info d-none">
           <div class="card-header">
-            <h3 class="card-title text-sm">Jumlah Transaksi per Bulan</h3>
+            <h3 class="card-title text-sm">Jumlah Transaksi per Hari</h3>
           </div>
           <div class="card-body">
             <canvas id="chart-transaksi" height="90"></canvas>
@@ -124,7 +124,7 @@
 
         <div class="card card-outline card-warning">
           <div class="card-header">
-            <h3 class="card-title text-sm">Jumlah Pasien per Bulan</h3>
+            <h3 class="card-title text-sm">Jumlah Pasien per Hari</h3>
             <small class="text-muted d-block">*1 pasien dihitung 1x per hari, meski transaksi berkali-kali</small>
           </div>
           <div class="card-body">

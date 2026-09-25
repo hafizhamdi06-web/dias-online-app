@@ -34,7 +34,7 @@ class Grafik_Penjualan extends CI_Controller {
         $tglsampai = tgl_database($_POST['tglsampai']);
         $cabang = $this->_cabangValid($_POST['cabang']);
 
-        $query = "SELECT DATE_FORMAT(A.sutanggal,'%Y-%m') 'bulan',
+        $query = "SELECT DATE_FORMAT(A.sutanggal,'%Y-%m-%d') 'tanggal',
                           SUM(A.sutotaltransaksi) 'omzet',
                           COUNT(DISTINCT A.suid) 'jumlahtransaksi',
                           COUNT(DISTINCT A.sukontak) 'jumlahpasien'
@@ -42,8 +42,8 @@ class Grafik_Penjualan extends CI_Controller {
                     WHERE A.susumber='IP' AND A.sustatus<>9
                       AND A.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."'
                       AND A.sucabang = '".$cabang."'
-                 GROUP BY DATE_FORMAT(A.sutanggal,'%Y-%m')
-                 ORDER BY bulan ASC";
+                 GROUP BY DATE_FORMAT(A.sutanggal,'%Y-%m-%d')
+                 ORDER BY tanggal ASC";
 
         header('Content-Type: application/json');
         echo $this->M_transaksi->get_data_query($query);
