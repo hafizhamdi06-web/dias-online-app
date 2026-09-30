@@ -118,12 +118,21 @@
               <div class="col-sm-4">
                 <label class="col-form-label text-sm font-weight-normal">Bank :</label>
               </div>
-              <div class="col-sm-8"> 
+              <div class="col-sm-8">
                   <input type="text" id="bank" name="bank" class="form-control form-control-sm" autocomplete="off">
-                            
+
               </div>
           </div>
-          
+
+          <div class="row mt-2 mx-1">
+              <div class="col-sm-4">
+                <label class="col-form-label text-sm font-weight-normal">No HP :</label>
+              </div>
+              <div class="col-sm-8">
+                  <input type="text" id="nohp" name="nohp" class="form-control form-control-sm" autocomplete="off">
+              </div>
+          </div>
+
           <div class="row mt-4 pt-0 mx-1 px-1">
             <button type="button" id="submitfilter" class="btn btn-primary btn-sm btn-block">Tampilkan</button>
           </div>

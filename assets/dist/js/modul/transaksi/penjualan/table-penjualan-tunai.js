@@ -75,7 +75,7 @@ $(function() {
 	var clearFilter = () => {
 		$('#tgldari').datepicker('setDate','dd-mm-yy');
 		$('#tglsampai').datepicker('setDate','dd-mm-yy');
-		$('#idkontak,#kontak,#bank,#carabayar').val('');
+		$('#idkontak,#kontak,#bank,#carabayar,#nohp').val('');
 		$('#cabang').val(_cabangUser ? _cabangUser : '').trigger('change');
 	}
 
@@ -106,6 +106,7 @@ $(function() {
 	          data.sampai = $('#tglsampai').val();
 	          data.carabayar = $('#carabayar').val();
 	          data.bank = $('#bank').val();
+	          data.nohp = $('#nohp').val();
 	          data.cabang = $('#cabang').val();
 	        }                       	                       	                       
 		},

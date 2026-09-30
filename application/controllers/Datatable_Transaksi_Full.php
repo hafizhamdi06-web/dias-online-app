@@ -635,7 +635,10 @@ class Datatable_Transaksi_Full extends CI_Controller {
 
            }
 
-
+           $nohp = $_POST['nohp'];
+           if(!empty($nohp)){
+               $isWhere2 .= " AND B.K1TELP1 like '%".$this->db->escape_like_str($nohp)."%'";
+           }
 
 
 
