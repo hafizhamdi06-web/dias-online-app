@@ -289,6 +289,8 @@ var _muatRingkasan = () => {
     "type"   : "POST",
     "dataType" : "json",
     "data"   : {
+      tgldari: $('#tgldari').val(),
+      tglsampai: $('#tglsampai').val(),
       cabang: $('#cabang').val()
     },
     "cache"  : false,
@@ -300,9 +302,9 @@ var _muatRingkasan = () => {
       var row = rows[0] || {};
 
       $('#ib-omzet-hari-ini').text(_formatRibuan(row.omzethariini));
-      $('#ib-omzet-bulan-ini').text(_formatRibuan(row.omzetbulanini));
+      $('#ib-omzet-bulan-ini').text(_formatRibuan(row.omzetperiode));
       $('#ib-pasien-hari-ini').text(_formatRibuan(row.pasienhariini));
-      $('#ib-pasien-bulan-ini').text(_formatRibuan(row.pasienbulanini));
+      $('#ib-pasien-bulan-ini').text(_formatRibuan(row.pasienperiode));
     }
   });
 };

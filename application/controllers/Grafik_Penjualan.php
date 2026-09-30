@@ -120,17 +120,18 @@ class Grafik_Penjualan extends CI_Controller {
 
     function ringkasan(){
         $cabang = $this->_cabangValid($_POST['cabang']);
+        $tgldari = tgl_database($_POST['tgldari']);
+        $tglsampai = tgl_database($_POST['tglsampai']);
 
         $query = "SELECT
                      SUM(CASE WHEN A.sutanggal = CURDATE() THEN A.sutotaltransaksi ELSE 0 END) 'omzethariini',
                      COUNT(DISTINCT CASE WHEN A.sutanggal = CURDATE() THEN A.sukontak END) 'pasienhariini',
-                     SUM(A.sutotaltransaksi) 'omzetbulanini',
-                     COUNT(DISTINCT A.sukontak) 'pasienbulanini'
+                     SUM(CASE WHEN A.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."' THEN A.sutotaltransaksi ELSE 0 END) 'omzetperiode',
+                     COUNT(DISTINCT CASE WHEN A.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."' THEN A.sukontak END) 'pasienperiode'
                    FROM fstoku A
                   WHERE A.susumber='IP' AND A.sustatus<>9
                     AND A.sucabang = '".$cabang."'
-                    AND A.sutanggal >= DATE_FORMAT(CURDATE(),'%Y-%m-01')
-                    AND A.sutanggal <= CURDATE()";
+                    AND (A.sutanggal = CURDATE() OR A.sutanggal BETWEEN '".$tgldari."' AND '".$tglsampai."')";
 
         header('Content-Type: application/json');
         echo $this->M_transaksi->get_data_query($query);

@@ -77,7 +77,7 @@
             <div class="gp-ringkasan-box gp-ringkasan-primary">
               <span class="gp-ringkasan-icon"><i class="fas fa-wallet"></i></span>
               <div class="gp-ringkasan-text">
-                <span class="gp-ringkasan-label">Omzet Bulan Ini</span>
+                <span class="gp-ringkasan-label">Omzet Periode Ini</span>
                 <span class="gp-ringkasan-number" id="ib-omzet-bulan-ini">0</span>
               </div>
             </div>
@@ -96,7 +96,7 @@
             <div class="gp-ringkasan-box gp-ringkasan-info">
               <span class="gp-ringkasan-icon"><i class="fas fa-users"></i></span>
               <div class="gp-ringkasan-text">
-                <span class="gp-ringkasan-label">Pasien Bulan Ini</span>
+                <span class="gp-ringkasan-label">Pasien Periode Ini</span>
                 <span class="gp-ringkasan-number" id="ib-pasien-bulan-ini">0</span>
                 <small class="gp-ringkasan-note">*1 pasien dihitung 1x per hari</small>
               </div>
