@@ -96,7 +96,7 @@ $(function() {
 		"pagingType":"simple",    
 		"order": [[0, 'desc' ]],
 		"select":true,  
-		"dom": '<"top"pi>tr<"clear">',
+		"dom": 'B<"top"pi>tr<"clear">',
 		"ajax": {
 		    "url":base_url+"Datatable_Transaksi_Full/view_penjualan_tunai",
 		    "type":"post",
@@ -122,16 +122,71 @@ $(function() {
 		      },    
 		      { "data": "nomor" },
 		      { "data": "tanggal" },
-		      { "data": "kontak" }, 
-			  { "data": "total", 
+		      { "data": "kontak" },
+		      { "data": "nohp" },
+			  { "data": "total",
 				"className": 'aright',		      
 				"render": (data, type, row, meta) => {
 					data = accounting.formatMoney(data);
 					return data;		        		
 				}		      	
 			  },	
-		      { "data": "status" }, 	      
+		      { "data": "status" },
 		],
+		"buttons": [{
+		        extend: 'excelHtml5',
+		        text: '<i class="fa fa-file-excel px-1"></i> Excel File',
+		        title: title + ' - ' + copy,
+				autoFilter: false,
+				messageTop: () => {
+					let data = $('#table_info').text();
+					if(typeof data == undefined || data == null) return '';
+					return data;
+				},
+		        exportOptions: {
+					format: {
+						body: (data, row, column, node) => {
+						    return column === 6 ?
+						        data.split('.').join('').toString().replace(',','.') :
+						        data;
+						}
+					},
+		            columns: [2,3,4,5,6,7],
+					modifier: {
+					    order: 'current',
+					    page: 'all',
+					    selected: null,
+					}
+		        },
+				action: function(e, dt, button, config) {
+					// Tabel ini serverSide, jadi row yg tersimpan di client hanya 1 halaman.
+					// Trik resmi DataTables: paksa ajax reload untuk ambil SEMUA baris (length=-1),
+					// jalankan aksi export bawaan excelHtml5 terhadap hasil itu, lalu reload lagi
+					// ke halaman semula tanpa benar2 me-render data sebanyak itu ke tabel.
+					var self = this;
+					var oldStart = dt.settings()[0]._iDisplayStart;
+
+					dt.one('preXhr', function(e, s, data) {
+						data.start = 0;
+						data.length = -1;
+
+						dt.one('preDraw', function(e, settings) {
+							$.fn.dataTable.ext.buttons.excelHtml5.action.call(self, e, dt, button, config);
+
+							dt.one('preXhr', function(e, settings, data) {
+								settings._iDisplayStart = oldStart;
+								data.start = oldStart;
+							});
+
+							setTimeout(function(){ dt.ajax.reload(); }, 0);
+
+							return false;
+						});
+					});
+
+					dt.ajax.reload();
+				}
+		}],
 	    "drawCallback": function() {
 	      var total = tabel.data().count();
 
@@ -150,6 +205,8 @@ $(function() {
 		  }
 		}
 	});
+
+	tabel.buttons().container().appendTo( '#btnExpor' );
 
 	new $.fn.dataTable.ColResize(tabel, {
 	  isEnabled: true,

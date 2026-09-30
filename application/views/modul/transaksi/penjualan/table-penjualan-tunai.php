@@ -36,7 +36,8 @@
           <th></th>
           <th class="text-sm">Nomor</th>
           <th class="text-sm">Tanggal</th>
-          <th class="text-sm">Pelanggan</th>   
+          <th class="text-sm">Pelanggan</th>
+          <th class="text-sm">No HP</th>
           <th class="text-sm text-right">Total Transaksi</th>
           <th class="text-sm">Status</th>  
           </tr>
@@ -139,8 +140,11 @@
           <div class="row mt-2 pt-0 mx-1 px-1">
             <button type="button" id="editdepo" class="btn btn-primary btn-sm btn-block">EDIT DEPO</button>
           </div>
-                             
-        </div>        
+          <div class="row mt-2 ml-3">
+            <div id="btnExpor"></div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
@@ -183,6 +187,10 @@
 <script src="<? echo base_url('assets/plugins/datatables-responsive/js/responsive.bootstrap4.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-select/js/dataTables.select.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datatables-select/js/select.bootstrap4.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-buttons/js/dataTables.buttons.min.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-buttons/js/buttons.bootstrap4.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-buttons/js/buttons.html5.min.js'); ?>"></script>
+<script src="<? echo base_url('assets/plugins/datatables-buttons/js/buttons.jsZip.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/input-mask/jquery.inputmask.bundle.js'); ?>"></script>
 <script src="<? echo base_url('assets/plugins/datepicker/bootstrap-datepicker.js'); ?>"></script>

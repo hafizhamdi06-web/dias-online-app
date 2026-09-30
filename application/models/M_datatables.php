@@ -13,7 +13,9 @@ class M_datatables extends CI_Model {
         // Ambil data limit per page
         $limit = preg_replace("/[^a-zA-Z0-9.]/", '', "{$_POST['length']}");
         // Ambil data start
-        $start =preg_replace("/[^a-zA-Z0-9.]/", '', "{$_POST['start']}"); 
+        $start =preg_replace("/[^a-zA-Z0-9.]/", '', "{$_POST['start']}");
+        // length=-1 artinya "tampilkan semua" (dipakai tombol export Excel), jangan di-LIMIT
+        $limitClause = (@$_POST['length'] == -1) ? "" : " LIMIT ".$limit." OFFSET ".$start;
 
         if($where != null)
         {
@@ -49,9 +51,9 @@ class M_datatables extends CI_Model {
 
             if(!empty($iswhere))
             {
-                $sql_data = $this->db->query($query." WHERE $iswhere AND ".$fwhere." AND (".$cari.")".$order." LIMIT ".$limit." OFFSET ".$start);
+                $sql_data = $this->db->query($query." WHERE $iswhere AND ".$fwhere." AND (".$cari.")".$order.$limitClause);
             }else{
-                $sql_data = $this->db->query($query." WHERE ".$fwhere." AND (".$cari.")".$order." LIMIT ".$limit." OFFSET ".$start);
+                $sql_data = $this->db->query($query." WHERE ".$fwhere." AND (".$cari.")".$order.$limitClause);
             }
             
             if(isset($search))
@@ -97,10 +99,10 @@ class M_datatables extends CI_Model {
             }
 
             if(!empty($iswhere))
-            {                
-                $sql_data = $this->db->query($query." WHERE $iswhere AND (".$cari.")".$order." LIMIT ".$limit." OFFSET ".$start);
+            {
+                $sql_data = $this->db->query($query." WHERE $iswhere AND (".$cari.")".$order.$limitClause);
             }else{
-                $sql_data = $this->db->query($query." WHERE (".$cari.")".$order." LIMIT ".$limit." OFFSET ".$start);
+                $sql_data = $this->db->query($query." WHERE (".$cari.")".$order.$limitClause);
             }
 
             if(isset($search))

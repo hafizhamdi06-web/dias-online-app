@@ -594,7 +594,7 @@ class Datatable_Transaksi_Full extends CI_Controller {
         $transcode = element('PJ_Penjualan_Tunai',NID);
         $transcode = $this->M_transaksi->prefixtrans($transcode);
         $query  = "SELECT A.suid 'id',A.sunotransaksi 'nomor',DATE_FORMAT(A.sutanggal,'%d-%m-%Y') 'tanggal',
-                          B.knama 'kontak', A.suuraian 'uraian', IFNULL(A.sutotaltransaksi,0) 'total',
+                          B.knama 'kontak', B.K1TELP1 'nohp', A.suuraian 'uraian', IFNULL(A.sutotaltransaksi,0) 'total',
                           case A.sustatus when 9 then 'Cancel' else 'Aktif' end 'status'
                      FROM fstoku A
                 LEFT JOIN bkontak B ON A.sukontak=B.kid";
