@@ -1,0 +1,21 @@
+INSERT INTO aareport
+  (ARLINK, ARNAME, ARNAME2, ARPAPERORINTED, ARPAPERSIZE, ARACTIVE, ARTITLE,
+   ARMARGINLEFT, ARMARGINTOP, ARDATE1F, ARGUDANGF, ARPTF)
+VALUES
+  ('laporan-cogs-klinik', 'COGS Klinik', 'COGS Klinik',
+   2, 3, 1, '', 6, 6, 1, 1, 1);
+
+SET @arid = LAST_INSERT_ID();
+
+INSERT INTO aamenu
+  (MNAMA, MDESCRIPTION, MURUTAN, MPARENT, MTYPE, MACTIVE, MREPORT, MCAPTION1)
+VALUES
+  ('COGS Klinik', 'COGS dikelompokkan per jenis transaksi dan COA HPP/Persediaan Klinik',
+   250, 557, 1, 1, @arid, 'COGS Klinik');
+
+SET @mid = LAST_INSERT_ID();
+
+-- Hak akses: copy dari "Laporan Perhitungan HPP" (MID 757)
+INSERT INTO aausermenu (AUIDUSER, AUIDMENU, AUADD, AUEDIT, AUDELL, AUPRINT, AUAPPROVE)
+SELECT AUIDUSER, @mid, AUADD, AUEDIT, AUDELL, AUPRINT, AUAPPROVE
+  FROM aausermenu WHERE AUIDMENU = 757;
