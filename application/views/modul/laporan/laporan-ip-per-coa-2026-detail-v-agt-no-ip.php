@@ -17,7 +17,7 @@ $tampilNol = $_POST["saldo"];
 $CI = &get_instance();
 
 $query =
-	" SELECT  GURUTAN,GKODE,CTID,CTNAMA,CTTIDAKDITARIK,CTTIPEPRODUK,IKODE,INAMA,notransaksi,namapasien,
+	" SELECT  GURUTAN,GKODE,CTID,CTNAMA,CTTIDAKDITARIK,CTTIPEPRODUK,IKODE,INAMA,notransaksi,namapasien,namadokter,rowsdid,
 				  sum(subtotal) as subtotal,
 	              sum(ifnull(alkeshpp,0)*1.05) as alkeshpp,
 				  sum(
@@ -25,12 +25,13 @@ $query =
 				  (cogs*1.05) end
 				  ) as nilaiproduk,
 				  sum(cogs) as totalcogs,
-				  sum(ifnull(alkeshpp,0)) as totalcogsalkes
+				  sum(ifnull(alkeshpp,0)) as totalcogsalkes,
+				  sum(SDKELUAR) as qty
 
 				    from (
 
 	                   SELECT  GURUTAN,GKODE,CTID,CTNAMA,IKODE,INAMA,CTTIDAKDITARIK,CTTIPEPRODUK,SDKELUAR,ICOA2021,sunotransaksi 'notransaksi',
-			                kp.knama 'namapasien',
+			                kp.knama 'namapasien', dr.knama 'namadokter', a.sdid 'rowsdid',
 		                ( 	CASE WHEN ICOA2021=12 THEN
 						(sdkeluar*(sdharga-sddiskon)-sdbayardp)/sutotaltransaksi*
 						(sutotalkartudebit+sutotalkartukredit+sutotaltransfer+(sutotalkas-sutotalsisa)+sutotaldp+
@@ -61,6 +62,7 @@ $query =
 	                  left join bcoatipe_pendapatan on ctid=i2coapendapatan
 	                  left join bmerchant on mckode=sumerchantjenis
 	                  left join bkontak kp on kp.kid=sukontak
+	                  left join bkontak dr on dr.kid=sddokter
 	                  WHERE coalesce(sdkepalaalkes,0) =0 and SUSTATUS<>9 and SUSUMBER = 'IP'
 	                  AND sutanggal BETWEEN '" .
 	tgl_database($date1) .
@@ -78,8 +80,8 @@ if ($idpt != "") {
 }
 
 $query .= ") a GROUP by
-                    	  GURUTAN,GKODE,CTID,CTNAMA,CTTIDAKDITARIK,CTTIPEPRODUK,IKODE,INAMA,notransaksi,namapasien
-                    	  ORDER BY GURUTAN,CTID,IKODE,notransaksi
+                    	  GURUTAN,GKODE,CTID,CTNAMA,CTTIDAKDITARIK,CTTIPEPRODUK,IKODE,INAMA,notransaksi,namapasien,namadokter,rowsdid
+                    	  ORDER BY GURUTAN,CTID,IKODE,notransaksi,rowsdid
                     	  ";
 
 $datareport = $CI->M_transaksi->get_data_query($query);
@@ -88,13 +90,13 @@ $datareport = json_decode($datareport);
 // Detail alkes per produk/transaksi (kode, nama, qty, cogs) - sumber yg sama dgn
 // subquery alkeshpp di atas, tapi di-detail-kan per item alkes, bukan di-SUM.
 $queryAlkes =
-	" SELECT  a2.notransaksi, a2.ikode 'produkkode',
+	" SELECT  a2.sdid 'rowsdid',
 			  ab.ikode 'alkeskode', ab.inama 'alkesnama',
 			  aa.sdkeluar 'alkesqty', aa.sdbeli 'alkescogs'
 	     FROM fstokd aa
 	    INNER JOIN bitem ab ON ab.iid = aa.sditem
 	    INNER JOIN (
-	         SELECT pa.sdid, pfu.sunotransaksi 'notransaksi', pb.ikode
+	         SELECT pa.sdid
 	           FROM fstokd pa
 	           LEFT JOIN fstoku pfu ON pfu.suid=pa.sdidsu
 	           LEFT JOIN bitem pb ON pb.iid=pa.sditem
@@ -116,14 +118,14 @@ if ($idpt != "") {
 }
 
 $queryAlkes .= "  ) a2 ON a2.sdid = aa.SDIDUALKES
-	    ORDER BY a2.notransaksi, a2.ikode";
+	    ORDER BY a2.sdid";
 
 $dataAlkes = $CI->M_transaksi->get_data_query($queryAlkes);
 $dataAlkes = json_decode($dataAlkes);
 
 $alkesDetail = array();
 foreach ($dataAlkes->data as $al) {
-	$key = $al->notransaksi . '|' . $al->produkkode;
+	$key = $al->rowsdid;
 	if (!isset($alkesDetail[$key])) { $alkesDetail[$key] = array(); }
 	$alkesDetail[$key][] = $al;
 }
@@ -142,6 +144,8 @@ foreach ($dataAlkes->data as $al) {
 				<th class="left px-1">Produk/Tindakan</th>
 				<th class="left px-1">No IP</th>
 				<th class="left px-1">Nama Pasien</th>
+				<th class="left px-1">Nama Dokter</th>
+				<th class="left px-1">Qty</th>
 				<th class="left px-1">Penjualan</th>
 				<th class="left px-1">Produk</th>
 				<th class="left px-1">Alkes</th>
@@ -162,20 +166,24 @@ foreach ($dataAlkes->data as $al) {
 				$tnilaiproduk = 0 ; $tnilaisales = 0 ; $tnilaialkes = 0 ; $tppn=0;  $tpendapatanklinik=0; $tpendapatandokter=0; $tcogs=0; $tcogsalkes=0;
 
 				$subtotalcoabaru = 0; $nilaiprodukcoabaru=0; $alkeshppcoabaru=0;  $ppncoabaru=0; $pendapatanklinikcoabaru=0;
-				$totalcogscoabaru = 0; $totalcogsalkescoabaru = 0;
+				$totalcogscoabaru = 0; $totalcogsalkescoabaru = 0; $qtycoabaru = 0; $tqty = 0;
 				$coabaru=''; $jumlahdatacobaru=0;
 
 				foreach ($datareport->data as $row) {
 
 				    $subtotal=$row->subtotal;
+    			    $qty=$row->qty;
     			    $tnilaisales += $subtotal ;
+    			    $tqty += $qty ;
 
 				    if ($row->CTTIDAKDITARIK==0) {
-    				    $alkeshpp=$row->alkeshpp;
-    				    $nilaiproduk=$row->nilaiproduk;
     				    $totalcogs=$row->totalcogs;
     				    $totalcogsalkes=$row->totalcogsalkes;
-    					$ppn = ($nilaiproduk+$alkeshpp)*11/100;
+    				    if ($subtotal != 0) {
+    				        $alkeshpp=$row->alkeshpp;
+    				        $nilaiproduk=$row->nilaiproduk;
+    					    $ppn = ($nilaiproduk+$alkeshpp)*11/100;
+    				    }
 				    }
 				    	$pendapatanklinik = ($subtotal-$nilaiproduk-$alkeshpp-$ppn)  ;
     					$pendapatandokter = 0 ;
@@ -185,7 +193,8 @@ foreach ($dataAlkes->data as $al) {
 
 
             				echo "<tr>";
-        					echo "<td class='left px-1' colspan=5 style='border-top:1px solid #000; border-bottom:1px solid #000;'>Jumlah ".$coabaru."</td>";
+        					echo "<td class='left px-1' colspan=6 style='border-top:1px solid #000; border-bottom:1px solid #000;'>Jumlah ".$coabaru."</td>";
+        					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($qtycoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($subtotalcoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($nilaiprodukcoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($alkeshppcoabaru,2)."</td>";
@@ -196,14 +205,14 @@ foreach ($dataAlkes->data as $al) {
         					echo "<td class='left px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='left px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td>";
         					echo "</tr>";
          				 	$subtotalcoabaru = 0; $nilaiprodukcoabaru=0; $alkeshppcoabaru=0;  $ppncoabaru=0; $pendapatanklinikcoabaru=0;
-         				 	$totalcogscoabaru = 0; $totalcogsalkescoabaru = 0;
+         				 	$totalcogscoabaru = 0; $totalcogsalkescoabaru = 0; $qtycoabaru = 0;
 
                  			}
                     		 $jumlahdatacobaru=0;
              			}
 
 
-    					$alkesKey = $row->notransaksi.'|'.$row->IKODE;
+    					$alkesKey = $row->rowsdid;
     					$alkesList = !empty($alkesDetail[$alkesKey]) ? $alkesDetail[$alkesKey] : array();
 
     					echo "<tr>";
@@ -212,6 +221,8 @@ foreach ($dataAlkes->data as $al) {
     					echo "<td class='left px-1'>".$row->INAMA."</td>";
     					echo "<td class='left px-1'>".$row->notransaksi."</td>";
     					echo "<td class='left px-1'>".$row->namapasien."</td>";
+    					echo "<td class='left px-1'>".$row->namadokter."</td>";
+    					echo "<td class='right px-1'>".eFormatNumber($qty,2)."</td>";
     					echo "<td class='right px-1'>".eFormatNumber($subtotal,2)."</td>";
     					echo "<td class='right px-1'>".eFormatNumber($nilaiproduk,2)."</td>";
     					echo "<td class='right px-1'>".eFormatNumber($alkeshpp,2)."</td>";
@@ -233,8 +244,8 @@ foreach ($dataAlkes->data as $al) {
     					for ($ia = 1; $ia < count($alkesList); $ia++) {
     						$al = $alkesList[$ia];
     						echo "<tr>";
-    						echo "<td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td>";
-    						echo "<td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td>";
+    						echo "<td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td>";
+    						echo "<td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td>";
     						echo "<td class='left px-1'>".$al->alkeskode."</td>";
     						echo "<td class='left px-1'>".$al->alkesnama."</td>";
     						echo "<td class='right px-1'>".eFormatNumber($al->alkesqty,2)."</td>";
@@ -257,17 +268,19 @@ foreach ($dataAlkes->data as $al) {
 						$pendapatanklinikcoabaru+=$pendapatanklinik;
 						$totalcogscoabaru+=$totalcogs;
 						$totalcogsalkescoabaru+=$totalcogsalkes;
+						$qtycoabaru+=$qty;
 						$jumlahdatacobaru++;
 
 
 				$nilaiproduk = 0 ; $subtotal = 0 ; $nilaialkes = 0 ; $ppn=0; $pendapatanklinik=0; $pendapatandokter=0; $alkeshpp=0;
-				$totalcogs=0; $totalcogsalkes=0;
+				$totalcogs=0; $totalcogsalkes=0; $qty=0;
 
 
 				}
 					if ($jumlahdatacobaru>1) {
 						echo "<tr class='bg-dark'>";
-        					echo "<td class='left px-1' colspan=5 style='border-top:1px solid #000; border-bottom:1px solid #000;'>Jumlah ".$coabaru."</td>";
+        					echo "<td class='left px-1' colspan=6 style='border-top:1px solid #000; border-bottom:1px solid #000;'>Jumlah ".$coabaru."</td>";
+        					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($qtycoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($subtotalcoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($nilaiprodukcoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($alkeshppcoabaru,2)."</td>";
@@ -284,7 +297,8 @@ foreach ($dataAlkes->data as $al) {
 		<tfoot>
 
 			<tr>
-				<td class="px-1" colspan=5>Total</td>
+				<td class="px-1" colspan=6>Total</td>
+				<td class="right px-1"><?= eFormatNumber($tqty, 2) ?></td>
 				<td class="right px-1"><?= eFormatNumber($tnilaisales, 2) ?></td>
 				<td class="right px-1"><?= eFormatNumber($tnilaiproduk, 2) ?></td>
 				<td class="right px-1"><?= eFormatNumber($tnilaialkes, 2) ?></td>
