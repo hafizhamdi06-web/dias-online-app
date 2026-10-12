@@ -67,7 +67,6 @@ $query =
 	"'  AND '" .
 	tgl_database($date2) .
 	"'
-					   AND sdkeluar*(sdharga-sddiskon)>0
 					  ";
 
 if ($idgudang != "") {
@@ -106,8 +105,7 @@ $queryAlkes =
 	tgl_database($date1) .
 	"'  AND '" .
 	tgl_database($date2) .
-	"'
-	            AND pa.sdkeluar*(pa.sdharga-pa.sddiskon)>0";
+	"'";
 
 if ($idgudang != "") {
 	$queryAlkes .= " AND pg.gid='" . $idgudang . "'";
@@ -151,6 +149,10 @@ foreach ($dataAlkes->data as $al) {
 				<th class="left px-1">Pendapatan Klinik</th>
 				<th class="left px-1">Cogs Produk</th>
 				<th class="left px-1">Cogs Alkes</th>
+				<th class="left px-1">Kode Alkes</th>
+				<th class="left px-1">Nama Alkes</th>
+				<th class="left px-1">Qty Alkes</th>
+				<th class="left px-1">COGS</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -191,6 +193,7 @@ foreach ($dataAlkes->data as $al) {
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($pendapatanklinikcoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($totalcogscoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($totalcogsalkescoabaru,2)."</td>";
+        					echo "<td class='left px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='left px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td>";
         					echo "</tr>";
          				 	$subtotalcoabaru = 0; $nilaiprodukcoabaru=0; $alkeshppcoabaru=0;  $ppncoabaru=0; $pendapatanklinikcoabaru=0;
          				 	$totalcogscoabaru = 0; $totalcogsalkescoabaru = 0;
@@ -199,6 +202,9 @@ foreach ($dataAlkes->data as $al) {
                     		 $jumlahdatacobaru=0;
              			}
 
+
+    					$alkesKey = $row->notransaksi.'|'.$row->IKODE;
+    					$alkesList = !empty($alkesDetail[$alkesKey]) ? $alkesDetail[$alkesKey] : array();
 
     					echo "<tr>";
     					echo "<td class='left px-1'>".$row->GKODE."</td>";
@@ -213,26 +219,27 @@ foreach ($dataAlkes->data as $al) {
     					echo "<td class='right px-1'>".eFormatNumber($pendapatanklinik,2)."</td>";
     					echo "<td class='right px-1'>".eFormatNumber($totalcogs,2)."</td>";
     					echo "<td class='right px-1'>".eFormatNumber($totalcogsalkes,2)."</td>";
+    					if (!empty($alkesList)) {
+    						$al0 = $alkesList[0];
+    						echo "<td class='left px-1'>".$al0->alkeskode."</td>";
+    						echo "<td class='left px-1'>".$al0->alkesnama."</td>";
+    						echo "<td class='right px-1'>".eFormatNumber($al0->alkesqty,2)."</td>";
+    						echo "<td class='right px-1'>".eFormatNumber($al0->alkescogs,2)."</td>";
+    					} else {
+    						echo "<td class='left px-1'></td><td class='left px-1'></td><td class='right px-1'></td><td class='right px-1'></td>";
+    					}
     					echo "</tr>";
 
-    					$alkesKey = $row->notransaksi.'|'.$row->IKODE;
-    					if (!empty($alkesDetail[$alkesKey])) {
-    						foreach ($alkesDetail[$alkesKey] as $al) {
-    							echo "<tr>";
-    							echo "<td class='left px-1'></td>";
-    							echo "<td class='left px-1'></td>";
-    							echo "<td class='left px-1 text-gray'>&nbsp;&nbsp;&nbsp;&nbsp;Alkes: [".$al->alkeskode."] ".$al->alkesnama." (Qty ".eFormatNumber($al->alkesqty,2).")</td>";
-    							echo "<td class='left px-1'></td>";
-    							echo "<td class='left px-1'></td>";
-    							echo "<td class='right px-1 text-gray'></td>";
-    							echo "<td class='right px-1 text-gray'></td>";
-    							echo "<td class='right px-1 text-gray'></td>";
-    							echo "<td class='right px-1 text-gray'></td>";
-    							echo "<td class='right px-1 text-gray'></td>";
-    							echo "<td class='right px-1 text-gray'></td>";
-    							echo "<td class='right px-1 text-gray'>".eFormatNumber($al->alkescogs,2)."</td>";
-    							echo "</tr>";
-    						}
+    					for ($ia = 1; $ia < count($alkesList); $ia++) {
+    						$al = $alkesList[$ia];
+    						echo "<tr>";
+    						echo "<td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td><td class='left px-1'></td>";
+    						echo "<td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td><td class='right px-1'></td>";
+    						echo "<td class='left px-1'>".$al->alkeskode."</td>";
+    						echo "<td class='left px-1'>".$al->alkesnama."</td>";
+    						echo "<td class='right px-1'>".eFormatNumber($al->alkesqty,2)."</td>";
+    						echo "<td class='right px-1'>".eFormatNumber($al->alkescogs,2)."</td>";
+    						echo "</tr>";
     					}
 
     					$tnilaiproduk += $nilaiproduk;
@@ -268,6 +275,7 @@ foreach ($dataAlkes->data as $al) {
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($pendapatanklinikcoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($totalcogscoabaru,2)."</td>";
         					echo "<td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'>".eFormatNumber($totalcogsalkescoabaru,2)."</td>";
+        					echo "<td class='left px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='left px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td><td class='right px-1' style='border-top:1px solid #000; border-bottom:1px solid #000;'></td>";
         					echo "</tr>";
 					}
 
@@ -284,6 +292,10 @@ foreach ($dataAlkes->data as $al) {
 				<td class="right px-1"><?= eFormatNumber($tpendapatanklinik, 2) ?></td>
 				<td class="right px-1"><?= eFormatNumber($tcogs, 2) ?></td>
 				<td class="right px-1"><?= eFormatNumber($tcogsalkes, 2) ?></td>
+				<td class="left px-1"></td>
+				<td class="left px-1"></td>
+				<td class="right px-1"></td>
+				<td class="right px-1"></td>
 			</tr>
 
 
